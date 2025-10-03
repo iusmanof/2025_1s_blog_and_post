@@ -1,23 +1,23 @@
-import {Request, Response ,NextFunction} from "express";
+import {Request, Response, NextFunction} from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
-
-const USERNAME = "admin"
-const PASSWORD = "qwerty"
-
+const USERNAME = process.env.USERNAME;
+const PASSWORD = process.env.PASSWORD;
 
 export const basicAuth = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader || !authHeader.startsWith("Basic ")) {
-   return res.status(401).send("Unauthorized");
-  }
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || !authHeader.startsWith("Basic ")) {
+        return res.status(401).send("Unauthorized");
+    }
 
-  const base64Credentials: string = authHeader.split(" ")[1];
-  const credentials = Buffer.from(base64Credentials, "base64").toString("utf-8");
-  const [username, password] = credentials.split(":");
+    const base64Credentials: string = authHeader.split(" ")[1];
+    const credentials = Buffer.from(base64Credentials, "base64").toString("utf-8");
+    const [username, password] = credentials.split(":");
 
-  if (username === USERNAME && password === PASSWORD) {
-    return next();
-  }
+    if (username === USERNAME && password === PASSWORD) {
+        return next();
+    }
 
-  res.status(401).send("Unauthorized");
+    res.status(401).send("Unauthorized");
 };

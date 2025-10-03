@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from "../src/index";  // Правильный импорт
+import app from "../src/index";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 import httpStatusCode from "../src/HTTP_STATUS_enum/HttpStatusCode";

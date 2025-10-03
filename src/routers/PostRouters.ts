@@ -1,5 +1,4 @@
 import {Request, Response, Router} from "express";
-import {HTTP_STATUS} from "../StatusCode";
 import {RequestWithParams} from "../model_types/RequestTypes";
 import {PostModelWithId} from "../model_types/PostModel";
 import {basicAuth} from "../auth";
@@ -9,6 +8,7 @@ import {contentValidation} from "../bodyValidation/contentValidation";
 import {shortDescriptionValidation} from "../bodyValidation/shortDescriptionValidation";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {postAccessLayerMongoDB} from "../dataAccessLayer/post-data-access-layer-mongodb";
+import HTTP_STATUS from "../HTTP_STATUS_enum/HttpStatusCode";
 
 export const PostRouter = Router();
 

@@ -1,11 +1,11 @@
-export type BlogBase ={
-  name:	string
-  description:	string
-  websiteUrl:	string
+export type BlogBase = {
+    name: string
+    description: string
+    websiteUrl: string
 }
 
 export type BlogMongoDb = BlogBase & {
-    createdAt:	string
+    createdAt: string
     isMembership: boolean
 }
 

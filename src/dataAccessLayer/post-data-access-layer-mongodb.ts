@@ -62,7 +62,7 @@ export const postAccessLayerMongoDB = {
             blogId: post.blogId,
         };
 
-        if (post.blogName){
+        if (post.blogName) {
             updateFields.blogName = post.blogName;
         }
         const isUpdated = await getPostCollection().updateOne({_id: new ObjectId(id)}, {
