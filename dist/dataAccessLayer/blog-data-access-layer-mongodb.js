@@ -24,16 +24,14 @@ exports.blogDataAccessLayerMongoDB = void 0;
 const db_1 = require("../repositories/db");
 const mongodb_1 = require("mongodb");
 exports.blogDataAccessLayerMongoDB = {
-    getAllBlogs() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const result = yield (0, db_1.getBlogCollection)().find({}).toArray();
-            const blogWithId = result.map((_a) => {
-                var { _id } = _a, rest = __rest(_a, ["_id"]);
-                return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
-            });
-            return blogWithId;
+    getAllBlogs: () => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield (0, db_1.getBlogCollection)().find({}).toArray();
+        const blogWithId = result.map((_a) => {
+            var { _id } = _a, rest = __rest(_a, ["_id"]);
+            return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
         });
-    },
+        return yield blogWithId;
+    }),
     getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield (0, db_1.getBlogCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });

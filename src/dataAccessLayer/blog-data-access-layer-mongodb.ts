@@ -3,13 +3,13 @@ import { BlogBase, BlogMongoDb, BlogWithId } from "../model_types/BlogModel";
 import { ObjectId } from "mongodb";
 
 export const blogDataAccessLayerMongoDB = {
-  async getAllBlogs() {
+   getAllBlogs: async () => {
     const result = await getBlogCollection().find({}).toArray();
     const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
       ...rest,
       id: _id.toString(),
     }));
-    return blogWithId;
+    return await blogWithId;
   },
   async getBlogById(id: string) {
     const result = await getBlogCollection().findOne({ _id: new ObjectId(id) });
