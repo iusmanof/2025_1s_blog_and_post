@@ -7,34 +7,12 @@ import { nameValidation } from "../bodyValidation/nameValidation";
 import { websiteValidation } from "../bodyValidation/websiteValidation";
 import { inputValidationMiddleware } from "../middlewares/input-validation-middleware";
 import { blogDataAccessLayerMongoDB } from "../dataAccessLayer/blog-data-access-layer-mongodb";
-import { query } from "express-validator";
 import HTTP_STATUS from "../HTTP_STATUS_enum/HttpStatusCode";
+import BlogHandler from "../handlers/blogs/blogHandler_GET";
 
 export const BlogRouter = Router();
 
-BlogRouter.get(
-  "/",
-  [
-    query("searchNameTerm").default(null),
-    query("sortBy").default("createdAt"),
-    query("sortDirection").default("desc"),
-    query("pageNumber").default(1),
-    query("pageSize").default(10),
-  ],
-  async (req: Request, res: Response) => {
-    const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } =
-      req.query;
-
-    console.log(searchNameTerm);
-    console.log(sortBy);
-    console.log(sortDirection);
-    console.log(pageNumber);
-    console.log(pageSize);
-
-    const blogAll = await blogDataAccessLayerMongoDB.getAllBlogs();
-    return await res.status(HTTP_STATUS.OK_200).send(blogAll);
-  },
-);
+BlogRouter.get("/", BlogHandler.GET);
 BlogRouter.get(
   "/:id",
   async (req: RequestWithParams<{ id: string }>, res: Response) => {

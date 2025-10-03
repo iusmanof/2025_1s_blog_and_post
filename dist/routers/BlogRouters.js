@@ -19,25 +19,10 @@ const nameValidation_1 = require("../bodyValidation/nameValidation");
 const websiteValidation_1 = require("../bodyValidation/websiteValidation");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const blog_data_access_layer_mongodb_1 = require("../dataAccessLayer/blog-data-access-layer-mongodb");
-const express_validator_1 = require("express-validator");
 const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatusCode"));
+const blogHandler_GET_1 = __importDefault(require("../handlers/blogs/blogHandler_GET"));
 exports.BlogRouter = (0, express_1.Router)();
-exports.BlogRouter.get("/", [
-    (0, express_validator_1.query)("searchNameTerm").default(null),
-    (0, express_validator_1.query)("sortBy").default("createdAt"),
-    (0, express_validator_1.query)("sortDirection").default("desc"),
-    (0, express_validator_1.query)("pageNumber").default(1),
-    (0, express_validator_1.query)("pageSize").default(10),
-], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } = req.query;
-    console.log(searchNameTerm);
-    console.log(sortBy);
-    console.log(sortDirection);
-    console.log(pageNumber);
-    console.log(pageSize);
-    const blogAll = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getAllBlogs();
-    return yield res.status(HttpStatusCode_1.default.OK_200).send(blogAll);
-}));
+exports.BlogRouter.get("/", blogHandler_GET_1.default.GET);
 exports.BlogRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blogFounded = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getBlogById(req.params.id);
     if (!blogFounded)
