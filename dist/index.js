@@ -21,12 +21,12 @@ const post_data_access_layer_mongodb_1 = require("./dataAccessLayer/post-data-ac
 const app = (0, express_1.default)();
 const port = process.env.port || 3000;
 app.use(express_1.default.json());
-app.use('/blogs', BlogRouters_1.BlogRouter);
-app.use('/posts', PostRouters_1.PostRouter);
-app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield res.send('blogs api');
+app.use("/blogs", BlogRouters_1.BlogRouter);
+app.use("/posts", PostRouters_1.PostRouter);
+app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield res.send("blogs api");
 }));
-app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete("/testing/all-data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.deleteAllBlogs();
     post_data_access_layer_mongodb_1.postAccessLayerMongoDB.deleteAllPosts();
     res.status(204).send("All data is deleted");

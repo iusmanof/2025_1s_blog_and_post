@@ -18,11 +18,11 @@ exports.blogDataAccessLayer = {
     },
     getBlogById(id) {
         let blogFounded;
-        blogFounded = blogsDB.find(v => v.id === id);
+        blogFounded = blogsDB.find((v) => v.id === id);
         return blogFounded;
     },
     updateBlog(id, blog) {
-        const blogID = blogsDB.findIndex(b => b.id === id);
+        const blogID = blogsDB.findIndex((b) => b.id === id);
         if (blogID === -1) {
             return false;
         }
@@ -31,22 +31,22 @@ exports.blogDataAccessLayer = {
             blogsDB = [
                 ...blogsDB.slice(0, blogID),
                 blogUpdated,
-                ...blogsDB.slice(blogID + 1)
+                ...blogsDB.slice(blogID + 1),
             ];
             return true;
         }
     },
     deleteBlog(id) {
-        const blogID = blogsDB.findIndex(v => v.id === id);
+        const blogID = blogsDB.findIndex((v) => v.id === id);
         if (blogID == -1) {
             return false;
         }
         else {
-            blogsDB = blogsDB.filter(v => v.id !== id);
+            blogsDB = blogsDB.filter((v) => v.id !== id);
             return true;
         }
     },
     deleteAllBlogs() {
         blogsDB = [];
-    }
+    },
 };

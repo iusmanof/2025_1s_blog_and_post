@@ -11,22 +11,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDB = exports.postCollection = exports.blogCollection = void 0;
+exports.runDB = void 0;
+exports.getPostCollection = getPostCollection;
+exports.getBlogCollection = getBlogCollection;
 const mongodb_1 = require("mongodb");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const url = (_a = process.env.MONGODB_URI) !== null && _a !== void 0 ? _a : process.env.MONGODB_URI_DBNAME_LOCAL;
-const dbName = (_b = process.env.DB_NAME) !== null && _b !== void 0 ? _b : "local";
+const url = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME;
 if (!url)
-    throw new Error("MONGODB_URI\n is not defined");
+    throw new Error("MONGODB_URI is not defined");
+if (!dbName)
+    throw new Error("DB_NAME URL is not defined");
 const client = new mongodb_1.MongoClient(url);
-exports.blogCollection = client.db(dbName).collection('blogs');
-exports.postCollection = client.db(dbName).collection('posts');
+let blogCollection;
+let postCollection;
 const runDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield client.connect();
+        const db = client.db(dbName);
+        blogCollection = db.collection("blogs");
+        postCollection = db.collection("posts");
         console.log("Connect successfully to server");
     }
     catch (e) {
@@ -36,3 +42,13 @@ const runDB = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.runDB = runDB;
+function getPostCollection() {
+    if (!postCollection)
+        throw new Error("Collection not initialized");
+    return postCollection;
+}
+function getBlogCollection() {
+    if (!blogCollection)
+        throw new Error("Collection not initialized");
+    return blogCollection;
+}

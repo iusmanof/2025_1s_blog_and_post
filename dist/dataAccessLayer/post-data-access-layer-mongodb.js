@@ -26,7 +26,7 @@ const mongodb_1 = require("mongodb");
 const blog_data_access_layer_mongodb_1 = require("./blog-data-access-layer-mongodb");
 exports.postAccessLayerMongoDB = {
     getAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield db_1.postCollection.find({}).toArray();
+        const result = yield (0, db_1.getPostCollection)().find({}).toArray();
         let resultWithId;
         resultWithId = result.map((_a) => {
             var { _id } = _a, rest = __rest(_a, ["_id"]);
@@ -35,7 +35,7 @@ exports.postAccessLayerMongoDB = {
         return resultWithId;
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield db_1.postCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
+        const result = yield (0, db_1.getPostCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
         if (!result) {
             return null;
         }
@@ -53,13 +53,15 @@ exports.postAccessLayerMongoDB = {
             content: post.content,
             blogId: post.blogId,
             blogName: blog ? blog.name : "Unknown",
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
         };
-        const result = yield db_1.postCollection.insertOne(Object.assign({}, postCreated));
+        const result = yield (0, db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
         return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
     }),
     deletePost: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const isDeleted = yield db_1.postCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+        const isDeleted = yield (0, db_1.getPostCollection)().deleteOne({
+            _id: new mongodb_1.ObjectId(id),
+        });
         return (yield isDeleted.deletedCount) !== 0;
     }),
     updatePost: (id, post) => __awaiter(void 0, void 0, void 0, function* () {
@@ -72,12 +74,12 @@ exports.postAccessLayerMongoDB = {
         if (post.blogName) {
             updateFields.blogName = post.blogName;
         }
-        const isUpdated = yield db_1.postCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, {
-            $set: updateFields
+        const isUpdated = yield (0, db_1.getPostCollection)().updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+            $set: updateFields,
         });
         return (yield isUpdated.matchedCount) !== 0;
     }),
     deleteAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
-        yield db_1.postCollection.deleteMany({});
+        yield (0, db_1.getPostCollection)().deleteMany({});
     }),
 };

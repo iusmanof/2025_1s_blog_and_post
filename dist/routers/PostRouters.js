@@ -8,48 +8,55 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostRouter = void 0;
 const express_1 = require("express");
-const StatusCode_1 = require("../StatusCode");
 const auth_1 = require("../auth");
 const titleValidation_1 = require("../bodyValidation/titleValidation");
 const contentValidation_1 = require("../bodyValidation/contentValidation");
 const shortDescriptionValidation_1 = require("../bodyValidation/shortDescriptionValidation");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const post_data_access_layer_mongodb_1 = require("../dataAccessLayer/post-data-access-layer-mongodb");
+const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatusCode"));
 exports.PostRouter = (0, express_1.Router)();
 exports.PostRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield post_data_access_layer_mongodb_1.postAccessLayerMongoDB.getAllPosts();
-    yield res.status(StatusCode_1.HTTP_STATUS.OK_200).send(result);
+    yield res.status(HttpStatusCode_1.default.OK_200).send(result);
 }));
-exports.PostRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.PostRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postFounded = yield post_data_access_layer_mongodb_1.postAccessLayerMongoDB.getPostById(req.params.id);
     if (!postFounded)
-        yield res.status(StatusCode_1.HTTP_STATUS.NOT_FOUND_404).send("No posts found.");
+        yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("No posts found.");
     yield res.status(200).json(postFounded);
 }));
-exports.PostRouter.post('/', auth_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.PostRouter.post("/", auth_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postCreated = yield post_data_access_layer_mongodb_1.postAccessLayerMongoDB.createPost(req.body);
     const apiErrorMsg = [];
     if (!postCreated) {
         apiErrorMsg.push({ message: "ID Not found", field: "id" });
-        yield res.status(StatusCode_1.HTTP_STATUS.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
+        yield res
+            .status(HttpStatusCode_1.default.NOT_FOUND_404)
+            .json({ errorsMessages: apiErrorMsg });
     }
-    yield res.status(StatusCode_1.HTTP_STATUS.CREATED_201).json(postCreated);
+    yield res.status(HttpStatusCode_1.default.CREATED_201).json(postCreated);
 }));
-exports.PostRouter.put('/:id', auth_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.PostRouter.put("/:id", auth_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postIsUpdated = yield post_data_access_layer_mongodb_1.postAccessLayerMongoDB.updatePost(req.params.id, req.body);
     const apiErrorMsg = [];
     if (!postIsUpdated) {
         apiErrorMsg.push({ message: "ID Not found", field: "id" });
-        return yield res.status(StatusCode_1.HTTP_STATUS.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
+        return yield res
+            .status(HttpStatusCode_1.default.NOT_FOUND_404)
+            .json({ errorsMessages: apiErrorMsg });
     }
-    return yield res.status(StatusCode_1.HTTP_STATUS.NO_CONTENT_204).send();
+    return yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
 }));
-exports.PostRouter.delete('/:id', auth_1.basicAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.PostRouter.delete("/:id", auth_1.basicAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield post_data_access_layer_mongodb_1.postAccessLayerMongoDB.deletePost(req.params.id);
     if (!post)
-        yield res.status(StatusCode_1.HTTP_STATUS.NOT_FOUND_404).send("Not found");
-    yield res.status(StatusCode_1.HTTP_STATUS.NO_CONTENT_204).send();
+        yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Not found");
+    yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
 }));

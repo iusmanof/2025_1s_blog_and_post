@@ -9,7 +9,7 @@ exports.postAccessLayer = {
     },
     getPostById: (id) => {
         let postFounded;
-        postFounded = postsDB.find(post => post.id === id);
+        postFounded = postsDB.find((post) => post.id === id);
         return postFounded;
     },
     createPost: (post) => {
@@ -20,13 +20,13 @@ exports.postAccessLayer = {
             shortDescription: post.shortDescription,
             content: post.content,
             blogId: post.blogId,
-            blogName: blog ? blog.name : "Unknown"
+            blogName: blog ? blog.name : "Unknown",
         };
         postsDB = [...postsDB, postCreated];
         return postCreated;
     },
     deletePost: (id) => {
-        const postID = postsDB.findIndex(p => p.id === id);
+        const postID = postsDB.findIndex((p) => p.id === id);
         if (postID === -1) {
             return false;
         }
@@ -36,7 +36,7 @@ exports.postAccessLayer = {
         }
     },
     updatePost: (id, post) => {
-        const postID = postsDB.findIndex(p => p.id === id);
+        const postID = postsDB.findIndex((p) => p.id === id);
         if (postID === -1) {
             return false;
         }
@@ -46,7 +46,7 @@ exports.postAccessLayer = {
             postsDB = [
                 ...postsDB.slice(0, postID),
                 postUpdated,
-                ...postsDB.slice(postID + 1)
+                ...postsDB.slice(postID + 1),
             ];
             return true;
         }

@@ -7,23 +7,31 @@
     "start": "node dist/index.js",
     "ngrok": "ngrok http 3000",
     "test": "jest",
-    "test:watch": "jest --watch --runInBand"
+    "test:watch": "jest --watch --runInBand",
+    "lint": "eslint --fix .",
+    "format": "prettier --write ."
   },
   "dependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/supertest": "^6.0.3",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "jest": "^30.2.0",
-    "mongodb": "^6.20.0",
-    "supertest": "^7.1.4",
-    "ts-jest": "^29.4.4"
+    "mongodb": "^6.20.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }
