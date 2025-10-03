@@ -4,8 +4,12 @@ import dotenv from 'dotenv'
 import {PostMongoDb} from "../model_types/PostModel";
 dotenv.config()
 
-const url: string | undefined = process.env.MONGODB_URI ?? process.env.MONGODB_URI_DBNAME_LOCAL
-const dbName: string = process.env.DB_NAME ?? "local"
+const url: string | undefined = process.env.MONGODB_URI
+const dbName: string | undefined= process.env.DB_NAME
+console.log(url)
+console.log(dbName)
+console.log("process.env.MONGODB_URI" + process.env.MONGODB_URI)
+console.log("process.env.DB_NAME" + process.env.DB_NAME)
 
 if (!url) throw new Error("MONGODB_URI\n is not defined");
 
