@@ -18,4 +18,8 @@ node_modules
 
 /.idea/
 /node_modules/
-.env
+# Игнорировать лог-файл
+logs/debug.log
+
+# Игнорировать все .env файлы
+*.env
