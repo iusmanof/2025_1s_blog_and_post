@@ -39,6 +39,7 @@ const runDB = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error("Don't connect to server");
         console.log(e);
         yield client.close();
+        throw e;
     }
 });
 exports.runDB = runDB;
