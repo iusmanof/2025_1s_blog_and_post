@@ -27,8 +27,8 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield res.send("blogs api");
 }));
 app.delete("/testing/all-data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.deleteAllBlogs();
-    post_data_access_layer_mongodb_1.postAccessLayerMongoDB.deleteAllPosts();
+    yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.deleteAllBlogs();
+    yield post_data_access_layer_mongodb_1.postAccessLayerMongoDB.deleteAllPosts();
     res.status(204).send("All data is deleted");
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {

@@ -18,8 +18,8 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 app.delete("/testing/all-data", async (req: Request, res: Response) => {
-  blogDataAccessLayerMongoDB.deleteAllBlogs();
-  postAccessLayerMongoDB.deleteAllPosts();
+  await blogDataAccessLayerMongoDB.deleteAllBlogs();
+  await postAccessLayerMongoDB.deleteAllPosts();
   res.status(204).send("All data is deleted");
 });
 
