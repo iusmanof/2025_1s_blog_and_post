@@ -27,6 +27,7 @@ export const runDB = async () => {
     console.error("Don't connect to server");
     console.log(e);
     await client.close();
+    throw e;
   }
 };
 
