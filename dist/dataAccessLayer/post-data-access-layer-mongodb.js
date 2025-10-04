@@ -20,11 +20,11 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postAccessLayerMongoDB = void 0;
+exports.postDataAccessLayerMongoDB = void 0;
 const db_1 = require("../repositories/db");
 const mongodb_1 = require("mongodb");
 const blog_data_access_layer_mongodb_1 = require("./blog-data-access-layer-mongodb");
-exports.postAccessLayerMongoDB = {
+exports.postDataAccessLayerMongoDB = {
     getAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield (0, db_1.getPostCollection)().find({}).toArray();
         let resultWithId;

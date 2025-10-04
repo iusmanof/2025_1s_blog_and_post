@@ -3,7 +3,7 @@ import { getPostCollection } from "../repositories/db";
 import { ObjectId } from "mongodb";
 import { blogDataAccessLayerMongoDB } from "./blog-data-access-layer-mongodb";
 
-export const postAccessLayerMongoDB = {
+export const postDataAccessLayerMongoDB = {
   getAllPosts: async () => {
     const result = await getPostCollection().find({}).toArray();
     let resultWithId: {

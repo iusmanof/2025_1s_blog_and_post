@@ -4,7 +4,7 @@ import { BlogRouter } from "./routers/BlogRouters";
 import { PostRouter } from "./routers/PostRouters";
 import { runDB } from "./repositories/db";
 import { blogDataAccessLayerMongoDB } from "./dataAccessLayer/blog-data-access-layer-mongodb";
-import { postAccessLayerMongoDB } from "./dataAccessLayer/post-data-access-layer-mongodb";
+import { postDataAccessLayerMongoDB} from "./dataAccessLayer/post-data-access-layer-mongodb";
 
 const app = express();
 const port = process.env.port || 3000;
@@ -19,7 +19,7 @@ app.get("/", async (req: Request, res: Response) => {
 
 app.delete("/testing/all-data", async (req: Request, res: Response) => {
   await blogDataAccessLayerMongoDB.deleteAllBlogs();
-  await postAccessLayerMongoDB.deleteAllPosts();
+  await postDataAccessLayerMongoDB.deleteAllPosts();
   res.status(204).send("All data is deleted");
 });
 

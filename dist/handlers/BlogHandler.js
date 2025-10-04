@@ -12,8 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const blog_data_access_layer_mongodb_1 = require("../../dataAccessLayer/blog-data-access-layer-mongodb");
-const HttpStatusCode_1 = __importDefault(require("../../HTTP_STATUS_enum/HttpStatusCode"));
+const blog_data_access_layer_mongodb_1 = require("../dataAccessLayer/blog-data-access-layer-mongodb");
+const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatusCode"));
 const BlogHandler = {
     GET: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const blogAll = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getAllBlogs();
