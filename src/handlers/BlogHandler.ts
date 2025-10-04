@@ -1,4 +1,3 @@
-import {blogDataAccessLayerMongoDB} from "../dataAccessLayer/blog-data-access-layer-mongodb";
 import HTTP_STATUS from "../HTTP_STATUS_enum/HttpStatusCode";
 import {Request, Response} from "express";
 import {RequestWithParams} from "../model_types/RequestTypes";
@@ -19,7 +18,7 @@ const BlogHandler = {
         res.status(200).json(blog);
     },
     POST:  async (req: Request, res: Response) => {
-        const blogCreated = await blogDataAccessLayerMongoDB.createBlog(req.body);
+        const blogCreated = await blogService.create(req.body);
         return await res.status(HTTP_STATUS.CREATED_201).json(blogCreated);
     },
     PUT:  async (
@@ -31,10 +30,7 @@ const BlogHandler = {
         }
         >,
     ) => {
-        const blogIsUpdated = await blogDataAccessLayerMongoDB.updateBlog(
-            req.params.id,
-            req.body,
-        );
+        const blogIsUpdated =await blogService.update(req.params.id, req.body)
         const apiErrorMsg: FieldError[] = [];
         if (!blogIsUpdated) {
             apiErrorMsg.push({message: "ID Not found", field: "id"});
@@ -45,7 +41,7 @@ const BlogHandler = {
         return await res.status(HTTP_STATUS.NO_CONTENT_204).send();
     },
     DELETE: async (req: RequestWithParams<{ id: string }>, res: Response) => {
-        const blog = await blogDataAccessLayerMongoDB.deleteBlog(req.params.id);
+        const blog = await blogService.delete(req.params.id)
         if (!blog)
             return await res.status(HTTP_STATUS.NOT_FOUND_404).send("Not found");
         return await res.status(HTTP_STATUS.NO_CONTENT_204).send();
