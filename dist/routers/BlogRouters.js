@@ -23,12 +23,7 @@ const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatus
 const BlogHandler_1 = __importDefault(require("../handlers/blogs/BlogHandler"));
 exports.BlogRouter = (0, express_1.Router)();
 exports.BlogRouter.get("/", BlogHandler_1.default.GET);
-exports.BlogRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogFounded = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getBlogById(req.params.id);
-    if (!blogFounded)
-        res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Blog not found.");
-    res.status(200).json(blogFounded);
-}));
+exports.BlogRouter.get("/:id", BlogHandler_1.default.GET_ID);
 exports.BlogRouter.post("/", auth_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blogCreated = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.createBlog(req.body);
     return yield res.status(HttpStatusCode_1.default.CREATED_201).json(blogCreated);

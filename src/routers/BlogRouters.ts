@@ -13,17 +13,7 @@ import BlogHandler from "../handlers/blogs/BlogHandler";
 export const BlogRouter = Router();
 
 BlogRouter.get("/", BlogHandler.GET);
-BlogRouter.get(
-  "/:id",
-  async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const blogFounded = await blogDataAccessLayerMongoDB.getBlogById(
-      req.params.id,
-    );
-    if (!blogFounded)
-      res.status(HTTP_STATUS.NOT_FOUND_404).send("Blog not found.");
-    res.status(200).json(blogFounded);
-  },
-);
+BlogRouter.get("/:id", BlogHandler.GET_ID);
 
 BlogRouter.post(
   "/",

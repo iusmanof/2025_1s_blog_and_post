@@ -18,6 +18,12 @@ const BlogHandler = {
     GET: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const blogAll = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getAllBlogs();
         return yield res.status(HttpStatusCode_1.default.OK_200).send(blogAll);
-    })
+    }),
+    GET_ID: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const blogFounded = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getBlogById(req.params.id);
+        if (!blogFounded)
+            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Blog not found.");
+        res.status(200).json(blogFounded);
+    }),
 };
 exports.default = BlogHandler;
