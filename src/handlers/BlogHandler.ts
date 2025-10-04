@@ -4,19 +4,19 @@ import {Request, Response} from "express";
 import {RequestWithParams} from "../model_types/RequestTypes";
 import {BlogWithId} from "../model_types/BlogModel";
 import {FieldError} from "../model_types/FieldError";
+import BlogService from "../services/BlogService";
+import blogService from "../services/BlogService";
 
 const BlogHandler = {
     GET:  async (req: Request, res: Response) => {
-        const blogAll = await blogDataAccessLayerMongoDB.getAllBlogs();
-        return await res.status(HTTP_STATUS.OK_200).send(blogAll);
+        const blogs = await BlogService.findMany();
+        return await res.status(HTTP_STATUS.OK_200).send(blogs);
     },
     GET_ID:  async (req: RequestWithParams<{ id: string }>, res: Response) => {
-        const blogFounded = await blogDataAccessLayerMongoDB.getBlogById(
-            req.params.id,
-        );
-        if (!blogFounded)
+        const blog = await blogService.findById(req.params.id);
+        if (!blog)
             res.status(HTTP_STATUS.NOT_FOUND_404).send("Blog not found.");
-        res.status(200).json(blogFounded);
+        res.status(200).json(blog);
     },
     POST:  async (req: Request, res: Response) => {
         const blogCreated = await blogDataAccessLayerMongoDB.createBlog(req.body);

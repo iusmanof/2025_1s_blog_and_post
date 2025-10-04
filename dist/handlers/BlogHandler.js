@@ -14,16 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const blog_data_access_layer_mongodb_1 = require("../dataAccessLayer/blog-data-access-layer-mongodb");
 const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatusCode"));
+const BlogService_1 = __importDefault(require("../services/BlogService"));
+const BlogService_2 = __importDefault(require("../services/BlogService"));
 const BlogHandler = {
     GET: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const blogAll = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getAllBlogs();
-        return yield res.status(HttpStatusCode_1.default.OK_200).send(blogAll);
+        const blogs = yield BlogService_1.default.findMany();
+        return yield res.status(HttpStatusCode_1.default.OK_200).send(blogs);
     }),
     GET_ID: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const blogFounded = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getBlogById(req.params.id);
-        if (!blogFounded)
+        const blog = yield BlogService_2.default.findById(req.params.id);
+        if (!blog)
             res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Blog not found.");
-        res.status(200).json(blogFounded);
+        res.status(200).json(blog);
     }),
     POST: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const blogCreated = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.createBlog(req.body);
