@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.basicAuth = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const USERNAME = process.env.USERLOCAL;
-const PASSWORD = process.env.PASSLOCAL;
+const USERNAME = "admin";
+const PASSWORD = "qwerty";
 const basicAuth = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Basic ")) {

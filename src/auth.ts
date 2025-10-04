@@ -2,8 +2,8 @@ import {Request, Response, NextFunction} from "express";
 import dotenv from "dotenv";
 dotenv.config();
 
-const USERNAME = process.env.USERLOCAL;
-const PASSWORD = process.env.PASSLOCAL;
+const USERNAME = "admin"
+const PASSWORD = "qwerty"
 
 export const basicAuth = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"];

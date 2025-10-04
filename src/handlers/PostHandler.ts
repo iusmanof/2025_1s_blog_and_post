@@ -1,4 +1,4 @@
-import { Request, Response} from "express";
+import {Request, Response} from "express";
 import {postDataAccessLayerMongoDB} from "../dataAccessLayer/post-data-access-layer-mongodb";
 import HTTP_STATUS from "../HTTP_STATUS_enum/HttpStatusCode";
 import {RequestWithParams} from "../model_types/RequestTypes";
