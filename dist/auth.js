@@ -22,3 +22,4 @@ const basicAuth = (req, res, next) => {
     res.status(401).send("Unauthorized");
 };
 exports.basicAuth = basicAuth;
+//# sourceMappingURL=auth.js.map

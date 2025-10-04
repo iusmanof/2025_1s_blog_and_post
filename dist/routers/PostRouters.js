@@ -17,3 +17,4 @@ exports.PostRouter.get("/:id", PostHandler_1.default.GET_ID);
 exports.PostRouter.post("/", auth_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, PostHandler_1.default.POST);
 exports.PostRouter.put("/:id", auth_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, PostHandler_1.default.PUT);
 exports.PostRouter.delete("/:id", auth_1.basicAuth, PostHandler_1.default.DELETE);
+//# sourceMappingURL=PostRouters.js.map

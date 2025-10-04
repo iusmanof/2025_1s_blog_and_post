@@ -16,3 +16,4 @@ exports.BlogRouter.get("/:id", BlogHandler_1.default.GET_ID);
 exports.BlogRouter.post("/", auth_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, BlogHandler_1.default.POST);
 exports.BlogRouter.put("/:id", auth_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, BlogHandler_1.default.PUT);
 exports.BlogRouter.delete("/:id", auth_1.basicAuth, BlogHandler_1.default.DELETE);
+//# sourceMappingURL=BlogRouters.js.map

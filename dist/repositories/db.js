@@ -52,3 +52,4 @@ function getBlogCollection() {
         throw new Error("Collection not initialized");
     return blogCollection;
 }
+//# sourceMappingURL=db.js.map

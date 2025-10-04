@@ -8,3 +8,4 @@ exports.contentValidation = (0, express_validator_1.body)("content")
     .withMessage("Param not a string")
     .isLength({ min: 1, max: 1000 })
     .withMessage("Param is too long");
+//# sourceMappingURL=contentValidation.js.map

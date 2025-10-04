@@ -39,3 +39,4 @@ const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 startApp();
 exports.default = app;
+//# sourceMappingURL=index.js.map

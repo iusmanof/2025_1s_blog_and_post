@@ -8,3 +8,4 @@ exports.shortDescriptionValidation = (0, express_validator_1.body)("shortDescrip
     .withMessage("Param not a string")
     .isLength({ min: 1, max: 100 })
     .withMessage("Param is too long");
+//# sourceMappingURL=shortDescriptionValidation.js.map

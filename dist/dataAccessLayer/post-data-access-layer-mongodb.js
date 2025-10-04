@@ -83,3 +83,4 @@ exports.postDataAccessLayerMongoDB = {
         yield (0, db_1.getPostCollection)().deleteMany({});
     }),
 };
+//# sourceMappingURL=post-data-access-layer-mongodb.js.map

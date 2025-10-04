@@ -1,0 +1,1 @@
+{"version":3,"file":"nameValidation.js","sourceRoot":"","sources":["../../src/bodyValidation/nameValidation.ts"],"names":[],"mappings":";;;AAAA,yDAAyC;AAE5B,QAAA,cAAc,GAAG,IAAA,wBAAI,EAAC,MAAM,CAAC;KACvC,IAAI,EAAE;KACN,QAAQ,EAAE;KACV,WAAW,CAAC,qBAAqB,CAAC;KAClC,QAAQ,CAAC,EAAE,GAAG,EAAE,CAAC,EAAE,GAAG,EAAE,EAAE,EAAE,CAAC;KAC7B,WAAW,CAAC,oBAAoB,CAAC,CAAC"}

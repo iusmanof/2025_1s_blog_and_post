@@ -16,3 +16,4 @@ const inputValidationMiddleware = (req, res, next) => {
     }
 };
 exports.inputValidationMiddleware = inputValidationMiddleware;
+//# sourceMappingURL=input-validation-middleware.js.map

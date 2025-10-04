@@ -8,3 +8,4 @@ exports.titleValidation = (0, express_validator_1.body)("title")
     .withMessage("Param not a string")
     .isLength({ min: 1, max: 30 })
     .withMessage("Param is too long");
+//# sourceMappingURL=titleValidation.js.map
