@@ -8,7 +8,7 @@ import { websiteValidation } from "../bodyValidation/websiteValidation";
 import { inputValidationMiddleware } from "../middlewares/input-validation-middleware";
 import { blogDataAccessLayerMongoDB } from "../dataAccessLayer/blog-data-access-layer-mongodb";
 import HTTP_STATUS from "../HTTP_STATUS_enum/HttpStatusCode";
-import BlogHandler from "../handlers/blogs/blogHandler_GET";
+import BlogHandler from "../handlers/blogs/BlogHandler";
 
 export const BlogRouter = Router();
 

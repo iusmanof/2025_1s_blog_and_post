@@ -20,9 +20,9 @@ const websiteValidation_1 = require("../bodyValidation/websiteValidation");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const blog_data_access_layer_mongodb_1 = require("../dataAccessLayer/blog-data-access-layer-mongodb");
 const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatusCode"));
-const blogHandler_GET_1 = __importDefault(require("../handlers/blogs/blogHandler_GET"));
+const BlogHandler_1 = __importDefault(require("../handlers/blogs/BlogHandler"));
 exports.BlogRouter = (0, express_1.Router)();
-exports.BlogRouter.get("/", blogHandler_GET_1.default.GET);
+exports.BlogRouter.get("/", BlogHandler_1.default.GET);
 exports.BlogRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blogFounded = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getBlogById(req.params.id);
     if (!blogFounded)
