@@ -6,10 +6,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const url = process.env.MONGODB_URI;
-const dbName = process.env.DB_NAME;
+// const dbName = process.env.DB_NAME;
 
 if (!url) throw new Error("MONGODB_URI is not defined");
-if (!dbName) throw new Error("DB_NAME URL is not defined");
+// if (!dbName) throw new Error("DB_NAME URL is not defined");
 
 const client = new MongoClient(url);
 
@@ -19,7 +19,7 @@ let postCollection: Collection<PostMongoDb>;
 export const runDB = async () => {
   try {
     await client.connect();
-    const db = client.db(dbName);
+    const db = client.db('testDB');
     blogCollection = db.collection<BlogMongoDb>("blogs");
     postCollection = db.collection<PostMongoDb>("posts");
     console.log("Connect successfully to server");

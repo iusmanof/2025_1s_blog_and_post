@@ -19,18 +19,17 @@ const mongodb_1 = require("mongodb");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const url = process.env.MONGODB_URI;
-const dbName = process.env.DB_NAME;
+// const dbName = process.env.DB_NAME;
 if (!url)
     throw new Error("MONGODB_URI is not defined");
-if (!dbName)
-    throw new Error("DB_NAME URL is not defined");
+// if (!dbName) throw new Error("DB_NAME URL is not defined");
 const client = new mongodb_1.MongoClient(url);
 let blogCollection;
 let postCollection;
 const runDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield client.connect();
-        const db = client.db(dbName);
+        const db = client.db('testDB');
         blogCollection = db.collection("blogs");
         postCollection = db.collection("posts");
         console.log("Connect successfully to server");
