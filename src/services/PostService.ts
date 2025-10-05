@@ -1,10 +1,10 @@
 import {postDataAccessLayerMongoDB} from "../dataAccessLayer/post-data-access-layer-mongodb";
-import {PostModel, PostModelWithId} from "../model_types/PostModel";
+import {PostModel, PostModelWithId, PostQuery} from "../model_types/PostModel";
 
 const PostService = {
-    findMany: async () =>{
+    findMany: async (query: PostQuery) =>{
         // Business logic layer
-        return await postDataAccessLayerMongoDB.getAllPosts();
+        return await postDataAccessLayerMongoDB.getAllPosts(query);
     },
     findById: async (id: string) =>{
         // Business logic layer
@@ -22,6 +22,10 @@ const PostService = {
         // Business logic layer
         return await postDataAccessLayerMongoDB.deletePost(id);
     },
+    findPostsByBlogId: async (blogId: string, query: PostQuery): Promise<PostModelWithId[]> =>  {
+        // Business logic layer
+        return await postDataAccessLayerMongoDB.getPostByBlogId(blogId, query);
+    }
 }
 
 export default PostService;

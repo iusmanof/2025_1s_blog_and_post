@@ -11,9 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const post_data_access_layer_mongodb_1 = require("../dataAccessLayer/post-data-access-layer-mongodb");
 const PostService = {
-    findMany: () => __awaiter(void 0, void 0, void 0, function* () {
+    findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer
-        return yield post_data_access_layer_mongodb_1.postDataAccessLayerMongoDB.getAllPosts();
+        return yield post_data_access_layer_mongodb_1.postDataAccessLayerMongoDB.getAllPosts(query);
     }),
     findById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer
@@ -31,6 +31,10 @@ const PostService = {
         // Business logic layer
         return yield post_data_access_layer_mongodb_1.postDataAccessLayerMongoDB.deletePost(id);
     }),
+    findPostsByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
+        // Business logic layer
+        return yield post_data_access_layer_mongodb_1.postDataAccessLayerMongoDB.getPostByBlogId(blogId, query);
+    })
 };
 exports.default = PostService;
 //# sourceMappingURL=PostService.js.map

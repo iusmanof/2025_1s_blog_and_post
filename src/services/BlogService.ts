@@ -1,10 +1,10 @@
 import {blogDataAccessLayerMongoDB} from "../dataAccessLayer/blog-data-access-layer-mongodb";
-import {BlogBase} from "../model_types/BlogModel";
+import {BlogBase, BlogQuery} from "../model_types/BlogModel";
 
 const BlogService = {
-    findMany: async () => {
+    findMany: async (query: BlogQuery) => {
         // Business logic layer
-        return await blogDataAccessLayerMongoDB.getAllBlogs();
+        return await blogDataAccessLayerMongoDB.getAllBlogs(query);
     },
     findById: async (id: string) => {
         // Business logic layer

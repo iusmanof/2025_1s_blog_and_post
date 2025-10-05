@@ -5,10 +5,14 @@ import {contentValidation} from "../bodyValidation/contentValidation";
 import {shortDescriptionValidation} from "../bodyValidation/shortDescriptionValidation";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import PostHandler from "../handlers/PostHandler";
+import {paginationAndSortingValidation} from "../queryValidation/blogsQueryValidation";
 
 export const PostRouter = Router();
 
-PostRouter.get("/", PostHandler.GET);
+PostRouter.get("/",
+    paginationAndSortingValidation(),
+    PostHandler.GET);
+
 PostRouter.get("/:id", PostHandler.GET_ID);
 
 PostRouter.post("/",

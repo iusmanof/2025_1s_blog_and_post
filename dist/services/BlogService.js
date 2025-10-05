@@ -11,9 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const blog_data_access_layer_mongodb_1 = require("../dataAccessLayer/blog-data-access-layer-mongodb");
 const BlogService = {
-    findMany: () => __awaiter(void 0, void 0, void 0, function* () {
+    findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer
-        return yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getAllBlogs();
+        return yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getAllBlogs(query);
     }),
     findById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer

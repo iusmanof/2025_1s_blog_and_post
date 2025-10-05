@@ -25,8 +25,16 @@ const db_1 = require("../repositories/db");
 const mongodb_1 = require("mongodb");
 const blog_data_access_layer_mongodb_1 = require("./blog-data-access-layer-mongodb");
 exports.postDataAccessLayerMongoDB = {
-    getAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield (0, db_1.getPostCollection)().find({}).toArray();
+    getAllPosts: (query) => __awaiter(void 0, void 0, void 0, function* () {
+        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc' } = query;
+        const skip = (pageNumber - 1) * pageSize;
+        const sortDir = sortDirection === 'asc' ? 1 : -1;
+        const result = yield (0, db_1.getPostCollection)()
+            .find({})
+            .sort({ [sortBy]: sortDir })
+            .skip(+skip)
+            .limit(+pageSize)
+            .toArray();
         let resultWithId;
         resultWithId = result.map((_a) => {
             var { _id } = _a, rest = __rest(_a, ["_id"]);
@@ -82,5 +90,25 @@ exports.postDataAccessLayerMongoDB = {
     deleteAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, db_1.getPostCollection)().deleteMany({});
     }),
+    getPostByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
+        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc' } = query;
+        const skip = (pageNumber - 1) * pageSize;
+        const sortDir = sortDirection === 'asc' ? 1 : -1;
+        const result = yield (0, db_1.getPostCollection)()
+            .find({ blogId })
+            .sort({ [sortBy]: sortDir })
+            .skip(+skip)
+            .limit(+pageSize)
+            .toArray();
+        console.log(result);
+        // objectID
+        // const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
+        //     ...rest,
+        //     id: _id.toString(),
+        // }));
+        // return await blogWithId;
+        return result;
+        // return await getPostCollection().findOne({_id: new ObjectId(blogId)});
+    })
 };
 //# sourceMappingURL=post-data-access-layer-mongodb.js.map

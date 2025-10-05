@@ -15,9 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatusCode"));
 const BlogService_1 = __importDefault(require("../services/BlogService"));
 const BlogService_2 = __importDefault(require("../services/BlogService"));
+const PostService_1 = __importDefault(require("../services/PostService"));
 const BlogHandler = {
     GET: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const blogs = yield BlogService_1.default.findMany();
+        const blogs = yield BlogService_1.default.findMany(req.query);
         return yield res.status(HttpStatusCode_1.default.OK_200).send(blogs);
     }),
     GET_ID: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,6 +26,17 @@ const BlogHandler = {
         if (!blog)
             res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Blog not found.");
         res.status(200).json(blog);
+    }),
+    GET_BLOG_ID_POSTS: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const blogId = req.params.blogId;
+        const blog = yield BlogService_2.default.findById(blogId);
+        if (!blog)
+            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Blog not found.");
+        const posts = yield PostService_1.default.findPostsByBlogId(blogId, req.query);
+        if (!posts) {
+            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Posts not found.");
+        }
+        res.status(200).json(posts);
     }),
     POST: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const blogCreated = yield BlogService_2.default.create(req.body);

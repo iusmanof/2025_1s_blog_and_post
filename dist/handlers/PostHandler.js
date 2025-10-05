@@ -16,7 +16,7 @@ const HttpStatusCode_1 = __importDefault(require("../HTTP_STATUS_enum/HttpStatus
 const PostService_1 = __importDefault(require("../services/PostService"));
 const PostHandler = {
     GET: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield PostService_1.default.findMany();
+        const result = yield PostService_1.default.findMany(req.query);
         return res.status(HttpStatusCode_1.default.OK_200).send(result);
     }),
     GET_ID: (req, res) => __awaiter(void 0, void 0, void 0, function* () {

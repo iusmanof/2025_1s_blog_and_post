@@ -1,15 +1,32 @@
 import { getBlogCollection } from "../repositories/db";
-import { BlogBase, BlogMongoDb, BlogWithId } from "../model_types/BlogModel";
+import {BlogBase, BlogMongoDb, BlogQuery, BlogWithId} from "../model_types/BlogModel";
 import { ObjectId } from "mongodb";
 
+
+
+
+
 export const blogDataAccessLayerMongoDB = {
-   getAllBlogs: async () => {
-    const result = await getBlogCollection().find({}).toArray();
-    const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
-      ...rest,
-      id: _id.toString(),
-    }));
-    return await blogWithId;
+        getAllBlogs: async (query: BlogQuery) => {
+            const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection= 'asc', searchNameTerm} = query;
+
+            const skip = (pageNumber - 1) * pageSize;
+            const sortDir = sortDirection === 'asc' ? 1 : -1;
+            const search =  searchNameTerm ? { name: {$regex: searchNameTerm, $options: "i" }} : {};
+
+            const result = await getBlogCollection()
+                .find(search)
+                .sort({[sortBy]: sortDir})
+                .skip(+skip)
+                .limit(+pageSize)
+                .toArray();
+
+            // objectID
+            const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
+                ...rest,
+                id: _id.toString(),
+            }));
+            return await blogWithId;
   },
   async getBlogById(id: string) {
     const result = await getBlogCollection().findOne({ _id: new ObjectId(id) });

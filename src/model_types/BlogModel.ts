@@ -12,3 +12,11 @@ export type BlogMongoDb = BlogBase & {
 export type BlogWithId = BlogBase & {
   id: string;
 };
+
+export type BlogQuery = {
+    searchNameTerm: string | null;
+    sortBy: string;
+    sortDirection: string;
+    pageNumber: number;
+    pageSize: number;
+}

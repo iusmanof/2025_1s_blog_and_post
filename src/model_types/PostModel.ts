@@ -13,3 +13,10 @@ export type PostModelWithId = PostModel & {
 export type PostMongoDb = PostModel & {
   createdAt: string;
 };
+
+export type PostQuery = {
+    sortBy: string;
+    sortDirection: string;
+    pageNumber: number;
+    pageSize: number;
+}

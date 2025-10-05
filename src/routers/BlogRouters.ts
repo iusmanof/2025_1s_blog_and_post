@@ -4,11 +4,21 @@ import {nameValidation} from "../bodyValidation/nameValidation";
 import {websiteValidation} from "../bodyValidation/websiteValidation";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import BlogHandler from "../handlers/BlogHandler";
+import {
+    paginationAndSortingValidation,
+    paginationAndSortingValidationWithSearchName
+} from "../queryValidation/blogsQueryValidation";
 
 export const BlogRouter = Router();
 
-BlogRouter.get("/", BlogHandler.GET);
+BlogRouter.get("/",
+    paginationAndSortingValidationWithSearchName(),
+    BlogHandler.GET);
+
 BlogRouter.get("/:id", BlogHandler.GET_ID);
+BlogRouter.get("/:blogId/posts",
+    paginationAndSortingValidation(),
+    BlogHandler.GET_BLOG_ID_POSTS);
 
 BlogRouter.post(
     "/",

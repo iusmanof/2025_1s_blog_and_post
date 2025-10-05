@@ -1,14 +1,13 @@
 import {Request, Response} from "express";
-import {postDataAccessLayerMongoDB} from "../dataAccessLayer/post-data-access-layer-mongodb";
 import HTTP_STATUS from "../HTTP_STATUS_enum/HttpStatusCode";
-import {RequestWithParams} from "../model_types/RequestTypes";
+import {RequestWithParams, RequestWithQuery} from "../model_types/RequestTypes";
 import {FieldError} from "../model_types/FieldError";
-import {PostModel, PostModelWithId} from "../model_types/PostModel";
+import {PostModel, PostModelWithId, PostQuery} from "../model_types/PostModel";
 import PostService from "../services/PostService";
 
 const PostHandler = {
-    GET: async (req: Request, res: Response) => {
-        const result = await PostService.findMany()
+    GET: async (req: RequestWithQuery<PostQuery>, res: Response) => {
+        const result = await PostService.findMany(req.query)
         return res.status(HTTP_STATUS.OK_200).send(result);
     },
     GET_ID: async (req: RequestWithParams<{ id: string }>, res: Response) => {
