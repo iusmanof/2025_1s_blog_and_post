@@ -6,6 +6,7 @@ import {FieldError} from "../model_types/FieldError";
 import BlogService from "../services/BlogService";
 import blogService from "../services/BlogService";
 import postService from "../services/PostService";
+import {PostModel} from "../model_types/PostModel";
 
 const BlogHandler = {
     GET: async (req: RequestWithQuery<BlogQuery>, res: Response) => {
@@ -23,6 +24,7 @@ const BlogHandler = {
         res: Response
     ) => {
         const blogId = req.params.blogId;
+
         const blog = await blogService.findById(blogId);
         if (!blog)
             res.status(HTTP_STATUS.NOT_FOUND_404).send("Blog not found.");
@@ -35,6 +37,15 @@ const BlogHandler = {
     },
     POST: async (req: Request, res: Response) => {
         const blogCreated = await blogService.create(req.body);
+        return await res.status(HTTP_STATUS.CREATED_201).json(blogCreated);
+    },
+
+    POST_BLOG_ID_POSTS: async (req: Request<PostModel,{blogId: string}>, res: Response) => {
+        const blog = await blogService.findById(req.params.blogId);
+        if(!blog){
+            return await res.status(HTTP_STATUS.NOT_FOUND_404).send("Blog not found.");
+        }
+        const blogCreated  = await blogService.createPostByBlogId(req.body, req.params.blogId);
         return await res.status(HTTP_STATUS.CREATED_201).json(blogCreated);
     },
     PUT: async (

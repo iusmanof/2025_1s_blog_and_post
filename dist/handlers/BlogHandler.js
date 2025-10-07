@@ -42,6 +42,14 @@ const BlogHandler = {
         const blogCreated = yield BlogService_2.default.create(req.body);
         return yield res.status(HttpStatusCode_1.default.CREATED_201).json(blogCreated);
     }),
+    POST_BLOG_ID_POSTS: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const blog = yield BlogService_2.default.findById(req.params.blogId);
+        if (!blog) {
+            return yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Blog not found.");
+        }
+        const blogCreated = yield BlogService_2.default.createPostByBlogId(req.body, req.params.blogId);
+        return yield res.status(HttpStatusCode_1.default.CREATED_201).json(blogCreated);
+    }),
     PUT: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const blogIsUpdated = yield BlogService_2.default.update(req.params.id, req.body);
         const apiErrorMsg = [];

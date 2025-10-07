@@ -26,7 +26,7 @@ const mongodb_1 = require("mongodb");
 const blog_data_access_layer_mongodb_1 = require("./blog-data-access-layer-mongodb");
 exports.postDataAccessLayerMongoDB = {
     getAllPosts: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc' } = query;
+        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
         const skip = (pageNumber - 1) * pageSize;
         const sortDir = sortDirection === 'asc' ? 1 : -1;
         const result = yield (0, db_1.getPostCollection)()
@@ -66,6 +66,19 @@ exports.postDataAccessLayerMongoDB = {
         const result = yield (0, db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
         return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
     }),
+    createPostByBlofId: (post, blogId) => __awaiter(void 0, void 0, void 0, function* () {
+        const blog = yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.getBlogById(post.blogId);
+        const postCreated = {
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: blogId,
+            blogName: blog ? blog.name : "Unknown",
+            createdAt: new Date().toISOString(),
+        };
+        const result = yield (0, db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
+        return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
+    }),
     deletePost: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const isDeleted = yield (0, db_1.getPostCollection)().deleteOne({
             _id: new mongodb_1.ObjectId(id),
@@ -91,7 +104,7 @@ exports.postDataAccessLayerMongoDB = {
         yield (0, db_1.getPostCollection)().deleteMany({});
     }),
     getPostByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
-        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc' } = query;
+        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
         const skip = (pageNumber - 1) * pageSize;
         const sortDir = sortDirection === 'asc' ? 1 : -1;
         const result = yield (0, db_1.getPostCollection)()
@@ -100,15 +113,19 @@ exports.postDataAccessLayerMongoDB = {
             .skip(+skip)
             .limit(+pageSize)
             .toArray();
-        console.log(result);
-        // objectID
-        // const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
-        //     ...rest,
-        //     id: _id.toString(),
-        // }));
-        // return await blogWithId;
-        return result;
-        // return await getPostCollection().findOne({_id: new ObjectId(blogId)});
+        const postWithId = result.map((_a) => {
+            var { _id } = _a, rest = __rest(_a, ["_id"]);
+            return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
+        });
+        const totalCount = yield (0, db_1.getPostCollection)().countDocuments({ blogId });
+        const resultWithMeta = {
+            "pagesCount": +Math.ceil(totalCount / pageSize),
+            "page": +pageNumber,
+            "pageSize": +pageSize,
+            "totalCount": +totalCount,
+            "items": postWithId
+        };
+        return yield resultWithMeta;
     })
 };
 //# sourceMappingURL=post-data-access-layer-mongodb.js.map

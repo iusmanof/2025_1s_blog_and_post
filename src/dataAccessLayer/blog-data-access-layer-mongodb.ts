@@ -1,9 +1,8 @@
-import { getBlogCollection } from "../repositories/db";
+import {getBlogCollection} from "../repositories/db";
 import {BlogBase, BlogMongoDb, BlogQuery, BlogWithId} from "../model_types/BlogModel";
-import { ObjectId } from "mongodb";
-
-
-
+import {ObjectId} from "mongodb";
+import {PostModel} from "../model_types/PostModel";
+import {postDataAccessLayerMongoDB} from "./post-data-access-layer-mongodb";
 
 
 export const blogDataAccessLayerMongoDB = {
@@ -26,7 +25,17 @@ export const blogDataAccessLayerMongoDB = {
                 ...rest,
                 id: _id.toString(),
             }));
-            return await blogWithId;
+            // return await blogWithId;
+
+            const totalCount = (await getBlogCollection().find({}).toArray()).length
+
+            return {
+                "pagesCount": Math.ceil(totalCount / pageSize),
+                "page": pageNumber,
+                "pageSize": pageSize,
+                "totalCount": totalCount,
+                "items": blogWithId
+            };
   },
   async getBlogById(id: string) {
     const result = await getBlogCollection().findOne({ _id: new ObjectId(id) });
@@ -37,7 +46,7 @@ export const blogDataAccessLayerMongoDB = {
       ...rest,
       id: _id.toString(),
     }));
-    return blogWIthId[0];
+      return blogWIthId[0];
   },
   async createBlog(blog: BlogBase) {
     const blogCreatedWithDate: BlogMongoDb = {
@@ -70,6 +79,9 @@ export const blogDataAccessLayerMongoDB = {
     );
 
     return isUpdated.matchedCount !== 0;
+  },
+  async  createPostByBlogId(body: PostModel, blogId: string) {
+    return await postDataAccessLayerMongoDB.createPostByBlofId(body, blogId);
   },
   async deleteBlog(id: string) {
     const isDeleted = await getBlogCollection().deleteOne({

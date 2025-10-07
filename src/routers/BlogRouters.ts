@@ -16,6 +16,7 @@ BlogRouter.get("/",
     BlogHandler.GET);
 
 BlogRouter.get("/:id", BlogHandler.GET_ID);
+
 BlogRouter.get("/:blogId/posts",
     paginationAndSortingValidation(),
     BlogHandler.GET_BLOG_ID_POSTS);
@@ -27,6 +28,12 @@ BlogRouter.post(
     inputValidationMiddleware,
     BlogHandler.POST,
 );
+
+BlogRouter.post(
+    "/:blogId/posts",
+    basicAuth,
+    BlogHandler.POST_BLOG_ID_POSTS,
+)
 
 BlogRouter.put(
     "/:id",

@@ -20,3 +20,11 @@ export type PostQuery = {
     pageNumber: number;
     pageSize: number;
 }
+
+export type PostPromise = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: PostModel[]
+}

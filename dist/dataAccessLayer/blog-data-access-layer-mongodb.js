@@ -23,6 +23,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogDataAccessLayerMongoDB = void 0;
 const db_1 = require("../repositories/db");
 const mongodb_1 = require("mongodb");
+const post_data_access_layer_mongodb_1 = require("./post-data-access-layer-mongodb");
 exports.blogDataAccessLayerMongoDB = {
     getAllBlogs: (query) => __awaiter(void 0, void 0, void 0, function* () {
         const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc', searchNameTerm } = query;
@@ -40,7 +41,15 @@ exports.blogDataAccessLayerMongoDB = {
             var { _id } = _a, rest = __rest(_a, ["_id"]);
             return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
         });
-        return yield blogWithId;
+        // return await blogWithId;
+        const totalCount = (yield (0, db_1.getBlogCollection)().find({}).toArray()).length;
+        return {
+            "pagesCount": Math.ceil(totalCount / pageSize),
+            "page": pageNumber,
+            "pageSize": pageSize,
+            "totalCount": totalCount,
+            "items": blogWithId
+        };
     }),
     getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -78,6 +87,11 @@ exports.blogDataAccessLayerMongoDB = {
                 },
             });
             return isUpdated.matchedCount !== 0;
+        });
+    },
+    createPostByBlogId(body, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield post_data_access_layer_mongodb_1.postDataAccessLayerMongoDB.createPostByBlofId(body, blogId);
         });
     },
     deleteBlog(id) {

@@ -1,11 +1,11 @@
-import {PostModel, PostModelWithId, PostQuery} from "../model_types/PostModel";
-import {getPostCollection} from "../repositories/db";
+import {PostModel, PostModelWithId, PostPromise, PostQuery} from "../model_types/PostModel";
+import { getPostCollection} from "../repositories/db";
 import {ObjectId} from "mongodb";
 import {blogDataAccessLayerMongoDB} from "./blog-data-access-layer-mongodb";
 
 export const postDataAccessLayerMongoDB = {
     getAllPosts: async (query: PostQuery) => {
-        const {pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc'} = query;
+        const {pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc'} = query;
 
         const skip = (pageNumber - 1) * pageSize;
         const sortDir = sortDirection === 'asc' ? 1 : -1;
@@ -60,6 +60,23 @@ export const postDataAccessLayerMongoDB = {
             id: result.insertedId.toString(),
         };
     },
+    createPostByBlofId: async (post: PostModel, blogId: string) => {
+        const blog = await blogDataAccessLayerMongoDB.getBlogById(post.blogId);
+
+        const postCreated = {
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: blogId,
+            blogName: blog ? blog.name : "Unknown",
+            createdAt: new Date().toISOString(),
+        };
+        const result = await getPostCollection().insertOne({...postCreated});
+        return {
+            ...postCreated,
+            id: result.insertedId.toString(),
+        };
+    },
     deletePost: async (id: string) => {
         const isDeleted = await getPostCollection().deleteOne({
             _id: new ObjectId(id),
@@ -88,8 +105,8 @@ export const postDataAccessLayerMongoDB = {
     deleteAllPosts: async () => {
         await getPostCollection().deleteMany({});
     },
-    getPostByBlogId: async (blogId: string, query: PostQuery): Promise<any[]> => {
-        const {pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'asc'} = query;
+    getPostByBlogId: async (blogId: string, query: PostQuery): Promise<PostPromise> => {
+        const {pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc'} = query;
 
         const skip = (pageNumber - 1) * pageSize;
         const sortDir = sortDirection === 'asc' ? 1 : -1;
@@ -101,16 +118,21 @@ export const postDataAccessLayerMongoDB = {
             .limit(+pageSize)
             .toArray();
 
-        console.log(result);
-        // objectID
-        // const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
-        //     ...rest,
-        //     id: _id.toString(),
-        // }));
-        // return await blogWithId;
+        const postWithId: PostModel[] = result.map(({ _id, ...rest }) => ({
+            ...rest,
+            id: _id.toString(),
+        }));
 
+        const totalCount = await getPostCollection().countDocuments({ blogId });
 
-        return result
-        // return await getPostCollection().findOne({_id: new ObjectId(blogId)});
+        const resultWithMeta = {
+            "pagesCount": +Math.ceil(totalCount/pageSize),
+            "page": +pageNumber,
+            "pageSize": +pageSize,
+            "totalCount": +totalCount,
+            "items": postWithId
+        }
+
+        return await resultWithMeta;
     }
 };

@@ -23,6 +23,10 @@ const BlogService = {
         // Business logic layer
         return yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.createBlog(body);
     }),
+    createPostByBlogId: (body, blogId) => __awaiter(void 0, void 0, void 0, function* () {
+        // Business logic layer
+        return yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.createPostByBlogId(body, blogId);
+    }),
     update: (id, body) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer
         return yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.updateBlog(id, body);

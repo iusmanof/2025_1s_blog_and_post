@@ -22,7 +22,7 @@ const PostService = {
         // Business logic layer
         return await postDataAccessLayerMongoDB.deletePost(id);
     },
-    findPostsByBlogId: async (blogId: string, query: PostQuery): Promise<PostModelWithId[]> =>  {
+    findPostsByBlogId: async (blogId: string, query: PostQuery): Promise<any> =>  {
         // Business logic layer
         return await postDataAccessLayerMongoDB.getPostByBlogId(blogId, query);
     }
