@@ -40,7 +40,15 @@ exports.postDataAccessLayerMongoDB = {
             var { _id } = _a, rest = __rest(_a, ["_id"]);
             return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
         });
-        return resultWithId;
+        // return resultWithId;
+        const totalCount = yield (0, db_1.getPostCollection)().countDocuments({});
+        return {
+            "pagesCount": +Math.ceil(totalCount / pageSize),
+            "page": +pageNumber,
+            "pageSize": +pageSize,
+            "totalCount": +totalCount,
+            "items": resultWithId
+        };
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield (0, db_1.getPostCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });

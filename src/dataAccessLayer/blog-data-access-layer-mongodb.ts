@@ -7,7 +7,7 @@ import {postDataAccessLayerMongoDB} from "./post-data-access-layer-mongodb";
 
 export const blogDataAccessLayerMongoDB = {
         getAllBlogs: async (query: BlogQuery) => {
-            const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection= 'asc', searchNameTerm} = query;
+            const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection= 'desc', searchNameTerm} = query;
 
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === 'asc' ? 1 : -1;
@@ -27,13 +27,13 @@ export const blogDataAccessLayerMongoDB = {
             }));
             // return await blogWithId;
 
-            const totalCount = (await getBlogCollection().find({}).toArray()).length
+            const totalCount = (await getBlogCollection().find(search).toArray()).length
 
             return {
-                "pagesCount": Math.ceil(totalCount / pageSize),
-                "page": pageNumber,
-                "pageSize": pageSize,
-                "totalCount": totalCount,
+                "pagesCount": +Math.ceil(totalCount / pageSize),
+                "page": +pageNumber,
+                "pageSize": +pageSize,
+                "totalCount": +totalCount,
                 "items": blogWithId
             };
   },

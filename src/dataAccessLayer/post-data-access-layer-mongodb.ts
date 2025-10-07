@@ -30,7 +30,18 @@ export const postDataAccessLayerMongoDB = {
             ...rest,
             id: _id.toString(),
         }));
-        return resultWithId;
+        // return resultWithId;
+
+
+        const totalCount = await getPostCollection().countDocuments({ });
+
+        return  {
+            "pagesCount": +Math.ceil(totalCount/pageSize),
+            "page": +pageNumber,
+            "pageSize": +pageSize,
+            "totalCount": +totalCount,
+            "items": resultWithId
+        }
     },
     getPostById: async (id: string) => {
         const result = await getPostCollection().findOne({_id: new ObjectId(id)});

@@ -8,6 +8,9 @@ import {
     paginationAndSortingValidation,
     paginationAndSortingValidationWithSearchName
 } from "../queryValidation/blogsQueryValidation";
+import {titleValidation} from "../bodyValidation/titleValidation";
+import {contentValidation} from "../bodyValidation/contentValidation";
+import {shortDescriptionValidation} from "../bodyValidation/shortDescriptionValidation";
 
 export const BlogRouter = Router();
 
@@ -32,6 +35,8 @@ BlogRouter.post(
 BlogRouter.post(
     "/:blogId/posts",
     basicAuth,
+    [titleValidation, contentValidation, shortDescriptionValidation],
+    inputValidationMiddleware,
     BlogHandler.POST_BLOG_ID_POSTS,
 )
 
