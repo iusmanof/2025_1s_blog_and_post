@@ -1,58 +1,56 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
-const post_service_1 = __importDefault(require("../../application/post.service"));
-const PostHandler = {
-    GET: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield post_service_1.default.findMany(req.query);
-        return res.status(HttpStatusCode_1.default.OK_200).send(result);
-    }),
-    GET_ID: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const postFounded = yield post_service_1.default.findById(req.params.id);
-        if (!postFounded)
-            yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("No posts found.");
-        yield res.status(200).json(postFounded);
-    }),
-    POST: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const postCreated = yield post_service_1.default.create(req.body);
-        const apiErrorMsg = [];
-        if (!postCreated) {
-            apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            yield res
-                .status(HttpStatusCode_1.default.NOT_FOUND_404)
-                .json({ errorsMessages: apiErrorMsg });
-        }
-        yield res.status(HttpStatusCode_1.default.CREATED_201).json(postCreated);
-    }),
-    PUT: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const postIsUpdated = yield post_service_1.default.update(req.params.id, req.body);
-        const apiErrorMsg = [];
-        if (!postIsUpdated) {
-            apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            return yield res
-                .status(HttpStatusCode_1.default.NOT_FOUND_404)
-                .json({ errorsMessages: apiErrorMsg });
-        }
-        return yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
-    }),
-    DELETE: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const post = yield post_service_1.default.delete(req.params.id);
-        if (!post)
-            yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Not found");
-        yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
-    }),
-};
-exports.default = PostHandler;
+// import {Request, Response} from "express";
+// import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+// import {RequestWithParams, RequestWithQuery} from "../../../core/types/RequestTypes";
+// import {FieldError} from "../../../core/types/FieldError";
+// import {PostModelWithId, PostQuery} from "../../../core/types/PostModel";
+// import PostService from "../../application/post.service";
+// const PostHandler = {
+// GET: async (req: RequestWithQuery<PostQuery>, res: Response) => {
+//     const result = await PostService.findMany(req.query)
+//     return res.status(HTTP_STATUS.OK_200).send(result);
+// },
+// GET_ID: async (req: RequestWithParams<{ id: string }>, res: Response) => {
+//     const postFounded = await PostService.findById(req.params.id)
+//     if (!postFounded)
+//         await res.status(HTTP_STATUS.NOT_FOUND_404).send("No posts found.");
+//     await res.status(200).json(postFounded);
+// },
+// POST: async (req: Request<PostModel>, res: Response) => {
+//     const postCreated = await PostService.create(req.body)
+//     const apiErrorMsg: FieldError[] = [];
+//     if (!postCreated) {
+//         apiErrorMsg.push({ message: "ID Not found", field: "id" });
+//         await res
+//             .status(HTTP_STATUS.NOT_FOUND_404)
+//             .json({ errorsMessages: apiErrorMsg });
+//     }
+//     await res.status(HTTP_STATUS.CREATED_201).json(postCreated);
+// },
+// PUT: async (
+//     req: Request,
+//     res: Response<
+//         | PostModelWithId
+//         | {
+//         errorsMessages: FieldError[];
+//     }
+//     >,
+// ) => {
+//     const postIsUpdated = await PostService.update(req.params.id, req.body);
+//     const apiErrorMsg: FieldError[] = [];
+//     if (!postIsUpdated) {
+//         apiErrorMsg.push({message: "ID Not found", field: "id"});
+//         return await res
+//             .status(HTTP_STATUS.NOT_FOUND_404)
+//             .json({errorsMessages: apiErrorMsg});
+//     }
+//     return await res.status(HTTP_STATUS.NO_CONTENT_204).send();
+// },
+// DELETE: async (req: RequestWithParams<{ id: string }>, res: Response) => {
+//     const post = await PostService.delete(req.params.id);
+//     if (!post) await res.status(HTTP_STATUS.NOT_FOUND_404).send("Not found");
+//     await res.status(HTTP_STATUS.NO_CONTENT_204).send();
+// },
+// }
+// export default PostHandler;
 //# sourceMappingURL=PostHandler.js.map

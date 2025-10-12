@@ -4,22 +4,29 @@ import {titleValidation} from "../../core/milldlewares/validation/titleValidatio
 import {contentValidation} from "../../core/milldlewares/validation/contentValidation";
 import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
-import PostHandler from "./handlers/PostHandler";
 import {paginationAndSortingValidation} from "../../core/milldlewares/validation/blogsQueryValidation";
+import {createPostHandler} from "./handlers/create-post.handler";
+import {updatePostHandler} from "./handlers/update-post.handler";
+import {getPostsHandler} from "./handlers/get-posts.handler";
+import {deletePostHandler} from "./handlers/delete-post.handler";
+import {getPostByIdHandler} from "./handlers/get-post-by-id.handler";
 
 export const postRouter = Router();
 
 postRouter.get("/",
     paginationAndSortingValidation(),
-    PostHandler.GET);
+    getPostsHandler
+);
 
-postRouter.get("/:id", PostHandler.GET_ID);
+postRouter.get("/:id",
+    getPostByIdHandler
+);
 
 postRouter.post("/",
     basicAuth,
     [titleValidation, contentValidation, shortDescriptionValidation],
     inputValidationMiddleware,
-    PostHandler.POST
+    createPostHandler
 );
 
 postRouter.put(
@@ -27,11 +34,11 @@ postRouter.put(
     basicAuth,
     [titleValidation, contentValidation, shortDescriptionValidation],
     inputValidationMiddleware,
-    PostHandler.PUT
+    updatePostHandler
 );
 
 postRouter.delete(
     "/:id",
     basicAuth,
-    PostHandler.DELETE
+    deletePostHandler
 );
