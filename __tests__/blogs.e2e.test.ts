@@ -1,143 +1,152 @@
 import request from "supertest";
-import app from "../src/index";
 import dotenv from "dotenv";
-import { MongoClient } from "mongodb";
-import httpStatusCode from "../src/HTTP_STATUS_enum/HttpStatusCode";
-import HttpStatusCode from "../src/HTTP_STATUS_enum/HttpStatusCode"; // Этот импорт нужно перенести сюда
+import httpStatusCode from "../src/core/types/HttpStatusCode";
+import express from "express";
+import {setupApp} from "../src/setup-app";
+import {generateAdminAuthToken} from "../src/auth/utils/generate-admin-auth-token";
+import {runDB, stopDb} from "../src/core/db/mongo.db";
+import {clearDb} from "./utils/clearDb";
+import HttpStatusCode from "../src/core/types/HttpStatusCode"; // Этот импорт нужно перенести сюда
 
 dotenv.config();
 
-const login = "admin";
-const password = "qwerty";
-const base64Credentials = Buffer.from(`${login}:${password}`).toString(
-  "base64",
-);
-
-const dbName = process.env.DB_NAME ?? "local";
-const MONGODB_URI_DBNAME =
-  process.env.mongoURI || `mongodb://0.0.0.0:27017/${dbName}`;
-
-const client = new MongoClient(MONGODB_URI_DBNAME);
-
-beforeAll(async () => {
-  await client.connect();
-  await request(app).delete("/testing/all-data").expect(204);
-});
-
-afterAll(async () => {
-  await client.close();
-});
-
 describe("/blogs", () => {
-  it("POST /blogs UNAUTHORIZED", async () => {
-    await request(app)
-      .post("/blogs")
-      .send({ name: " ", description: "" })
-      .expect(httpStatusCode.UNAUTHORIZED_401);
-  });
+    const app = express();
+    setupApp(app);
+    const adminCredentials = generateAdminAuthToken()
 
-  it("POST /blogs", async () => {
-    await request(app)
-      .post("/blogs")
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({ name: " ", description: "" })
-      .expect(httpStatusCode.BAD_REQUEST_400, {
-        errorsMessages: [
-          { message: "Name max length 15", field: "name" },
-          { message: "URL must be a valid URL", field: "websiteUrl" },
-        ],
-      });
+    beforeAll(async () => {
+        await runDB('mongodb://localhost:27017/test=DB');
+        await clearDb(app);
+    });
 
-    const res = await request(app).get("/blogs");
-    expect(res.statusCode).toBe(httpStatusCode.OK);
-    expect(res.body).toEqual([]);
-  });
+    afterAll(async () => {
+        await stopDb();
+    });
 
-  it("GET /blogs/id incorrect id", async () => {
-    await request(app)
-      .get("/blogs/incorrectid")
-      .expect(HttpStatusCode.BAD_REQUEST_400);
-  });
+    it("POST /blogs UNAUTHORIZED", async () => {
+        await request(app)
+            .post("/blogs")
+            .send({name: " ", description: ""})
+            .expect(httpStatusCode.UNAUTHORIZED_401);
+    });
 
-  it("GET /blogs/id correct id hex", async () => {
-    await request(app)
-      .post("/blogs")
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({
-        name: "name",
-        websiteUrl: "https://websiteUrl.domd",
-        description: "description",
-      });
+    it("POST /blogs coorect data", async () => {
+        const newBlog = {
+            name: "My Blog",
+            description: "A blog about tech and coding",
+            websiteUrl: "https://mytechblog.com"
+        };
 
-    await request(app)
-      .get("/blogs/123456789123456789123456")
-      .expect(HttpStatusCode.NOT_FOUND_404);
-  });
+        await request(app)
+            .post("/blogs")
+            .set("Authorization", adminCredentials)
+            .send(newBlog)
+            .expect(httpStatusCode.CREATED_201);
+    })
 
-  it("PUT /blogs/id incorrect data", async () => {
-    const createdBlog = await request(app)
-      .post("/blogs")
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({
-        name: "name",
-        websiteUrl: "https://websiteUrl.domd",
-        description: "description",
-      });
 
-    const blogId = createdBlog.body.id;
+    it("POST /blogs", async () => {
+        await request(app)
+            .post("/blogs")
+            .set("Authorization", adminCredentials)
+            .send({name: " ", description: ""})
+            .expect(httpStatusCode.BAD_REQUEST_400, {
+                errorsMessages: [
+                    {message: "Name max length 15", field: "name"},
+                    {message: "URL must be a valid URL", field: "websiteUrl"},
+                ],
+            });
 
-    await request(app)
-      .put(`/blogs/${blogId}`) // Исправил на правильный путь с использованием слэша
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({ name: "name", websiteUrl: "BAD URL", description: "description" })
-      .expect(HttpStatusCode.BAD_REQUEST_400);
-  });
+        const res = await request(app).get("/blogs");
+        expect(res.statusCode).toBe(httpStatusCode.OK_200);
+    });
 
-  it("PUT /blogs/id correct data", async () => {
-    const createdBlog = await request(app)
-      .post("/blogs")
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({
-        name: "name",
-        websiteUrl: "https://websiteUrl.domd",
-        description: "description",
-      });
+    it("GET /blogs/id incorrect id", async () => {
+        await request(app)
+            .get("/blogs/incorrectid")
+            .expect(HttpStatusCode.BAD_REQUEST_400);
+    });
 
-    const blogId = createdBlog.body.id;
+    it("GET /blogs/id correct id hex", async () => {
+        await request(app)
+            .post("/blogs")
+            .set("Authorization", adminCredentials)
+            .send({
+                name: "name",
+                websiteUrl: "https://websiteUrl.domd",
+                description: "description",
+            });
 
-    await request(app)
-      .put(`/blogs/${blogId}`)
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({
-        name: "name",
-        websiteUrl: "http://correct.url",
-        description: "description",
-      })
-      .expect(HttpStatusCode.BAD_REQUEST_400);
-  });
+        await request(app)
+            .get("/blogs/123456789123456789123456")
+            .expect(HttpStatusCode.NOT_FOUND_404);
+    });
 
-  it("DELETE /blogs/id incorrect id", async () => {
-    await request(app)
-      .delete("/blogs/INCORECT_ID")
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .expect(HttpStatusCode.NOT_FOUND_404);
-  });
+    it("PUT /blogs/id incorrect data", async () => {
+        const createdBlog = await request(app)
+            .post("/blogs")
+            .set("Authorization", adminCredentials)
+            .send({
+                name: "name",
+                websiteUrl: "https://websiteUrl.domd",
+                description: "description",
+            });
 
-  it("DELETE /blogs/id correct data", async () => {
-    const createdBlog = await request(app)
-      .post("/blogs")
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .send({
-        name: "name",
-        websiteUrl: "https://websiteUrl.domd",
-        description: "description",
-      });
+        const blogId = createdBlog.body.id;
 
-    const blogId = createdBlog.body.id;
+        await request(app)
+            .put(`/blogs/${blogId}`) // Исправил на правильный путь с использованием слэша
+            .set("Authorization", adminCredentials)
+            .send({name: "name", websiteUrl: "BAD URL", description: "description"})
+            .expect(HttpStatusCode.BAD_REQUEST_400);
+    });
 
-    await request(app)
-      .delete(`/blogs/${blogId}`)
-      .set("Authorization", `Basic ${base64Credentials}`)
-      .expect(HttpStatusCode.CREATED_201);
-  });
+    it("PUT /blogs/id correct data", async () => {
+        const createdBlog = await request(app)
+            .post("/blogs")
+            .set("Authorization", adminCredentials)
+            .send({
+                name: "name",
+                websiteUrl: "https://websiteUrl.domd",
+                description: "description",
+            });
+
+        const blogId = createdBlog.body.id;
+
+        await request(app)
+            .put(`/blogs/${blogId}`)
+            .set("Authorization", adminCredentials)
+            .send({
+                name: "name",
+                websiteUrl: "http://correct.url",
+                description: "description",
+            })
+            .expect(HttpStatusCode.NO_CONTENT_204);
+    });
+
+    it("DELETE /blogs/id incorrect id", async () => {
+        await request(app)
+            .delete("/blogs/INCORECT_ID")
+            .set("Authorization", adminCredentials)
+            .expect(HttpStatusCode.NOT_FOUND_404);
+    });
+
+    it("DELETE /blogs/id correct data", async () => {
+        const createdBlog = await request(app)
+            .post("/blogs")
+            .set("Authorization", adminCredentials)
+            .send({
+                name: "name",
+                websiteUrl: "https://websiteUrl.domd",
+                description: "description",
+            });
+
+        const blogId = createdBlog.body.id;
+
+        await request(app)
+            .delete(`/blogs/${blogId}`)
+            .set("Authorization", adminCredentials)
+            .expect(HttpStatusCode.NO_CONTENT_204);
+    });
 });

@@ -8,30 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runDB = void 0;
 exports.getPostCollection = getPostCollection;
 exports.getBlogCollection = getBlogCollection;
 const mongodb_1 = require("mongodb");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const url = process.env.MONGODB_URI;
-// const dbName = process.env.DB_NAME;
-if (!url)
+const settings_1 = require("../core/settings/settings");
+const url = settings_1.SETTINGS.MONGODB_URI;
+if (!url) {
     throw new Error("MONGODB_URI is not defined");
-// if (!dbName) throw new Error("DB_NAME URL is not defined");
+}
 const client = new mongodb_1.MongoClient(url);
 let blogCollection;
 let postCollection;
 const runDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield client.connect();
-        const db = client.db('testDB');
-        blogCollection = db.collection("blogs");
-        postCollection = db.collection("posts");
+        const db = client.db(settings_1.SETTINGS.DB_NAME);
+        blogCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_BLOGS);
+        postCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_POSTS);
         console.log("Connect successfully to server");
     }
     catch (e) {

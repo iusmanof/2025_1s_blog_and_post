@@ -13,26 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const BlogRouters_1 = require("./routers/BlogRouters");
-const PostRouters_1 = require("./routers/PostRouters");
-const db_1 = require("./repositories/db");
-const blog_data_access_layer_mongodb_1 = require("./dataAccessLayer/blog-data-access-layer-mongodb");
-const post_data_access_layer_mongodb_1 = require("./dataAccessLayer/post-data-access-layer-mongodb");
+const mongo_db_1 = require("./core/db/mongo.db");
+const setup_app_1 = require("./setup-app");
+const settings_1 = require("./core/settings/settings");
 const app = (0, express_1.default)();
 const port = process.env.port || 3000;
-app.use(express_1.default.json());
-app.use("/blogs", BlogRouters_1.BlogRouter);
-app.use("/posts", PostRouters_1.PostRouter);
-app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield res.send("blogs api");
-}));
-app.delete("/testing/all-data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield blog_data_access_layer_mongodb_1.blogDataAccessLayerMongoDB.deleteAllBlogs();
-    yield post_data_access_layer_mongodb_1.postDataAccessLayerMongoDB.deleteAllPosts();
-    res.status(204).send("All data is deleted");
-}));
+(0, setup_app_1.setupApp)(app);
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, db_1.runDB)();
+    yield (0, mongo_db_1.runDB)(settings_1.SETTINGS.MONGODB_URI);
     app.listen(port, () => {
         console.log(`App listening on port ${port}`);
     });

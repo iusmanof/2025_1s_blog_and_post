@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const post_data_access_layer_mongodb_1 = require("../dataAccessLayer/post-data-access-layer-mongodb");
+const post_data_access_layer_mongodb_1 = require("../posts/repositories/post-data-access-layer-mongodb");
 const PostService = {
     findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer

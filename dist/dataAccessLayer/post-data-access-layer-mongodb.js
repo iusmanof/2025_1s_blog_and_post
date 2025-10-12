@@ -21,15 +21,15 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postDataAccessLayerMongoDB = void 0;
-const db_1 = require("../repositories/db");
+const mongo_db_1 = require("../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
-const blog_data_access_layer_mongodb_1 = require("./blog-data-access-layer-mongodb");
+const blog_data_access_layer_mongodb_1 = require("../blogs/repositories/blog-data-access-layer-mongodb");
 exports.postDataAccessLayerMongoDB = {
     getAllPosts: (query) => __awaiter(void 0, void 0, void 0, function* () {
         const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
         const skip = (pageNumber - 1) * pageSize;
         const sortDir = sortDirection === 'asc' ? 1 : -1;
-        const result = yield (0, db_1.getPostCollection)()
+        const result = yield (0, mongo_db_1.getPostCollection)()
             .find({})
             .sort({ [sortBy]: sortDir })
             .skip(+skip)
@@ -41,7 +41,7 @@ exports.postDataAccessLayerMongoDB = {
             return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
         });
         // return resultWithId;
-        const totalCount = yield (0, db_1.getPostCollection)().countDocuments({});
+        const totalCount = yield (0, mongo_db_1.getPostCollection)().countDocuments({});
         return {
             "pagesCount": +Math.ceil(totalCount / pageSize),
             "page": +pageNumber,
@@ -51,7 +51,7 @@ exports.postDataAccessLayerMongoDB = {
         };
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const result = yield (0, db_1.getPostCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
+        const result = yield (0, mongo_db_1.getPostCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
         if (!result) {
             return null;
         }
@@ -71,7 +71,7 @@ exports.postDataAccessLayerMongoDB = {
             blogName: blog ? blog.name : "Unknown",
             createdAt: new Date().toISOString(),
         };
-        const result = yield (0, db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
+        const result = yield (0, mongo_db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
         return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
     }),
     createPostByBlofId: (post, blogId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -84,11 +84,11 @@ exports.postDataAccessLayerMongoDB = {
             blogName: blog ? blog.name : "Unknown",
             createdAt: new Date().toISOString(),
         };
-        const result = yield (0, db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
+        const result = yield (0, mongo_db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
         return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
     }),
     deletePost: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        const isDeleted = yield (0, db_1.getPostCollection)().deleteOne({
+        const isDeleted = yield (0, mongo_db_1.getPostCollection)().deleteOne({
             _id: new mongodb_1.ObjectId(id),
         });
         return (yield isDeleted.deletedCount) !== 0;
@@ -103,19 +103,19 @@ exports.postDataAccessLayerMongoDB = {
         if (post.blogName) {
             updateFields.blogName = post.blogName;
         }
-        const isUpdated = yield (0, db_1.getPostCollection)().updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+        const isUpdated = yield (0, mongo_db_1.getPostCollection)().updateOne({ _id: new mongodb_1.ObjectId(id) }, {
             $set: updateFields,
         });
         return (yield isUpdated.matchedCount) !== 0;
     }),
     deleteAllPosts: () => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, db_1.getPostCollection)().deleteMany({});
+        yield (0, mongo_db_1.getPostCollection)().deleteMany({});
     }),
     getPostByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
         const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
         const skip = (pageNumber - 1) * pageSize;
         const sortDir = sortDirection === 'asc' ? 1 : -1;
-        const result = yield (0, db_1.getPostCollection)()
+        const result = yield (0, mongo_db_1.getPostCollection)()
             .find({ blogId })
             .sort({ [sortBy]: sortDir })
             .skip(+skip)
@@ -125,7 +125,7 @@ exports.postDataAccessLayerMongoDB = {
             var { _id } = _a, rest = __rest(_a, ["_id"]);
             return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
         });
-        const totalCount = yield (0, db_1.getPostCollection)().countDocuments({ blogId });
+        const totalCount = yield (0, mongo_db_1.getPostCollection)().countDocuments({ blogId });
         const resultWithMeta = {
             "pagesCount": +Math.ceil(totalCount / pageSize),
             "page": +pageNumber,

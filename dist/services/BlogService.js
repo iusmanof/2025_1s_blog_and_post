@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const blog_data_access_layer_mongodb_1 = require("../dataAccessLayer/blog-data-access-layer-mongodb");
+const blog_data_access_layer_mongodb_1 = require("../blogs/repositories/blog-data-access-layer-mongodb");
 const BlogService = {
     findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
         // Business logic layer
