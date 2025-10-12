@@ -1,0 +1,1 @@
+{"version":3,"file":"clearDb.js","sourceRoot":"","sources":["../../../src/auth/utils/clearDb.ts"],"names":[],"mappings":";;;;;;;;;;;;;;AAGA,0BAKC;AARD,kDAAoD;AACpD,0DAAgC;AAEhC,SAAsB,OAAO,CAAC,GAAY;;QACtC,MAAM,IAAA,mBAAO,EAAC,GAAG,CAAC;aACb,MAAM,CAAC,GAAG,oBAAY,WAAW,CAAC;aAClC,MAAM,CAAC,UAAU,CAAC,SAAS,CAAC,CAAC;QAClC,OAAO;IACX,CAAC;CAAA"}

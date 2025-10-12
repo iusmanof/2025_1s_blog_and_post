@@ -1,4 +1,4 @@
-import {Router } from "express";
+import {Router} from "express";
 import {basicAuth} from "../../auth/middlewares/super-admin.guard-middleware";
 import {nameValidation} from "../../core/milldlewares/validation/nameValidation";
 import {websiteValidation} from "../../core/milldlewares/validation/websiteValidation";
@@ -13,31 +13,49 @@ import {contentValidation} from "../../core/milldlewares/validation/contentValid
 import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";
 import {getBlogsHandler} from "./handlers/get-blogs.handler";
 import {queryIdMiddleware} from "../../core/milldlewares/validation/query-id.middleware";
+import {getBlogByIdHandler} from "./handlers/get-blog-by-id.handler";
+import {createBlogHandler} from "./handlers/create-blog.handler";
+import {deleteBlogHandler} from "./handlers/delete-blog.handler";
+import {updateBlogHandler} from "./handlers/update-blog.handler";
 
 export const blogRouter = Router();
 
 blogRouter.get("/",
     paginationAndSortingValidationWithSearchName(),
-    getBlogsHandler);
+    getBlogsHandler
+);
 
 blogRouter.get("/:id",
     queryIdMiddleware,
-    BlogHandler.GET_ID
+    getBlogByIdHandler
 );
-
-blogRouter.get("/:blogId/posts",
-    queryIdMiddleware,
-    paginationAndSortingValidation(),
-    BlogHandler.GET_BLOG_ID_POSTS);
 
 blogRouter.post(
     "/",
     basicAuth,
     [nameValidation, websiteValidation],
     inputValidationMiddleware,
-    BlogHandler.POST,
+    createBlogHandler,
 );
 
+blogRouter.put(
+    "/:id",
+    basicAuth,
+    [nameValidation, websiteValidation],
+    inputValidationMiddleware,
+    updateBlogHandler
+);
+
+blogRouter.delete(
+    "/:id",
+    queryIdMiddleware,
+    basicAuth,
+    deleteBlogHandler
+);
+
+/////////////////////
+// REFACTORING LATER
+/////////////////////
 blogRouter.post(
     "/:blogId/posts",
     basicAuth,
@@ -45,18 +63,7 @@ blogRouter.post(
     inputValidationMiddleware,
     BlogHandler.POST_BLOG_ID_POSTS,
 )
-
-blogRouter.put(
-    "/:id",
-    basicAuth,
-    [nameValidation, websiteValidation],
-    inputValidationMiddleware,
-   BlogHandler.PUT
-);
-
-blogRouter.delete(
-    "/:id",
+blogRouter.get("/:blogId/posts",
     queryIdMiddleware,
-    basicAuth,
-    BlogHandler.DELETE
-);
+    paginationAndSortingValidation(),
+    BlogHandler.GET_BLOG_ID_POSTS);
