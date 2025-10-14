@@ -4,7 +4,7 @@ import {titleValidation} from "../../core/milldlewares/validation/titleValidatio
 import {contentValidation} from "../../core/milldlewares/validation/contentValidation";
 import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
-import {paginationAndSortingValidation} from "../../core/milldlewares/validation/blogsQueryValidation";
+import {paginationAndSortingValidation} from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
 import {createPostHandler} from "./handlers/create-post.handler";
 import {updatePostHandler} from "./handlers/update-post.handler";
 import {getPostsHandler} from "./handlers/get-posts.handler";

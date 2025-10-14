@@ -10,14 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runDB = void 0;
-exports.getPostCollection = getPostCollection;
 exports.getBlogCollection = getBlogCollection;
+exports.getPostCollection = getPostCollection;
+exports.getUserCollection = getUserCollection;
 exports.stopDb = stopDb;
 const mongodb_1 = require("mongodb");
 const settings_1 = require("../settings/settings");
 let client;
 let blogCollection;
 let postCollection;
+let userCollection;
 const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
     client = new mongodb_1.MongoClient(url);
     try {
@@ -25,6 +27,7 @@ const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
         const db = client.db(settings_1.SETTINGS.DB_NAME);
         blogCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_BLOGS);
         postCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_POSTS);
+        userCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_USERS);
         console.log("Connect successfully to server");
     }
     catch (e) {
@@ -35,15 +38,23 @@ const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.runDB = runDB;
+function getBlogCollection() {
+    if (!blogCollection) {
+        throw new Error("Collection blog not initialized");
+    }
+    return blogCollection;
+}
 function getPostCollection() {
-    if (!postCollection)
-        throw new Error("Collection not initialized");
+    if (!postCollection) {
+        throw new Error("Collection post not initialized");
+    }
     return postCollection;
 }
-function getBlogCollection() {
-    if (!blogCollection)
-        throw new Error("Collection not initialized");
-    return blogCollection;
+function getUserCollection() {
+    if (!userCollection) {
+        throw new Error("Collection user not initialized");
+    }
+    return userCollection;
 }
 function stopDb() {
     return __awaiter(this, void 0, void 0, function* () {

@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {PostModel} from "../../../core/types/PostModel";
 import {FieldError} from "../../../core/types/FieldError";
-import PostService from "../../application/post.service";
+import PostService from "../../services/post.service";
 import HTTP_STATUS from "../../../core/types/HttpStatusCode";
 
 export async function createPostHandler(req: Request<PostModel>, res: Response) {

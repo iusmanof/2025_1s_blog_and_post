@@ -8,4 +8,5 @@ export const SETTINGS = {
     DB_NAME: process.env.DB_NAME || 'testDB',
     DB_COLLECTION_BLOGS: process.env.DB_COLLECTION_BLOGS || 'blogs',
     DB_COLLECTION_POSTS: process.env.DB_COLLECTION_BLOGS || 'posts',
+    DB_COLLECTION_USERS: process.env.DB_COLLECTION_BLOGS || 'users',
 }

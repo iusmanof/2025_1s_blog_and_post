@@ -4,7 +4,7 @@
 // import {RequestWithParams, RequestWithQuery} from "../../../core/types/RequestTypes";
 // import {FieldError} from "../../../core/types/FieldError";
 // import {PostModelWithId, PostQuery} from "../../../core/types/PostModel";
-// import PostService from "../../application/post.service";
+// import PostService from "../../services/post.service";
 // const PostHandler = {
 // GET: async (req: RequestWithQuery<PostQuery>, res: Response) => {
 //     const result = await PostService.findMany(req.query)

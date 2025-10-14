@@ -1,4 +1,4 @@
-import BlogService from "../../application/blog.service";
+import BlogService from "../../services/blog.service";
 import HTTP_STATUS from "../../../core/types/HttpStatusCode";
 import {RequestWithQuery} from "../../../core/types/RequestTypes";
 import {BlogQuery} from "../../../core/types/BlogModel";

@@ -5,17 +5,8 @@ const DEFAULT_SORT_BY = 'createdAt'
 const DEFAULT_SORT_DIRECTION = 'desc'
 const DEFAULT_PAGE_NUMBER = 1
 const DEFAULT_PAGE_SIZE = 10
-
-export function paginationAndSortingValidationWithSearchName() {
-    return [
-        query('searchNameTerm')
-            .optional()
-            .default(DEFAULT_SEARCH_TERM)
-            .isString()
-            .trim(),
-        ...paginationAndSortingValidation()
-    ]
-}
+const DEFAULT_SEARCH_LOGIN_TERM = null
+const DEFAULT_SEARCH_EMAIL_TERM = null
 
 export function paginationAndSortingValidation() {
     return [
@@ -37,5 +28,32 @@ export function paginationAndSortingValidation() {
             .optional()
             .default(DEFAULT_PAGE_SIZE)
             .isNumeric(),
+    ]
+}
+
+export function paginationAndSortingValidationWithSearchName() {
+    return [
+        query('searchNameTerm')
+            .optional()
+            .default(DEFAULT_SEARCH_TERM)
+            .isString()
+            .trim(),
+        ...paginationAndSortingValidation()
+    ]
+}
+
+export function paginationAndSortingValidationWithEmailAndLogin() {
+    return [
+        query('searchLoginTerm')
+            .optional()
+            .default(DEFAULT_SEARCH_LOGIN_TERM)
+            .isString()
+            .trim(),
+        query('searchEmailTerm')
+            .optional()
+            .default(DEFAULT_SEARCH_EMAIL_TERM)
+            .isString()
+            .trim(),
+        ...paginationAndSortingValidation(),
     ]
 }

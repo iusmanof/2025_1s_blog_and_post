@@ -1,6 +1,6 @@
 import {RequestWithParams} from "../../../core/types/RequestTypes";
 import {Response} from "express";
-import PostService from "../../application/post.service";
+import PostService from "../../services/post.service";
 import HTTP_STATUS from "../../../core/types/HttpStatusCode";
 
 export async function getPostByIdHandler(req: RequestWithParams<{ id: string }>, res: Response)  {

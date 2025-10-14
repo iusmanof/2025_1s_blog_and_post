@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePostHandler = updatePostHandler;
 const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
-const post_service_1 = __importDefault(require("../../application/post.service"));
+const post_service_1 = __importDefault(require("../../services/post.service"));
 function updatePostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postIsUpdated = yield post_service_1.default.update(req.params.id, req.body);

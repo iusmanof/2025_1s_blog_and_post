@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
-const blog_service_1 = __importDefault(require("../../application/blog.service"));
-const post_service_1 = __importDefault(require("../../../posts/application/post.service"));
+const blog_service_1 = __importDefault(require("../../services/blog.service"));
+const post_service_1 = __importDefault(require("../../../posts/services/post.service"));
 const express_validator_1 = require("express-validator");
 // @ts-ignore
 const BlogHandler = {

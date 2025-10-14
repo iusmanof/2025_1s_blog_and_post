@@ -7,7 +7,7 @@ import BlogHandler from "./handlers/BlogHandler";
 import {
     paginationAndSortingValidation,
     paginationAndSortingValidationWithSearchName
-} from "../../core/milldlewares/validation/blogsQueryValidation";
+} from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
 import {titleValidation} from "../../core/milldlewares/validation/titleValidation";
 import {contentValidation} from "../../core/milldlewares/validation/contentValidation";
 import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";

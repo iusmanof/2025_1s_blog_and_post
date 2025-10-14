@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBlogsHandler = getBlogsHandler;
-const blog_service_1 = __importDefault(require("../../application/blog.service"));
+const blog_service_1 = __importDefault(require("../../services/blog.service"));
 const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
 function getBlogsHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
