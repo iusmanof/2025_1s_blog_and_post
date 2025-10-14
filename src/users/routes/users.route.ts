@@ -17,7 +17,8 @@ userRouter.use(basicAuth);
 
 userRouter.get('/',
     basicAuth,
-    paginationAndSortingValidationWithEmailAndLogin,
+    paginationAndSortingValidationWithEmailAndLogin(),
+    inputValidationMiddleware,
     getUsersHandler
 );
 

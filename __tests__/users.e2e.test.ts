@@ -71,7 +71,7 @@ describe('/users', () => {
             password: 'passwrd123'
         };
 
-        const postResponse = await request(app)
+        await request(app)
             .post('/users')
             .set("Authorization", adminCredentials)
             .send(newUser)
