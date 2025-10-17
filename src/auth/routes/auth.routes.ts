@@ -9,7 +9,7 @@ import {Request, Response} from "express";
 
 export const authRouter = Router()
 
-authRouter.post("/",
+authRouter.post("/login",
     passwordValidation,
     loginOrEmailValidation,
     inputValidationMiddleware,
@@ -24,3 +24,7 @@ authRouter.post("/",
         }
         res.status(httpStatusCode.NO_CONTENT_204).json("Login successfully");
     });
+
+// authRouter.get("/me", async(req: Request, res: Response) => {
+//
+// })

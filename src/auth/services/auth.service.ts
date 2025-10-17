@@ -28,6 +28,9 @@ export const authService = {
             }
         }
 
+        // const accessToken = await jwtAdapter.signToken(loginOrEmail);
+
+        // return accessToken + true
         return true
     },
 }
