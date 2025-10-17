@@ -81,7 +81,7 @@ export const blogsRepository = {
     return isUpdated.matchedCount !== 0;
   },
   async  createPostByBlogId(body: PostModel, blogId: string) {
-    return await postsRepository.createPostByBlofId(body, blogId);
+    return await postsRepository.createPostByBlogId(body, blogId);
   },
   async deleteBlog(id: string) {
     const isDeleted = await getBlogCollection().deleteOne({

@@ -1,6 +1,6 @@
 import express from "express";
 import {setupApp} from "../src/setup-app";
-import {generateAdminAuthToken} from "../src/auth/utils/generate-admin-auth-token";
+import {generateAdminAuthToken} from "../src/core/utils/generate-admin-auth-token";
 import {runDB, stopDb} from "../src/core/db/mongo.db";
 import {clearDb} from "./utils/clearDb";
 import request from "supertest";

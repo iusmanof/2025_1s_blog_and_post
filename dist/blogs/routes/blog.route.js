@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogRouter = void 0;
 const express_1 = require("express");
-const super_admin_guard_middleware_1 = require("../../auth/middlewares/super-admin.guard-middleware");
+const super_admin_guard_middleware_1 = require("../../core/milldlewares/super-admin.guard-middleware");
 const nameValidation_1 = require("../../core/milldlewares/validation/nameValidation");
 const websiteValidation_1 = require("../../core/milldlewares/validation/websiteValidation");
 const input_validation_middleware_1 = require("../../core/milldlewares/validation/input-validation-middleware");
@@ -20,6 +20,7 @@ const get_blog_by_id_handler_1 = require("./handlers/get-blog-by-id.handler");
 const create_blog_handler_1 = require("./handlers/create-blog.handler");
 const delete_blog_handler_1 = require("./handlers/delete-blog.handler");
 const update_blog_handler_1 = require("./handlers/update-blog.handler");
+const param_id_middleware_1 = require("../../core/milldlewares/validation/param-id.middleware");
 exports.blogRouter = (0, express_1.Router)();
 exports.blogRouter.get("/", (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithSearchName)(), get_blogs_handler_1.getBlogsHandler);
 exports.blogRouter.get("/:id", query_id_middleware_1.queryIdMiddleware, get_blog_by_id_handler_1.getBlogByIdHandler);
@@ -30,5 +31,5 @@ exports.blogRouter.delete("/:id", query_id_middleware_1.queryIdMiddleware, super
 // REFACTORING LATER
 /////////////////////
 exports.blogRouter.post("/:blogId/posts", super_admin_guard_middleware_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, BlogHandler_1.default.POST_BLOG_ID_POSTS);
-exports.blogRouter.get("/:blogId/posts", query_id_middleware_1.queryIdMiddleware, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), BlogHandler_1.default.GET_BLOG_ID_POSTS);
+exports.blogRouter.get("/:blogId/posts", param_id_middleware_1.paramIdMiddleware, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), BlogHandler_1.default.GET_BLOG_ID_POSTS);
 //# sourceMappingURL=blog.route.js.map

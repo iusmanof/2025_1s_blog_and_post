@@ -1,5 +1,5 @@
-import express from "express";
-import {basicAuth} from "../../auth/middlewares/super-admin.guard-middleware";
+import {Router} from "express";
+import {basicAuth} from "../../core/milldlewares/super-admin.guard-middleware";
 import {
     paginationAndSortingValidationWithEmailAndLogin
 } from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
@@ -10,8 +10,9 @@ import {passwordValidation} from "../../core/milldlewares/validation/password.va
 import {loginValidation} from "../../core/milldlewares/validation/login.validation-middleware";
 import {emailValidation} from "../../core/milldlewares/validation/email.validation-middleware";
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
+import {usersInputValidationMiddleware} from "../../core/milldlewares/validation/users-input.validation-middleware";
 
-export const userRouter = express.Router();
+export const userRouter = Router();
 
 userRouter.use(basicAuth);
 
@@ -24,10 +25,10 @@ userRouter.get('/',
 
 userRouter.post('/',
     basicAuth,
-    passwordValidation,
     loginValidation,
+    passwordValidation,
     emailValidation,
-    inputValidationMiddleware,
+    usersInputValidationMiddleware,
     createUserHandler
 );
 

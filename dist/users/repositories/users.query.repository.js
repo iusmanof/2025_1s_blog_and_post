@@ -15,11 +15,12 @@ const mongodb_1 = require("mongodb");
 exports.usersQueryRepository = {
     findAllUsers(sortQueryDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { sortBy, sortDirection, pageSize, pageNumber } = sortQueryDto;
+            const { sortBy, sortDirection, pageSize, pageNumber, searchEmailTerm, searchLoginTerm } = sortQueryDto;
             const skip = (pageNumber - 1) * pageSize;
-            const loginAndEmailSearch = {};
-            const totalCount = yield (0, mongo_db_1.getUserCollection)().countDocuments();
-            const users = yield (0, mongo_db_1.getUserCollection)().find(loginAndEmailSearch)
+            const filter = this._getFilter(searchLoginTerm, searchEmailTerm);
+            const totalCount = yield (0, mongo_db_1.getUserCollection)().countDocuments(filter);
+            const users = yield (0, mongo_db_1.getUserCollection)()
+                .find(filter)
                 .sort({ [sortBy]: sortDirection })
                 .skip(+skip)
                 .limit(+pageSize)
@@ -50,5 +51,23 @@ exports.usersQueryRepository = {
             createdAt: user.createdAt ? user.createdAt.toISOString() : null,
         };
     },
+    _getFilter(loginQuery, emailQuery) {
+        // let filter: { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } = {};
+        const filters = [];
+        if (loginQuery) {
+            filters.push({ login: { $regex: loginQuery, $options: 'i' } });
+        }
+        if (emailQuery) {
+            filters.push({ email: { $regex: emailQuery, $options: 'i' } });
+        }
+        if (filters.length === 0) {
+            return {};
+        }
+        if (filters.length === 1) {
+            return filters[0];
+        }
+        // @ts-ignore
+        return { $or: filters };
+    }
 };
 //# sourceMappingURL=users.query.repository.js.map

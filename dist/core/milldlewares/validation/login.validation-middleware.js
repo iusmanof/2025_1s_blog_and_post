@@ -15,7 +15,8 @@ const users_repository_1 = require("../../../users/repositories/users.repository
 exports.loginValidation = (0, express_validator_1.body)("login")
     .isString()
     .trim()
-    .isLength({ min: 3, max: 20 })
+    .isLength({ min: 3, max: 10 })
+    .matches(/^[a-zA-Z0-9_-]*$/)
     .withMessage("Login is not correct")
     .custom((login) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_repository_1.usersRepository.findByLoginOrEmail(login);

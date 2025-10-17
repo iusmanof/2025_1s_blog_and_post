@@ -4,7 +4,8 @@ import {usersRepository} from "../../../users/repositories/users.repository";
 export const loginValidation = body("login")
     .isString()
     .trim()
-    .isLength({min: 3, max: 20})
+    .isLength({min: 3, max: 10})
+    .matches(/^[a-zA-Z0-9_-]*$/)
     .withMessage("Login is not correct")
     .custom(
         async (login: string):Promise<boolean> => {

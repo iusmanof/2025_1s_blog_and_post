@@ -71,7 +71,7 @@ export const postsRepository = {
             id: result.insertedId.toString(),
         };
     },
-    createPostByBlofId: async (post: PostModel, blogId: string) => {
+    createPostByBlogId: async (post: PostModel, blogId: string) => {
         const blog = await blogsRepository.getBlogById(post.blogId);
 
         const postCreated = {

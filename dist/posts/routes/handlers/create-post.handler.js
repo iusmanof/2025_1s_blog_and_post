@@ -21,11 +21,12 @@ function createPostHandler(req, res) {
         const apiErrorMsg = [];
         if (!postCreated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            yield res
+            res
                 .status(HttpStatusCode_1.default.NOT_FOUND_404)
                 .json({ errorsMessages: apiErrorMsg });
+            return;
         }
-        yield res.status(HttpStatusCode_1.default.CREATED_201).json(postCreated);
+        res.status(HttpStatusCode_1.default.CREATED_201).json(postCreated);
     });
 }
 //# sourceMappingURL=create-post.handler.js.map

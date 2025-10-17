@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRouter = void 0;
 const express_1 = require("express");
-const super_admin_guard_middleware_1 = require("../../auth/middlewares/super-admin.guard-middleware");
+const super_admin_guard_middleware_1 = require("../../core/milldlewares/super-admin.guard-middleware");
 const titleValidation_1 = require("../../core/milldlewares/validation/titleValidation");
 const contentValidation_1 = require("../../core/milldlewares/validation/contentValidation");
 const shortDescriptionValidation_1 = require("../../core/milldlewares/validation/shortDescriptionValidation");

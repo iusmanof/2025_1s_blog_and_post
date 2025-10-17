@@ -18,7 +18,7 @@ const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatus
 function getPostsHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield post_service_1.default.findMany(req.query);
-        return res.status(HttpStatusCode_1.default.OK_200).send(result);
+        res.status(HttpStatusCode_1.default.OK_200).send(result);
     });
 }
 //# sourceMappingURL=get-posts.handler.js.map

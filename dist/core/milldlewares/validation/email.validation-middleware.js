@@ -13,9 +13,9 @@ exports.emailValidation = void 0;
 const express_validator_1 = require("express-validator");
 const users_repository_1 = require("../../../users/repositories/users.repository");
 exports.emailValidation = (0, express_validator_1.body)("email")
-    .isLength({ min: 3, max: 40 })
     .trim()
     .isEmail()
+    .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
     .withMessage("Email is not correct")
     .custom((email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_repository_1.usersRepository.findByLoginOrEmail(email);

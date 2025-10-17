@@ -9,9 +9,10 @@ export async function createPostHandler(req: Request<PostModel>, res: Response) 
     const apiErrorMsg: FieldError[] = [];
     if (!postCreated) {
         apiErrorMsg.push({message: "ID Not found", field: "id"});
-        await res
+        res
             .status(HTTP_STATUS.NOT_FOUND_404)
             .json({errorsMessages: apiErrorMsg});
+        return;
     }
-    await res.status(HTTP_STATUS.CREATED_201).json(postCreated);
+    res.status(HTTP_STATUS.CREATED_201).json(postCreated);
 }

@@ -1,4 +1,4 @@
-import {ADMIN_PASSWORD, ADMIN_USERNAME} from "../middlewares/super-admin.guard-middleware";
+import {ADMIN_PASSWORD, ADMIN_USERNAME} from "../milldlewares/super-admin.guard-middleware";
 
 
 

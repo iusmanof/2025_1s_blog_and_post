@@ -18,9 +18,11 @@ const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatus
 function getPostByIdHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postFounded = yield post_service_1.default.findById(req.params.id);
-        if (!postFounded)
-            yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("No posts found.");
-        yield res.status(200).json(postFounded);
+        if (!postFounded) {
+            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("No posts found.");
+            return;
+        }
+        res.status(200).json(postFounded);
     });
 }
 //# sourceMappingURL=get-post-by-id.handler.js.map

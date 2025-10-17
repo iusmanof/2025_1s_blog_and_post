@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {basicAuth} from "../../auth/middlewares/super-admin.guard-middleware";
+import {basicAuth} from "../../core/milldlewares/super-admin.guard-middleware";
 import {nameValidation} from "../../core/milldlewares/validation/nameValidation";
 import {websiteValidation} from "../../core/milldlewares/validation/websiteValidation";
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
@@ -17,6 +17,7 @@ import {getBlogByIdHandler} from "./handlers/get-blog-by-id.handler";
 import {createBlogHandler} from "./handlers/create-blog.handler";
 import {deleteBlogHandler} from "./handlers/delete-blog.handler";
 import {updateBlogHandler} from "./handlers/update-blog.handler";
+import {paramIdMiddleware} from "../../core/milldlewares/validation/param-id.middleware";
 
 export const blogRouter = Router();
 
@@ -64,6 +65,6 @@ blogRouter.post(
     BlogHandler.POST_BLOG_ID_POSTS,
 )
 blogRouter.get("/:blogId/posts",
-    queryIdMiddleware,
+    paramIdMiddleware,
     paginationAndSortingValidation(),
     BlogHandler.GET_BLOG_ID_POSTS);

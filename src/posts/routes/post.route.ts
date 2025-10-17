@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {basicAuth} from "../../auth/middlewares/super-admin.guard-middleware";
+import {basicAuth} from "../../core/milldlewares/super-admin.guard-middleware";
 import {titleValidation} from "../../core/milldlewares/validation/titleValidation";
 import {contentValidation} from "../../core/milldlewares/validation/contentValidation";
 import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";

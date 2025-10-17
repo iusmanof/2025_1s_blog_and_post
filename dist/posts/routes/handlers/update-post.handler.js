@@ -21,11 +21,12 @@ function updatePostHandler(req, res) {
         const apiErrorMsg = [];
         if (!postIsUpdated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            return yield res
+            res
                 .status(HttpStatusCode_1.default.NOT_FOUND_404)
                 .json({ errorsMessages: apiErrorMsg });
+            return;
         }
-        return yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
+        res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
     });
 }
 //# sourceMappingURL=update-post.handler.js.map

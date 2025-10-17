@@ -19,9 +19,10 @@ function deletePostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const post = yield post_service_1.default.delete(req.params.id);
         if (!post) {
-            yield res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Not found");
+            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Not found");
+            return;
         }
-        yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
+        res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
     });
 }
 //# sourceMappingURL=delete-post.handler.js.map

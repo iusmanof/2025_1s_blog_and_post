@@ -6,11 +6,12 @@ import {IPagination, PaginationAndSortingUser} from "../../core/types/pagination
 
 export const usersQueryRepository = {
     async findAllUsers(sortQueryDto: PaginationAndSortingUser):  Promise<IPagination<UserResponseCreateDto[]>>{
-        const { sortBy, sortDirection, pageSize, pageNumber } = sortQueryDto;
+        const { sortBy, sortDirection, pageSize, pageNumber, searchEmailTerm, searchLoginTerm } = sortQueryDto;
         const skip = (pageNumber - 1) * pageSize;
-        const loginAndEmailSearch = {};
-        const totalCount = await getUserCollection().countDocuments()
-        const users = await getUserCollection().find(loginAndEmailSearch)
+        const filter = this._getFilter(searchLoginTerm, searchEmailTerm)
+        const totalCount = await getUserCollection().countDocuments(filter)
+        const users = await getUserCollection()
+            .find(filter)
             .sort({[sortBy]: sortDirection})
             .skip(+skip)
             .limit(+pageSize)
@@ -41,4 +42,25 @@ export const usersQueryRepository = {
             createdAt: user.createdAt ? user.createdAt.toISOString() : null,
         };
     },
+    _getFilter(loginQuery: string | null, emailQuery: string | null): { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } {
+        // let filter: { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } = {};
+
+        const filters = [];
+
+        if (loginQuery) {
+            filters.push({ login: { $regex: loginQuery, $options: 'i' } });
+        }
+        if (emailQuery) {
+            filters.push({ email: { $regex: emailQuery, $options: 'i' } });
+        }
+
+        if (filters.length === 0) {
+            return {};
+        }
+        if (filters.length === 1) {
+            return filters[0];
+        }
+        // @ts-ignore
+        return { $or: filters };
+    }
 }

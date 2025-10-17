@@ -1,0 +1,1 @@
+{"version":3,"file":"generate-admin-auth-token.js","sourceRoot":"","sources":["../../../src/core/utils/generate-admin-auth-token.ts"],"names":[],"mappings":";;AAIA,wDAMC;AAVD,+FAA4F;AAI5F,SAAgB,sBAAsB;IAClC,MAAM,WAAW,GAAG,GAAG,6CAAc,IAAI,6CAAc,EAAE,CAAC;IAC1D,MAAM,iBAAiB,GAAG,MAAM,CAAC,IAAI,CAAC,WAAW,CAAC,CAAC,QAAQ,CACvD,QAAQ,CACX,CAAC;IACF,OAAO,SAAS,iBAAiB,EAAE,CAAC;AACxC,CAAC"}

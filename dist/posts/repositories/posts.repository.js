@@ -74,7 +74,7 @@ exports.postsRepository = {
         const result = yield (0, mongo_db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
         return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
     }),
-    createPostByBlofId: (post, blogId) => __awaiter(void 0, void 0, void 0, function* () {
+    createPostByBlogId: (post, blogId) => __awaiter(void 0, void 0, void 0, function* () {
         const blog = yield blogs_repository_1.blogsRepository.getBlogById(post.blogId);
         const postCreated = {
             title: post.title,

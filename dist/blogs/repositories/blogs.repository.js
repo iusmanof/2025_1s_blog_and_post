@@ -91,7 +91,7 @@ exports.blogsRepository = {
     },
     createPostByBlogId(body, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield posts_repository_1.postsRepository.createPostByBlofId(body, blogId);
+            return yield posts_repository_1.postsRepository.createPostByBlogId(body, blogId);
         });
     },
     deleteBlog(id) {
