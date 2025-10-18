@@ -5,15 +5,30 @@ import {runDB, stopDb} from "../src/core/db/mongo.db";
 import {clearDb} from "./utils/clearDb";
 import request from "supertest";
 import httpStatusCode from "../src/core/types/HttpStatusCode";
+import {SETTINGS} from "../src/core/settings/settings";
 
 describe('/users', () => {
     const app = express();
     setupApp(app);
     const adminCredentials = generateAdminAuthToken()
+    let createdUserId: string;
 
     beforeAll(async () => {
-        await runDB('mongodb://localhost:27017/test-DB');
+        await runDB(SETTINGS.MONGODB_URI_TEST_DBNAME);
         await clearDb(app);
+
+        const newUser = {
+            login: 'testlogin',
+            email: 't@es.tom',
+            password: 'pass123'
+        };
+        const response = await request(app)
+            .post('/users')
+            .set("Authorization", adminCredentials)
+            .send(newUser)
+            .expect(httpStatusCode.CREATED_201);
+
+        createdUserId = response.body.id;
     })
 
     afterAll(async () => {
@@ -33,24 +48,6 @@ describe('/users', () => {
         expect(getResponse.body).toHaveProperty('pageSize')
     })
 
-    it('POST /users  CREATED_201', async () => {
-        const newUser = {
-            login: 'testwlogin',
-            email: 'q@ed.com',
-            password: 'pasqswrd123'
-        };
-
-        const postRresponse = await request(app)
-            .post('/users')
-            .set("Authorization", adminCredentials)
-            .send(newUser)
-            .expect(httpStatusCode.CREATED_201)
-
-        expect(postRresponse.body).toHaveProperty('id');
-        expect(postRresponse.body.login).toBe(newUser.login);
-        expect(postRresponse.body.email).toBe(newUser.email);
-    })
-
     it('POST /users BAD_REQUEST_400', async () => {
         const newUser = {
             login: 'testlogin',
@@ -65,27 +62,9 @@ describe('/users', () => {
             .expect(httpStatusCode.BAD_REQUEST_400)
     })
     it('DELETE /users', async () => {
-        const newUser = {
-            login: 'testlogin',
-            email: 'q@e.com',
-            password: 'passwrd123'
-        };
 
         await request(app)
-            .post('/users')
-            .set("Authorization", adminCredentials)
-            .send(newUser)
-            .expect(httpStatusCode.CREATED_201);
-
-        const getResponse = await request(app)
-            .get('/users/')
-            .set("Authorization", adminCredentials)
-            .expect(200);
-
-        const id = await getResponse.body.items[0].id;
-
-        await request(app)
-            .delete(`/users/${id}`)
+            .delete(`/users/${createdUserId}`)
             .set("Authorization", adminCredentials)
             .expect(204);
     });

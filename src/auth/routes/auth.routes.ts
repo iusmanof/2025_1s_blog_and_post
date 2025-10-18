@@ -1,11 +1,13 @@
-import {Router} from "express";
+import {Request, Response, Router} from "express";
 import {passwordValidation} from "../../core/milldlewares/validation/password.validation-middleware";
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
 import {loginOrEmailValidation} from "../../core/milldlewares/validation/login-or-email.validation";
 import {LoginOrEmailDto} from "../types/login-or-email.dto";
 import httpStatusCode from "../../core/types/HttpStatusCode";
 import {authService} from "../services/auth.service";
-import {Request, Response} from "express";
+import {ResultStatus} from "../../core/types/result-object";
+import {accessTokenGuard} from "../access-token.guard";
+import {usersQueryRepository} from "../../users/repositories/users.query.repository";
 
 export const authRouter = Router()
 
@@ -18,13 +20,31 @@ authRouter.post("/login",
 
         const result = await authService.login(loginOrEmail, password);
 
-        if (result !== true) {
+        if (result.status === ResultStatus.ERROR || result.data === null) {
             res.status(httpStatusCode.UNAUTHORIZED_401).json(result);
-            return
+            return;
         }
-        res.status(httpStatusCode.NO_CONTENT_204).json("Login successfully");
+        res.status(httpStatusCode.OK_200).json({ accessToken: result.data.accessToken });
     });
 
-// authRouter.get("/me", async(req: Request, res: Response) => {
-//
-// })
+interface AuthenticatedRequest extends Request {
+    user?: {
+        id: string;
+    };
+}
+
+authRouter.get("/me", accessTokenGuard, async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user?.id;
+
+    if (!userId) {
+        return res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+    }
+
+    const me = await usersQueryRepository.findById(userId);
+    if (!me) {
+        return res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+    }
+
+    return res.status(httpStatusCode.OK_200).send(me);
+});
+

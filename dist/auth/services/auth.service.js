@@ -12,32 +12,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authService = void 0;
 const users_repository_1 = require("../../users/repositories/users.repository");
 const bcrypt_adapter_1 = require("../adapters/bcrypt.adapter");
+const result_object_1 = require("../../core/types/result-object");
+const jwt_adapter_1 = require("../adapters/jwt.adapter");
 exports.authService = {
     login(loginOrEmail, password) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield users_repository_1.usersRepository.findByLoginOrEmail(loginOrEmail);
             if (!user) {
                 return {
-                    "errorsMessages": [
-                        {
-                            "message": "Not found",
-                            "field": "loginOrEmail"
-                        }
-                    ]
+                    status: result_object_1.ResultStatus.ERROR,
+                    errorMessages: 'Unauthorized',
+                    extensions: [{ message: "Not found", field: "loginOrEmail" }],
+                    data: null
                 };
             }
             const passwordCorrect = yield bcrypt_adapter_1.bcryptAdapter.checkPassword(password, user.passwordhash);
             if (!passwordCorrect) {
                 return {
-                    "errorsMessages": [
-                        {
-                            "message": "Wrong password",
-                            "field": "password"
-                        }
-                    ]
+                    status: result_object_1.ResultStatus.ERROR,
+                    errorMessages: 'Bad request',
+                    extensions: [{ message: "Wrong password", field: "password" }],
+                    data: null
                 };
             }
-            return true;
+            const accessToken = yield jwt_adapter_1.jwtAdapter.signToken(user._id.toString());
+            return {
+                status: result_object_1.ResultStatus.SUCCESS,
+                data: { accessToken },
+                extensions: [],
+            };
         });
     },
 };

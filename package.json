@@ -3,11 +3,11 @@
   "scripts": {
     "dev": "nodemon --inspect dist/index.js",
     "watch": "tsc -w",
+    "test:watch": "jest --watch --runInBand",
     "build": "tsc",
     "start": "node dist/index.js",
     "ngrok": "ngrok http 3000",
     "test": "jest",
-    "test:watch": "jest --watch --runInBand",
     "lint": "eslint --fix .",
     "format": "prettier --write .",
     "localtunnel": "lt --port 3000"
