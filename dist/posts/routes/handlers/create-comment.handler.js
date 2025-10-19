@@ -8,13 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCommentHandler = createCommentHandler;
+const comments_service_1 = require("../../../comments/services/comments.service");
+const result_object_1 = require("../../../core/types/result-object");
+const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
 function createCommentHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const a = req.body;
-        console.log(a);
-        return res;
+        var _a;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const postId = req.params.postId;
+        const content = req.body.content;
+        if (!userId) {
+            return null;
+        }
+        const result = yield comments_service_1.commentsService.create(userId, postId, content);
+        if (result.status === result_object_1.ResultStatus.SUCCESS && result.data) {
+            return res.status(HttpStatusCode_1.default.CREATED_201).json(result.data);
+        }
+        else {
+            return res.status(HttpStatusCode_1.default.BAD_REQUEST_400).json(result);
+        }
     });
 }
 //# sourceMappingURL=create-comment.handler.js.map

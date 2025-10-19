@@ -27,13 +27,7 @@ authRouter.post("/login",
         res.status(httpStatusCode.OK_200).json({ accessToken: result.data.accessToken });
     });
 
-interface AuthenticatedRequest extends Request {
-    user?: {
-        id: string;
-    };
-}
-
-authRouter.get("/me", accessTokenGuard, async (req: AuthenticatedRequest, res: Response) => {
+authRouter.get("/me", accessTokenGuard, async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {

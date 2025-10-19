@@ -12,8 +12,9 @@ exports.SETTINGS = {
     DB_NAME: process.env.DB_NAME || 'testDB',
     MONGODB_URI_TEST_DBNAME: process.env.MONGODB_URI_TEST_DBNAME || 'mongodb://localhost:27017/test-DB',
     DB_COLLECTION_BLOGS: process.env.DB_COLLECTION_BLOGS || 'blogs',
-    DB_COLLECTION_POSTS: process.env.DB_COLLECTION_BLOGS || 'posts',
-    DB_COLLECTION_USERS: process.env.DB_COLLECTION_BLOGS || 'users',
+    DB_COLLECTION_POSTS: process.env.DB_COLLECTION_POSTS || 'posts',
+    DB_COLLECTION_USERS: process.env.DB_COLLECTION_USERS || 'users',
+    DB_COLLECTION_COMMENTS: process.env.DB_COLLECTION_COMMENTS || 'comments',
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET || 'ACCESS_TOKEN_SECRET',
     ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 300,
 };

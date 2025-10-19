@@ -2,14 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import httpStatusCode from "../core/types/HttpStatusCode";
 import {jwtAdapter} from "./adapters/jwt.adapter";
 
-
-interface AuthenticatedRequest extends Request {
-    user?: {
-        id: string;
-    };
-}
-
-export const accessTokenGuard = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const accessTokenGuard = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.header('Authorization');
 
     if (!authHeader) {

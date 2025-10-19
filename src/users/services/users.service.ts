@@ -1,7 +1,6 @@
 import {PaginationAndSorting} from "../../core/types/pagination-and-sorting";
 import {usersRepository} from "../repositories/users.repository";
 import {UserCreateDto} from "../types/user-create-dto";
-import bcrypt from 'bcrypt';
 import {UserDbDto} from "../types/user-db-dto";
 import {bcryptAdapter} from "../../auth/adapters/bcrypt.adapter";
 

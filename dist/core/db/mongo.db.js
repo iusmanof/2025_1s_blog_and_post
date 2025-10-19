@@ -13,6 +13,7 @@ exports.runDB = void 0;
 exports.getBlogCollection = getBlogCollection;
 exports.getPostCollection = getPostCollection;
 exports.getUserCollection = getUserCollection;
+exports.getCommentCollection = getCommentCollection;
 exports.stopDb = stopDb;
 const mongodb_1 = require("mongodb");
 const settings_1 = require("../settings/settings");
@@ -20,6 +21,7 @@ let client;
 let blogCollection;
 let postCollection;
 let userCollection;
+let commentCollection;
 const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
     client = new mongodb_1.MongoClient(url);
     try {
@@ -28,6 +30,7 @@ const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
         blogCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_BLOGS);
         postCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_POSTS);
         userCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_USERS);
+        commentCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_COMMENTS);
         console.log("Connect successfully to server");
     }
     catch (e) {
@@ -55,6 +58,12 @@ function getUserCollection() {
         throw new Error("Collection user not initialized");
     }
     return userCollection;
+}
+function getCommentCollection() {
+    if (!commentCollection) {
+        throw new Error("Collection user not initialized");
+    }
+    return commentCollection;
 }
 function stopDb() {
     return __awaiter(this, void 0, void 0, function* () {

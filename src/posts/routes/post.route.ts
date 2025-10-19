@@ -11,7 +11,8 @@ import {getPostsHandler} from "./handlers/get-posts.handler";
 import {deletePostHandler} from "./handlers/delete-post.handler";
 import {getPostByIdHandler} from "./handlers/get-post-by-id.handler";
 import {createCommentHandler} from "./handlers/create-comment.handler";
-import {getCommentHandler} from "./handlers/get-comment.handler";
+import {getCommentsByPostIdHandler} from "./handlers/get-comment.handler";
+import {accessTokenGuard} from "../../auth/access-token.guard";
 
 export const postRouter = Router();
 
@@ -46,14 +47,11 @@ postRouter.delete(
 );
 
 postRouter.post("/:postId/comments",
-    // basicAuth,
-    // guard ??
-
+    accessTokenGuard,
     createCommentHandler
 );
 
 postRouter.get("/:postId/comments",
-    // basicAuth,
-    // guard ??
-    getCommentHandler
+    paginationAndSortingValidation(),
+    getCommentsByPostIdHandler
 );
