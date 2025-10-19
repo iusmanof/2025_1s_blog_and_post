@@ -13,6 +13,7 @@ import {getPostByIdHandler} from "./handlers/get-post-by-id.handler";
 import {createCommentHandler} from "./handlers/create-comment.handler";
 import {getCommentsByPostIdHandler} from "./handlers/get-comment.handler";
 import {accessTokenGuard} from "../../auth/access-token.guard";
+import {commentValidationa} from "../../core/milldlewares/validation/comments-validation.middleware";
 
 export const postRouter = Router();
 
@@ -48,6 +49,8 @@ postRouter.delete(
 
 postRouter.post("/:postId/comments",
     accessTokenGuard,
+    [commentValidationa],
+    inputValidationMiddleware,
     createCommentHandler
 );
 

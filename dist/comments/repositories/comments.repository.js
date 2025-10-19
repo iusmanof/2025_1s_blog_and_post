@@ -54,7 +54,7 @@ exports.commentsRepository = {
                 return null;
             }
             const totalCount = (yield (0, mongo_db_1.getCommentCollection)().find(search).toArray()).length;
-            const commentsWithInfo = {
+            return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
                 pageSize: +pageSize,
@@ -66,7 +66,6 @@ exports.commentsRepository = {
                     createdAt: comment.createdAt,
                 }))
             };
-            return commentsWithInfo;
         });
     },
     getCommentById(commentId) {
@@ -81,6 +80,29 @@ exports.commentsRepository = {
                 commentatorInfo: result.commentatorInfo,
                 createdAt: result.createdAt,
             };
+        });
+    },
+    deleteById(commentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield (0, mongo_db_1.getCommentCollection)().deleteOne({ _id: new mongodb_1.ObjectId(commentId) });
+            if (result.deletedCount === 0) {
+                return null;
+            }
+            return result;
+        });
+    },
+    deleteAllComments() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield (0, mongo_db_1.getCommentCollection)().deleteMany({});
+        });
+    },
+    updateById(commentId, content) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield (0, mongo_db_1.getCommentCollection)().updateOne({ "_id": new mongodb_1.ObjectId(commentId) }, { $set: { "content": content } });
+            if (result.matchedCount === 0) {
+                return null;
+            }
+            return result;
         });
     }
 };

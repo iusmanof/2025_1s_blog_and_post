@@ -31,14 +31,16 @@ authRouter.get("/me", accessTokenGuard, async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-        return res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+         res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+        return
     }
 
     const me = await usersQueryRepository.findById(userId);
     if (!me) {
-        return res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+         res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+        return
     }
 
-    return res.status(httpStatusCode.OK_200).send(me);
+    res.status(httpStatusCode.OK_200).send(me);
 });
 

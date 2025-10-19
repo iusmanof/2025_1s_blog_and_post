@@ -53,18 +53,14 @@ exports.jwtAdapter = {
             });
         });
     },
-    // async decodeToken (token: string) {
-    //     return "decodeToken"
-    // },
+    decodeToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return jwt.decode(token);
+        });
+    },
     verifyToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return jwt.verify(token, settings_1.SETTINGS.ACCESS_TOKEN_SECRET);
-            }
-            catch (err) {
-                console.log(err);
-                return null;
-            }
+            return jwt.verify(token, settings_1.SETTINGS.ACCESS_TOKEN_SECRET);
         });
     }
 };

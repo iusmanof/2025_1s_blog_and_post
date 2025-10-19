@@ -7,15 +7,10 @@ export const jwtAdapter = {
             expiresIn: SETTINGS.ACCESS_TOKEN_SECRET_TIME,
         });
     },
-    // async decodeToken (token: string) {
-    //     return "decodeToken"
-    // },
+    async decodeToken (token: string) {
+        return jwt.decode(token);
+    },
     async verifyToken(token: string) {
-        try {
-            return jwt.verify(token, SETTINGS.ACCESS_TOKEN_SECRET);
-        } catch (err) {
-            console.log(err);
-            return null
-        }
+        return jwt.verify(token, SETTINGS.ACCESS_TOKEN_SECRET);
     }
 }

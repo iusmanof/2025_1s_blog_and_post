@@ -1,11 +1,8 @@
-import {ResultObject, ResultStatus} from "../../core/types/result-object";
-import {getBlogCollection, getCommentCollection} from "../../core/db/mongo.db";
+import {getCommentCollection} from "../../core/db/mongo.db";
 import {commentsDataResultObject, commentsDBResultObject} from "../types/comments-data-result-object";
 import {usersQueryRepository} from "../../users/repositories/users.query.repository";
-import {CommentsDb} from "../types/comments-db";
-import {ObjectId, WithId} from "mongodb";
+import {ObjectId} from "mongodb";
 import {CommentsQuery} from "../types/comments-query";
-
 
 export const commentsRepository = {
     async create(userId: string, postId: string, content: string): Promise<commentsDataResultObject | null> {
@@ -56,7 +53,7 @@ export const commentsRepository = {
 
         const totalCount = (await getCommentCollection().find(search).toArray()).length
 
-        const commentsWithInfo = {
+        return {
             pagesCount: +Math.ceil(totalCount / pageSize),
             page: +pageNumber,
             pageSize: +pageSize,
@@ -67,8 +64,7 @@ export const commentsRepository = {
                 commentatorInfo: comment.commentatorInfo,
                 createdAt: comment.createdAt,
             }))
-        };
-        return commentsWithInfo
+        }
     },
     async getCommentById(commentId: string): Promise<commentsDataResultObject  | null> {
 
@@ -84,5 +80,22 @@ export const commentsRepository = {
             commentatorInfo: result.commentatorInfo,
             createdAt: result.createdAt,
         }
+    },
+    async deleteById(commentId: string) {
+        const result = await getCommentCollection().deleteOne({_id: new ObjectId(commentId)})
+        if (result.deletedCount === 0) {
+            return null
+        }
+        return result
+    },
+    async deleteAllComments(){
+        await getCommentCollection().deleteMany({})
+    },
+    async updateById(commentId: string, content: string): Promise<{} | null> {
+        const result = await getCommentCollection().updateOne({"_id":  new ObjectId(commentId) }, {$set: {"content": content}})
+        if (result.matchedCount === 0) {
+            return null
+        }
+        return result
     }
 }

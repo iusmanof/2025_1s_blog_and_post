@@ -34,15 +34,14 @@ exports.commentsService = {
     getCommentByPostId(postId, query) {
         return __awaiter(this, void 0, void 0, function* () {
             const comments = yield comments_repository_1.commentsRepository.getCommentsByPostId(postId, query);
-            //
-            // if (!comments || comments.length === 0){
-            //     return {
-            //         status: ResultStatus.ERROR,
-            //         errorMessages: 'Comments not found',
-            //         data: null,
-            //         extensions: []
-            //     }
-            // }
+            if (!comments) {
+                return {
+                    status: result_object_1.ResultStatus.ERROR,
+                    errorMessages: 'Comments not found',
+                    data: null,
+                    extensions: []
+                };
+            }
             return {
                 status: result_object_1.ResultStatus.SUCCESS,
                 extensions: [],
@@ -66,6 +65,46 @@ exports.commentsService = {
                 extensions: [],
                 data: comment
             };
+        });
+    },
+    deleteById(commentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield comments_repository_1.commentsRepository.deleteById(commentId);
+            if (!result) {
+                return {
+                    status: result_object_1.ResultStatus.ERROR,
+                    errorMessages: 'Failed to delete a comment',
+                    data: null,
+                    extensions: []
+                };
+            }
+            return {
+                status: result_object_1.ResultStatus.SUCCESS,
+                extensions: [],
+                data: result
+            };
+        });
+    },
+    updateById(commentId, content) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield comments_repository_1.commentsRepository.updateById(commentId, content);
+            if (!result) {
+                return {
+                    status: result_object_1.ResultStatus.ERROR,
+                    errorMessages: 'Failed to update a comment',
+                    data: null,
+                    extensions: []
+                };
+            }
+            return {
+                status: result_object_1.ResultStatus.SUCCESS,
+                extensions: [],
+                data: result
+            };
+        });
+    },
+    findById() {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
 };

@@ -36,12 +36,14 @@ exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) 
     var _a;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     if (!userId) {
-        return res.sendStatus(HttpStatusCode_1.default.UNAUTHORIZED_401);
+        res.sendStatus(HttpStatusCode_1.default.UNAUTHORIZED_401);
+        return;
     }
     const me = yield users_query_repository_1.usersQueryRepository.findById(userId);
     if (!me) {
-        return res.sendStatus(HttpStatusCode_1.default.UNAUTHORIZED_401);
+        res.sendStatus(HttpStatusCode_1.default.UNAUTHORIZED_401);
+        return;
     }
-    return res.status(HttpStatusCode_1.default.OK_200).send(me);
+    res.status(HttpStatusCode_1.default.OK_200).send(me);
 }));
 //# sourceMappingURL=auth.routes.js.map

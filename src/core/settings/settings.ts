@@ -12,5 +12,5 @@ export const SETTINGS = {
     DB_COLLECTION_USERS: process.env.DB_COLLECTION_USERS as string || 'users',
     DB_COLLECTION_COMMENTS: process.env.DB_COLLECTION_COMMENTS as string || 'comments',
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string || 'ACCESS_TOKEN_SECRET',
-    ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 300,
+    ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 400,
 }
