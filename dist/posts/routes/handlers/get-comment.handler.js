@@ -16,10 +16,16 @@ exports.getCommentsByPostIdHandler = getCommentsByPostIdHandler;
 const comments_service_1 = require("../../../comments/services/comments.service");
 const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
 const HttpStatusCode_2 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const post_service_1 = __importDefault(require("../../services/post.service"));
 function getCommentsByPostIdHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postId = req.params.postId;
         const query = req.query;
+        const post = yield post_service_1.default.findById(postId);
+        if (!post) {
+            res.status(HttpStatusCode_2.default.NOT_FOUND_404).send('Post not found');
+            return;
+        }
         const result = yield comments_service_1.commentsService.getCommentByPostId(postId, query);
         if (!result) {
             res.status(HttpStatusCode_2.default.NOT_FOUND_404).send("Not found");

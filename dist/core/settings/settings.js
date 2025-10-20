@@ -16,6 +16,6 @@ exports.SETTINGS = {
     DB_COLLECTION_USERS: process.env.DB_COLLECTION_USERS || 'users',
     DB_COLLECTION_COMMENTS: process.env.DB_COLLECTION_COMMENTS || 'comments',
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET || 'ACCESS_TOKEN_SECRET',
-    ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 400,
+    ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 40,
 };
 //# sourceMappingURL=settings.js.map
