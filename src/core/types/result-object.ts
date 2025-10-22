@@ -1,4 +1,4 @@
-export enum ResultStatus {
+export enum resultStatus {
     SUCCESS = 'success',
     ERROR = 'error',
 }
@@ -9,7 +9,7 @@ type ExtensionType = {
 };
 
 export type ResultObject<T = null> = {
-    status: ResultStatus;
+    status: resultStatus;
     errorMessages?: string;
     extensions: ExtensionType[];
     data: T;

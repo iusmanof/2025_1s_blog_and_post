@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {PostModel} from "../../../core/types/PostModel";
 import {FieldError} from "../../../core/types/FieldError";
 import PostService from "../../services/post.service";
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+import HTTP_STATUS from "../../../core/types/http-status-code";
 
 export async function createPostHandler(req: Request<PostModel>, res: Response) {
     const postCreated = await PostService.create(req.body)

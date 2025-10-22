@@ -1,12 +1,12 @@
 import request from "supertest";
 import dotenv from "dotenv";
-import httpStatusCode from "../src/core/types/HttpStatusCode";
+import httpStatusCode from "../src/core/types/http-status-code";
 import express from "express";
 import {setupApp} from "../src/setup-app";
 import {generateAdminAuthToken} from "../src/core/utils/generate-admin-auth-token";
 import {runDB, stopDb} from "../src/core/db/mongo.db";
 import {clearDb} from "./utils/clearDb";
-import HttpStatusCode from "../src/core/types/HttpStatusCode"; // Этот импорт нужно перенести сюда
+import HttpStatusCode from "../src/core/types/http-status-code"; // Этот импорт нужно перенести сюда
 
 dotenv.config();
 

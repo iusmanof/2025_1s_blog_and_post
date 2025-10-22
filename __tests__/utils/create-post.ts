@@ -1,6 +1,6 @@
 import {Express} from "express";
 import request from "supertest";
-import httpStatusCode from "../../src/core/types/HttpStatusCode";
+import httpStatusCode from "../../src/core/types/http-status-code";
 
 export async function createPost(app: Express, adminCredentials: string): Promise<string> {
     const newPost = {

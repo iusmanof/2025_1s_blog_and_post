@@ -6,7 +6,7 @@ import {getUserCollection, runDB, stopDb} from "../src/core/db/mongo.db";
 import {SETTINGS} from "../src/core/settings/settings";
 import {clearDb} from "./utils/clearDb";
 import request from "supertest";
-import httpStatusCode from "../src/core/types/HttpStatusCode";
+import httpStatusCode from "../src/core/types/http-status-code";
 
 describe("/auth", () => {
     const app = express();

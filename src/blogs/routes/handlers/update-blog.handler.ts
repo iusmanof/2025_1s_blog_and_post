@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {BlogWithId} from "../../../core/types/BlogModel";
 import {FieldError} from "../../../core/types/FieldError";
 import BlogService from "../../services/blog.service";
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+import HTTP_STATUS from "../../../core/types/http-status-code";
 
 export async function updateBlogHandler(
     req: Request,

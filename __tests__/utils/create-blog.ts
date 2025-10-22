@@ -1,5 +1,5 @@
 import request from "supertest";
-import httpStatusCode from "../../src/core/types/HttpStatusCode";
+import httpStatusCode from "../../src/core/types/http-status-code";
 import {Express} from "express";
 
 export async function createBlog(app: Express, adminCredentials: string): Promise<string> {

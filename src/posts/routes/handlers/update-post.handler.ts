@@ -1,6 +1,6 @@
 import {PostModelWithId} from "../../../core/types/PostModel";
 import {Request, Response} from "express";
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+import HTTP_STATUS from "../../../core/types/http-status-code";
 import {FieldError} from "../../../core/types/FieldError";
 import PostService from "../../services/post.service";
 

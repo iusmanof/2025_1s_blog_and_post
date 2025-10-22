@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsersHandler = getUsersHandler;
 const sort_query_default_util_1 = require("../../../core/utils/sort-query-default.util");
 const users_query_repository_1 = require("../../repositories/users.query.repository");
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function getUsersHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const query = req.query;
@@ -28,7 +28,7 @@ function getUsersHandler(req, res) {
             searchLoginTerm,
             searchEmailTerm
         });
-        return res.status(HttpStatusCode_1.default.OK_200).send(users);
+        return res.status(http_status_code_1.default.OK_200).send(users);
     });
 }
 //# sourceMappingURL=get-users.handler.js.map

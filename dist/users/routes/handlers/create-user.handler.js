@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUserHandler = createUserHandler;
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 const users_service_1 = require("../../services/users.service");
 const users_query_repository_1 = require("../../repositories/users.query.repository");
 function createUserHandler(req, res) {
@@ -21,7 +21,7 @@ function createUserHandler(req, res) {
         const { login, password, email } = req.body;
         const userId = yield users_service_1.usersService.create({ login, password, email });
         const newUser = yield users_query_repository_1.usersQueryRepository.findById(userId);
-        return res.status(HttpStatusCode_1.default.CREATED_201).send(newUser);
+        return res.status(http_status_code_1.default.CREATED_201).send(newUser);
     });
 }
 //# sourceMappingURL=create-user.handler.js.map

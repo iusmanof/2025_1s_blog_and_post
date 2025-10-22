@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlogHandler = deleteBlogHandler;
 const express_validator_1 = require("express-validator");
 const blog_service_1 = __importDefault(require("../../services/blog.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function deleteBlogHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const errors = (0, express_validator_1.validationResult)(req);
@@ -25,10 +25,10 @@ function deleteBlogHandler(req, res) {
         }
         const blog = yield blog_service_1.default.delete(req.params.id);
         if (!blog) {
-            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Not found");
+            res.status(http_status_code_1.default.NOT_FOUND_404).send("Not found");
             return;
         }
-        res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
+        res.status(http_status_code_1.default.NO_CONTENT_204).send();
     });
 }
 //# sourceMappingURL=delete-blog.handler.js.map

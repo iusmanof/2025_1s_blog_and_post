@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import httpStatusCode from "../core/types/HttpStatusCode";
+import httpStatusCode from "../core/types/http-status-code";
 import {jwtAdapter} from "./adapters/jwt.adapter";
 
 export const accessTokenGuard = async (req: Request, res: Response, next: NextFunction) => {
@@ -16,9 +16,6 @@ export const accessTokenGuard = async (req: Request, res: Response, next: NextFu
         res.status(httpStatusCode.UNAUTHORIZED_401).send('Unauthorized');
         return
     }
-
-    const as = await jwtAdapter.decodeToken(token);
-    console.log(as);
 
     try {
         const payload = await jwtAdapter.verifyToken(token);

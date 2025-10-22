@@ -2,7 +2,7 @@ import {RequestWithParams} from "../../../core/types/RequestTypes";
 import {Response} from "express";
 import {validationResult} from "express-validator";
 import BlogService from "../../services/blog.service";
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+import HTTP_STATUS from "../../../core/types/http-status-code";
 
 export async function getBlogByIdHandler(req: RequestWithParams<{ id: string }>, res: Response) {
     const errors = validationResult(req);

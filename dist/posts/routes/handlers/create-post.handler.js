@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPostHandler = createPostHandler;
 const post_service_1 = __importDefault(require("../../services/post.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function createPostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postCreated = yield post_service_1.default.create(req.body);
@@ -22,11 +22,11 @@ function createPostHandler(req, res) {
         if (!postCreated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
             res
-                .status(HttpStatusCode_1.default.NOT_FOUND_404)
+                .status(http_status_code_1.default.NOT_FOUND_404)
                 .json({ errorsMessages: apiErrorMsg });
             return;
         }
-        res.status(HttpStatusCode_1.default.CREATED_201).json(postCreated);
+        res.status(http_status_code_1.default.CREATED_201).json(postCreated);
     });
 }
 //# sourceMappingURL=create-post.handler.js.map

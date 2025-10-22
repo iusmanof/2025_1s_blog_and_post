@@ -1,7 +1,7 @@
 import {RequestWithParams} from "../../../core/types/RequestTypes";
 import {Response} from "express";
 import PostService from "../../services/post.service";
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+import HTTP_STATUS from "../../../core/types/http-status-code";
 
 export async function deletePostHandler (req: RequestWithParams<{ id: string }>, res: Response) {
     const post = await PostService.delete(req.params.id);

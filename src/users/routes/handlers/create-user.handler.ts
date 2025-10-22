@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import httpStatusCode from "../../../core/types/HttpStatusCode";
+import httpStatusCode from "../../../core/types/http-status-code";
 import {usersService} from "../../services/users.service";
 import {UserCreateDto} from "../../types/user-create-dto";
 import {UserResponseCreateDto} from "../../types/user-response-create-dto";

@@ -14,12 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPostByIdHandler = getPostByIdHandler;
 const post_service_1 = __importDefault(require("../../services/post.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function getPostByIdHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postFounded = yield post_service_1.default.findById(req.params.id);
         if (!postFounded) {
-            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("No posts found.");
+            res.status(http_status_code_1.default.NOT_FOUND_404).send("No posts found.");
             return;
         }
         res.status(200).json(postFounded);

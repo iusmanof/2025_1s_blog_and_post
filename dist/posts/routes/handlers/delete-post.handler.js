@@ -14,15 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePostHandler = deletePostHandler;
 const post_service_1 = __importDefault(require("../../services/post.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function deletePostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const post = yield post_service_1.default.delete(req.params.id);
         if (!post) {
-            res.status(HttpStatusCode_1.default.NOT_FOUND_404).send("Not found");
+            res.status(http_status_code_1.default.NOT_FOUND_404).send("Not found");
             return;
         }
-        res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
+        res.status(http_status_code_1.default.NO_CONTENT_204).send();
     });
 }
 //# sourceMappingURL=delete-post.handler.js.map

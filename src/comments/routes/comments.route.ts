@@ -1,8 +1,8 @@
 import {Request, Response, Router} from "express";
-import httpStatusCode from "../../core/types/HttpStatusCode";
+import httpStatusCode from "../../core/types/http-status-code";
 import {commentsService} from "../services/comments.service";
 import {accessTokenGuard} from "../../auth/access-token.guard";
-import { ResultStatus} from "../../core/types/result-object";
+import {resultStatus} from "../../core/types/result-object";
 import {commentValidationa} from "../../core/milldlewares/validation/comments-validation.middleware";
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
 
@@ -13,7 +13,7 @@ commentsRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) =
     const commentId = req.params.id
     const result = await commentsService.getCommentById(commentId)
 
-    if (result.status === ResultStatus.ERROR) {
+    if (result.status === resultStatus.ERROR) {
         res.status(httpStatusCode.NOT_FOUND_404).send("Not Found");
         return
     }
@@ -25,15 +25,15 @@ commentsRouter.delete("/:id",
     accessTokenGuard,
     async (req: Request<{ id: string }>, res: Response) => {
         const commentId = req.params.id
-        const userId = (req as any).user.id;
+        const userId = (req as any).user.id; // refactor
 
         const comment = await commentsService.getCommentById(commentId)
-        if (!comment.data) {
+        if (!comment.data) {  // refactor in service
             res.status(httpStatusCode.NOT_FOUND_404).send("Comment not found");
             return
         }
 
-        if (comment.data?.commentatorInfo.userId !== userId) {
+        if (comment.data?.commentatorInfo.userId !== userId) { // refactor in service
             res.status(httpStatusCode.FORBIDDEN_403).send("If try delete the comment that is not your own");
             return
         }
@@ -41,11 +41,11 @@ commentsRouter.delete("/:id",
         const result = await commentsService.deleteById(commentId)
 
 
-        if (result.status === 'error') {
+        if (result.status === resultStatus.ERROR) {
             res.status(httpStatusCode.NOT_FOUND_404).send("Comment not found")
             return
         }
-        if (result.status === 'success') {
+        if (result.status === resultStatus.SUCCESS) {
             res.status(httpStatusCode.NO_CONTENT_204).send()
             return
         }
@@ -74,11 +74,11 @@ commentsRouter.put("/:id",
         }
 
         const result = await commentsService.updateById(commentId, content)
-        if (result.status === 'error') {
+        if (result.status === resultStatus.ERROR) {
             res.status(httpStatusCode.NOT_FOUND_404).send("Comment not updated")
         }
 
-        if (result.status === 'success') {
+        if (result.status === resultStatus.SUCCESS) {
             res.status(httpStatusCode.NO_CONTENT_204).send("Updated successfully")
         }
 

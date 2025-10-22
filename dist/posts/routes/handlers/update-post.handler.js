@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePostHandler = updatePostHandler;
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 const post_service_1 = __importDefault(require("../../services/post.service"));
 function updatePostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -22,11 +22,11 @@ function updatePostHandler(req, res) {
         if (!postIsUpdated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
             res
-                .status(HttpStatusCode_1.default.NOT_FOUND_404)
+                .status(http_status_code_1.default.NOT_FOUND_404)
                 .json({ errorsMessages: apiErrorMsg });
             return;
         }
-        res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
+        res.status(http_status_code_1.default.NO_CONTENT_204).send();
     });
 }
 //# sourceMappingURL=update-post.handler.js.map

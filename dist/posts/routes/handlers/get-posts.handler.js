@@ -14,11 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPostsHandler = getPostsHandler;
 const post_service_1 = __importDefault(require("../../services/post.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function getPostsHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield post_service_1.default.findMany(req.query);
-        res.status(HttpStatusCode_1.default.OK_200).send(result);
+        res.status(http_status_code_1.default.OK_200).send(result);
     });
 }
 //# sourceMappingURL=get-posts.handler.js.map

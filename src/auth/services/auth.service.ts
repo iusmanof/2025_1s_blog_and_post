@@ -1,6 +1,6 @@
 import {usersRepository} from "../../users/repositories/users.repository";
 import {bcryptAdapter} from "../adapters/bcrypt.adapter";
-import {ResultObject, ResultStatus} from "../../core/types/result-object";
+import {ResultObject, resultStatus} from "../../core/types/result-object";
 import {jwtAdapter} from "../adapters/jwt.adapter";
 
 export const authService = {
@@ -8,7 +8,7 @@ export const authService = {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail);
         if (!user) {
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Unauthorized',
                 extensions: [{message: "Not found", field: "loginOrEmail"}],
                 data: null
@@ -18,7 +18,7 @@ export const authService = {
         const passwordCorrect = await bcryptAdapter.checkPassword(password, user.passwordhash);
         if (!passwordCorrect) {
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Bad request',
                 extensions: [{message: "Wrong password", field: "password"}],
                 data: null
@@ -28,7 +28,7 @@ export const authService = {
         const accessToken = await jwtAdapter.signToken(user._id.toString());
 
         return {
-            status: ResultStatus.SUCCESS,
+            status: resultStatus.SUCCESS,
             data: {accessToken},
             extensions: [],
         }

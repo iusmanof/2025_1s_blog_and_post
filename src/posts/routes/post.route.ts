@@ -3,7 +3,9 @@ import {basicAuth} from "../../core/milldlewares/super-admin.guard-middleware";
 import {titleValidation} from "../../core/milldlewares/validation/titleValidation";
 import {contentValidation} from "../../core/milldlewares/validation/contentValidation";
 import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";
-import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
+import {
+    inputValidationMiddleware,
+} from "../../core/milldlewares/validation/input-validation-middleware";
 import {paginationAndSortingValidation} from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
 import {createPostHandler} from "./handlers/create-post.handler";
 import {updatePostHandler} from "./handlers/update-post.handler";
@@ -14,6 +16,8 @@ import {createCommentHandler} from "./handlers/create-comment.handler";
 import {getCommentsByPostIdHandler} from "./handlers/get-comment.handler";
 import {accessTokenGuard} from "../../auth/access-token.guard";
 import {commentValidationa} from "../../core/milldlewares/validation/comments-validation.middleware";
+import {postIdValidationMiddleware} from "./middlewares/post-id-validation.middleware";
+import {userIdValidationMiddleware} from "./middlewares/user-id-validation.middleware";
 
 export const postRouter = Router();
 
@@ -49,8 +53,10 @@ postRouter.delete(
 
 postRouter.post("/:postId/comments",
     accessTokenGuard,
-    [commentValidationa],
+    commentValidationa,
     inputValidationMiddleware,
+    postIdValidationMiddleware,
+    userIdValidationMiddleware,
     createCommentHandler
 );
 

@@ -1,4 +1,4 @@
-import {ResultObject, ResultStatus} from "../../core/types/result-object";
+import {ResultObject, resultStatus} from "../../core/types/result-object";
 import {commentsRepository} from "../repositories/comments.repository";
 import {commentsDataResultObject, commentsDBResultObject} from "../types/comments-data-result-object";
 import {CommentsQuery} from "../types/comments-query";
@@ -9,14 +9,14 @@ export const commentsService = {
 
         if (!commentsInfo) {
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Failed to create a comment',
                 data: null,
                 extensions: []
             }
         }
         return {
-            status: ResultStatus.SUCCESS,
+            status: resultStatus.SUCCESS,
             extensions: [],
             data: commentsInfo
         }
@@ -25,14 +25,14 @@ export const commentsService = {
         const comments = await commentsRepository.getCommentsByPostId(postId, query)
         if (!comments){
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Comments not found',
                 data: null,
                 extensions: []
             }
         }
         return {
-            status: ResultStatus.SUCCESS,
+            status: resultStatus.SUCCESS,
             extensions: [],
             data: comments
         }
@@ -41,7 +41,7 @@ export const commentsService = {
         const comment = await commentsRepository.getCommentById(commentId)
         if (!comment) {
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Failed to get a comment',
                 data: null,
                 extensions: []
@@ -49,7 +49,7 @@ export const commentsService = {
         }
 
         return {
-            status: ResultStatus.SUCCESS,
+            status: resultStatus.SUCCESS,
             extensions: [],
             data: comment
         }
@@ -58,7 +58,7 @@ export const commentsService = {
         const result = await commentsRepository.deleteById(commentId)
         if (!result) {
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Failed to delete a comment',
                 data: null,
                 extensions: []
@@ -66,7 +66,7 @@ export const commentsService = {
         }
 
         return {
-            status: ResultStatus.SUCCESS,
+            status: resultStatus.SUCCESS,
             extensions: [],
             data: result
         }
@@ -77,14 +77,14 @@ export const commentsService = {
 
         if (!result) {
             return {
-                status: ResultStatus.ERROR,
+                status: resultStatus.ERROR,
                 errorMessages: 'Failed to update a comment',
                 data: null,
                 extensions: []
             }
         }
         return {
-            status: ResultStatus.SUCCESS,
+            status: resultStatus.SUCCESS,
             extensions: [],
             data: result
         }

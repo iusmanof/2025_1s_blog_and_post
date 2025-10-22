@@ -20,7 +20,7 @@ exports.authService = {
             const user = yield users_repository_1.usersRepository.findByLoginOrEmail(loginOrEmail);
             if (!user) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Unauthorized',
                     extensions: [{ message: "Not found", field: "loginOrEmail" }],
                     data: null
@@ -29,7 +29,7 @@ exports.authService = {
             const passwordCorrect = yield bcrypt_adapter_1.bcryptAdapter.checkPassword(password, user.passwordhash);
             if (!passwordCorrect) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Bad request',
                     extensions: [{ message: "Wrong password", field: "password" }],
                     data: null
@@ -37,7 +37,7 @@ exports.authService = {
             }
             const accessToken = yield jwt_adapter_1.jwtAdapter.signToken(user._id.toString());
             return {
-                status: result_object_1.ResultStatus.SUCCESS,
+                status: result_object_1.resultStatus.SUCCESS,
                 data: { accessToken },
                 extensions: [],
             };

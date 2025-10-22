@@ -1,7 +1,7 @@
-import HttpStatusCode from "../../../core/types/HttpStatusCode";
+import HttpStatusCode from "../../../core/types/http-status-code";
 import {usersService} from "../../services/users.service";
 import {Request, Response} from "express";
-import httpStatusCode from "../../../core/types/HttpStatusCode";
+import httpStatusCode from "../../../core/types/http-status-code";
 
 export async function deleteUserHandler(req: Request<{ id: string }>, res: Response<string>) {
     const user = await usersService.delete(req.params.id);

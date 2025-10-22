@@ -14,11 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBlogHandler = createBlogHandler;
 const blog_service_1 = __importDefault(require("../../services/blog.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function createBlogHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const blogCreated = yield blog_service_1.default.create(req.body);
-        return yield res.status(HttpStatusCode_1.default.CREATED_201).json(blogCreated);
+        return yield res.status(http_status_code_1.default.CREATED_201).json(blogCreated);
     });
 }
 //# sourceMappingURL=create-blog.handler.js.map

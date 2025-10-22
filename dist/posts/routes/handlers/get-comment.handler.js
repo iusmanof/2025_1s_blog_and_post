@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCommentsByPostIdHandler = getCommentsByPostIdHandler;
 const comments_service_1 = require("../../../comments/services/comments.service");
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
-const HttpStatusCode_2 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
+const http_status_code_2 = __importDefault(require("../../../core/types/http-status-code"));
 const post_service_1 = __importDefault(require("../../services/post.service"));
 function getCommentsByPostIdHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -23,14 +23,14 @@ function getCommentsByPostIdHandler(req, res) {
         const query = req.query;
         const post = yield post_service_1.default.findById(postId);
         if (!post) {
-            res.status(HttpStatusCode_2.default.NOT_FOUND_404).send('Post not found');
+            res.status(http_status_code_2.default.NOT_FOUND_404).send('Post not found');
             return;
         }
         const result = yield comments_service_1.commentsService.getCommentByPostId(postId, query);
         if (!result) {
-            res.status(HttpStatusCode_2.default.NOT_FOUND_404).send("Not found");
+            res.status(http_status_code_2.default.NOT_FOUND_404).send("Not found");
         }
-        res.status(HttpStatusCode_1.default.OK_200).json(result.data);
+        res.status(http_status_code_1.default.OK_200).json(result.data);
     });
 }
 //# sourceMappingURL=get-comment.handler.js.map

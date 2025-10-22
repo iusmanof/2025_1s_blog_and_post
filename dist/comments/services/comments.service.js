@@ -18,14 +18,14 @@ exports.commentsService = {
             const commentsInfo = yield comments_repository_1.commentsRepository.create(userId, postId, content);
             if (!commentsInfo) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Failed to create a comment',
                     data: null,
                     extensions: []
                 };
             }
             return {
-                status: result_object_1.ResultStatus.SUCCESS,
+                status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: commentsInfo
             };
@@ -36,14 +36,14 @@ exports.commentsService = {
             const comments = yield comments_repository_1.commentsRepository.getCommentsByPostId(postId, query);
             if (!comments) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Comments not found',
                     data: null,
                     extensions: []
                 };
             }
             return {
-                status: result_object_1.ResultStatus.SUCCESS,
+                status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: comments
             };
@@ -54,14 +54,14 @@ exports.commentsService = {
             const comment = yield comments_repository_1.commentsRepository.getCommentById(commentId);
             if (!comment) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Failed to get a comment',
                     data: null,
                     extensions: []
                 };
             }
             return {
-                status: result_object_1.ResultStatus.SUCCESS,
+                status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: comment
             };
@@ -72,14 +72,14 @@ exports.commentsService = {
             const result = yield comments_repository_1.commentsRepository.deleteById(commentId);
             if (!result) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Failed to delete a comment',
                     data: null,
                     extensions: []
                 };
             }
             return {
-                status: result_object_1.ResultStatus.SUCCESS,
+                status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: result
             };
@@ -90,14 +90,14 @@ exports.commentsService = {
             const result = yield comments_repository_1.commentsRepository.updateById(commentId, content);
             if (!result) {
                 return {
-                    status: result_object_1.ResultStatus.ERROR,
+                    status: result_object_1.resultStatus.ERROR,
                     errorMessages: 'Failed to update a comment',
                     data: null,
                     extensions: []
                 };
             }
             return {
-                status: result_object_1.ResultStatus.SUCCESS,
+                status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: result
             };

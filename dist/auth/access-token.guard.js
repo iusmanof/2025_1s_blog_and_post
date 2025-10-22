@@ -13,32 +13,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.accessTokenGuard = void 0;
-const HttpStatusCode_1 = __importDefault(require("../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../core/types/http-status-code"));
 const jwt_adapter_1 = require("./adapters/jwt.adapter");
 const accessTokenGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.header('Authorization');
     if (!authHeader) {
-        res.status(HttpStatusCode_1.default.UNAUTHORIZED_401).send('Unauthorized');
+        res.status(http_status_code_1.default.UNAUTHORIZED_401).send('Unauthorized');
         return;
     }
     const [type, token] = authHeader.split(' ');
     if (type !== "Bearer") {
-        res.status(HttpStatusCode_1.default.UNAUTHORIZED_401).send('Unauthorized');
+        res.status(http_status_code_1.default.UNAUTHORIZED_401).send('Unauthorized');
         return;
     }
-    const as = yield jwt_adapter_1.jwtAdapter.decodeToken(token);
-    console.log(as);
     try {
         const payload = yield jwt_adapter_1.jwtAdapter.verifyToken(token);
         if (!payload || typeof payload === 'string' || !('id' in payload)) {
-            res.status(HttpStatusCode_1.default.UNAUTHORIZED_401).send("Unauthorized");
+            res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
             return;
         }
         req.user = { id: payload.id };
         next();
     }
     catch (e) {
-        res.status(HttpStatusCode_1.default.UNAUTHORIZED_401).send("Token expired");
+        res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Token expired");
         return;
     }
 });

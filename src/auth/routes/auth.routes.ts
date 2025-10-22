@@ -3,9 +3,9 @@ import {passwordValidation} from "../../core/milldlewares/validation/password.va
 import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
 import {loginOrEmailValidation} from "../../core/milldlewares/validation/login-or-email.validation";
 import {LoginOrEmailDto} from "../types/login-or-email.dto";
-import httpStatusCode from "../../core/types/HttpStatusCode";
+import httpStatusCode from "../../core/types/http-status-code";
 import {authService} from "../services/auth.service";
-import {ResultStatus} from "../../core/types/result-object";
+import {resultStatus} from "../../core/types/result-object";
 import {accessTokenGuard} from "../access-token.guard";
 import {usersQueryRepository} from "../../users/repositories/users.query.repository";
 
@@ -20,7 +20,7 @@ authRouter.post("/login",
 
         const result = await authService.login(loginOrEmail, password);
 
-        if (result.status === ResultStatus.ERROR || result.data === null) {
+        if (result.status === resultStatus.ERROR || result.data === null) {
             res.status(httpStatusCode.UNAUTHORIZED_401).json(result);
             return;
         }

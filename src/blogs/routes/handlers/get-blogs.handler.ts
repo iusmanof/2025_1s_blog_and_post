@@ -1,5 +1,5 @@
 import BlogService from "../../services/blog.service";
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
+import HTTP_STATUS from "../../../core/types/http-status-code";
 import {RequestWithQuery} from "../../../core/types/RequestTypes";
 import {BlogQuery} from "../../../core/types/BlogModel";
 import {Response} from "express";

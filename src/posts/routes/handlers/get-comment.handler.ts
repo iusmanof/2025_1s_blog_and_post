@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
 import {commentsService} from "../../../comments/services/comments.service";
-import HttpStatusCode from "../../../core/types/HttpStatusCode";
+import HttpStatusCode from "../../../core/types/http-status-code";
 import {CommentsQuery} from "../../../comments/types/comments-query";
-import httpStatusCode from "../../../core/types/HttpStatusCode";
+import httpStatusCode from "../../../core/types/http-status-code";
 import postService from "../../services/post.service";
 
 export async function getCommentsByPostIdHandler(req: Request<{postId: string},{},{},  CommentsQuery  >, res: Response) {

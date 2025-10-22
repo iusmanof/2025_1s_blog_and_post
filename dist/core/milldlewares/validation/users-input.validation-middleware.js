@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersInputValidationMiddleware = void 0;
 const express_validator_1 = require("express-validator");
-const HttpStatusCode_1 = __importDefault(require("../../types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../types/http-status-code"));
 const usersInputValidationMiddleware = (req, res, next) => {
     const errors = (0, express_validator_1.validationResult)(req);
     console.log(errors);
@@ -16,7 +16,7 @@ const usersInputValidationMiddleware = (req, res, next) => {
                 field: "path" in err ? err.path : err.type,
             };
         });
-        res.status(HttpStatusCode_1.default.BAD_REQUEST_400).send({ errorsMessages: errorsArray });
+        res.status(http_status_code_1.default.BAD_REQUEST_400).send({ errorsMessages: errorsArray });
         return;
     }
     next();

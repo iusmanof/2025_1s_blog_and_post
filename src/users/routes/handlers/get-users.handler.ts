@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import {UserResponseCreateDto} from "../../types/user-response-create-dto";
 import {sortQueryFieldsUtil} from "../../../core/utils/sort-query-default.util";
 import {usersQueryRepository} from "../../repositories/users.query.repository";
-import httpStatusCode from "../../../core/types/HttpStatusCode";
+import httpStatusCode from "../../../core/types/http-status-code";
 import {IPagination, PaginationAndSortingUser} from "../../../core/types/pagination-and-sorting";
 
 

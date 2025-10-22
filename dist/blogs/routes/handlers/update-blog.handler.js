@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateBlogHandler = updateBlogHandler;
 const blog_service_1 = __importDefault(require("../../services/blog.service"));
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 function updateBlogHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const blogIsUpdated = yield blog_service_1.default.update(req.params.id, req.body);
@@ -22,10 +22,10 @@ function updateBlogHandler(req, res) {
         if (!blogIsUpdated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
             return yield res
-                .status(HttpStatusCode_1.default.NOT_FOUND_404)
+                .status(http_status_code_1.default.NOT_FOUND_404)
                 .json({ errorsMessages: apiErrorMsg });
         }
-        return yield res.status(HttpStatusCode_1.default.NO_CONTENT_204).send();
+        return yield res.status(http_status_code_1.default.NO_CONTENT_204).send();
     });
 }
 //# sourceMappingURL=update-blog.handler.js.map

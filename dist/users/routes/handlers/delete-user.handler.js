@@ -13,16 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserHandler = deleteUserHandler;
-const HttpStatusCode_1 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
 const users_service_1 = require("../../services/users.service");
-const HttpStatusCode_2 = __importDefault(require("../../../core/types/HttpStatusCode"));
+const http_status_code_2 = __importDefault(require("../../../core/types/http-status-code"));
 function deleteUserHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield users_service_1.usersService.delete(req.params.id);
         if (!user) {
-            return res.status(HttpStatusCode_2.default.NOT_FOUND_404).send("Not Found");
+            return res.status(http_status_code_2.default.NOT_FOUND_404).send("Not Found");
         }
-        return res.status(HttpStatusCode_1.default.NO_CONTENT_204).send("Deleted");
+        return res.status(http_status_code_1.default.NO_CONTENT_204).send("Deleted");
     });
 }
 //# sourceMappingURL=delete-user.handler.js.map

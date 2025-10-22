@@ -1,4 +1,3 @@
-import HTTP_STATUS from "../../../core/types/HttpStatusCode";
 import {Request, Response} from "express";
 import {RequestWithParamsAndQuery} from "../../../core/types/RequestTypes";
 import {BlogQuery} from "../../../core/types/BlogModel";
@@ -6,12 +5,10 @@ import BlogService from "../../services/blog.service";
 import postService from "../../../posts/services/post.service";
 import {PostModel} from "../../../core/types/PostModel";
 import {validationResult} from "express-validator";
-import httpStatusCode from "../../../core/types/HttpStatusCode";
+import httpStatusCode from "../../../core/types/http-status-code";
 
 
-// @ts-ignore
 const BlogHandler = {
-
     GET_BLOG_ID_POSTS: async (
         req: RequestWithParamsAndQuery<{ blogId: string }, BlogQuery>,
         res: Response
