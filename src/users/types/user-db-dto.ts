@@ -1,6 +1,12 @@
 export interface UserDbDto {
-    login: string;
+    login: string
     email: string;
-    passwordhash: string;
-    createdAt: Date;
+    password: string;
+    createdAt: Date,
+    // refactor
+    emailConfirmation?: {
+        confirmationCode: string,
+        expirationDate: Date,
+        isConfirmed: false
+    }
 }

@@ -24,7 +24,7 @@ export const accessTokenGuard = async (req: Request, res: Response, next: NextFu
             return
         }
 
-        (req as any).user = {id: payload.id};
+        req.user = {id: payload.id};
         next();
     } catch (e) {
         res.status(httpStatusCode.UNAUTHORIZED_401).send("Token expired");

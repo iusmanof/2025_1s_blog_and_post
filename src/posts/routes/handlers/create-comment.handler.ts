@@ -17,11 +17,10 @@ export async function createCommentHandler(req: Request<{ postId: string }, {}, 
 
     const result = await commentsService.create(userId, postId, content);
 
-    if (result.status === resultStatus.SUCCESS && result.data) {
-        res.status(httpStatusCode.CREATED_201).json(result.data);
-        return
-    } else {
+    if (result.status == resultStatus.ERROR) {
         res.status(httpStatusCode.BAD_REQUEST_400).json(result);
         return
     }
+
+    res.status(httpStatusCode.CREATED_201).json(result.data);
 }

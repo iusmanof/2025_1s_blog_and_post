@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
+const date_fns_1 = require("date-fns");
 exports.usersRepository = {
     findMany(queryDto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40,9 +41,19 @@ exports.usersRepository = {
     },
     findByLoginOrEmail(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().findOne({
+            return yield (0, mongo_db_1.getUserCollection)().findOne({
                 $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
             });
+        });
+    },
+    findByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield (0, mongo_db_1.getUserCollection)().findOne({ email: email });
+        });
+    },
+    findByLogin(login) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield (0, mongo_db_1.getUserCollection)().findOne({ login: login });
         });
     },
     create(user) {
@@ -61,6 +72,26 @@ exports.usersRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, mongo_db_1.getUserCollection)().deleteMany({});
         });
-    }
+    },
+    findByConfirmationCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (0, mongo_db_1.getUserCollection)().findOne({ "emailConfirmation.confirmationCode": code });
+        });
+    },
+    findBYEmailAndRefreshCode(email, code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield (0, mongo_db_1.getUserCollection)().updateOne({ email }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expirationDate": (0, date_fns_1.add)(new Date(), { hours: 1, minutes: 30 }) } });
+        });
+    },
+    findExpiredCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (0, mongo_db_1.getUserCollection)().findOne({ "emailConfirmation.confirmationCode": code, "emailConfirmation.expirationDate": { $gt: new Date() } });
+        });
+    },
+    confirmCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield (0, mongo_db_1.getUserCollection)().updateOne({ "emailConfirmation.confirmationCode": code }, { $set: { "emailConfirmation.isConfirmed": true } });
+        });
+    },
 };
 //# sourceMappingURL=users.repository.js.map

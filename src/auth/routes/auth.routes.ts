@@ -8,6 +8,11 @@ import {authService} from "../services/auth.service";
 import {resultStatus} from "../../core/types/result-object";
 import {accessTokenGuard} from "../access-token.guard";
 import {usersQueryRepository} from "../../users/repositories/users.query.repository";
+import {inputRegistrationValidationMiddleware} from "../middlewares/input-registration-validation.middleware";
+import {
+    loginRegistrationValidationMiddleware,
+} from "../middlewares/login-registration.validation.middleware";
+import {emailRegistrationValidationMiddleware} from "../middlewares/email-registration-validation.middleware";
 
 export const authRouter = Router()
 
@@ -43,4 +48,52 @@ authRouter.get("/me", accessTokenGuard, async (req: Request, res: Response) => {
 
     res.status(httpStatusCode.OK_200).send(me);
 });
+
+authRouter.post("/registration-confirmation", async(req: Request<{},{},{code: string}>, res: Response) => {
+    const code = req.body.code;
+
+    const result = await authService.confirmUser(code);
+
+
+    if (result.status === resultStatus.BAD_REQUEST || result.status === resultStatus.CODE_EXPIRED) {
+        res.status(httpStatusCode.BAD_REQUEST_400).json({ errorsMessages: result.extensions })
+        return
+    }
+
+
+    res.sendStatus(httpStatusCode.NO_CONTENT_204);
+})
+
+authRouter.post("/registration",
+    emailRegistrationValidationMiddleware,
+    loginRegistrationValidationMiddleware,
+    passwordValidation,
+    inputRegistrationValidationMiddleware,
+    async(req: Request, res: Response) => {
+    const {login, email, password} = req.body
+
+
+    const result =  await authService.registerUser(login, email, password)
+    if (result.status === resultStatus.EXISTS) {
+        res.status(httpStatusCode.BAD_REQUEST_400).json( { errorsMessages: result.extensions })
+        return
+    }
+
+    res.sendStatus(httpStatusCode.NO_CONTENT_204)
+})
+
+authRouter.post("/registration-email-resending",
+    async(req: Request, res: Response) => {
+    const {email} = req.body
+
+    const result  = await authService.resendCode(email)
+    if (result.status === resultStatus.BAD_REQUEST || result.status ===  resultStatus.NOT_FOUND) {
+        res.status(httpStatusCode.BAD_REQUEST_400).json( { errorsMessages: result.extensions })
+        return
+    }
+    res.status(httpStatusCode.NO_CONTENT_204).send('resend')
+})
+
+
+
 

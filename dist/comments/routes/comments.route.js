@@ -23,23 +23,22 @@ const input_validation_middleware_1 = require("../../core/milldlewares/validatio
 exports.commentsRouter = (0, express_1.Router)();
 exports.commentsRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = req.params.id;
-    const result = yield comments_service_1.commentsService.getCommentById(commentId);
-    if (result.status === result_object_1.resultStatus.ERROR) {
+    const result = yield comments_service_1.commentsService.getByCommentId(commentId);
+    if (result.status === result_object_1.resultStatus.NOT_FOUND) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Not Found");
         return;
     }
     res.status(http_status_code_1.default.OK_200).send(result.data);
 }));
 exports.commentsRouter.delete("/:id", access_token_guard_1.accessTokenGuard, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const commentId = req.params.id;
-    const userId = req.user.id; // refactor
-    const comment = yield comments_service_1.commentsService.getCommentById(commentId);
-    if (!comment.data) { // refactor in service
+    const userId = req.user.id;
+    const comment = yield comments_service_1.commentsService.getCommentById(commentId, userId);
+    if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
         return;
     }
-    if (((_a = comment.data) === null || _a === void 0 ? void 0 : _a.commentatorInfo.userId) !== userId) { // refactor in service
+    if (comment.status == result_object_1.resultStatus.ERROR) {
         res.status(http_status_code_1.default.FORBIDDEN_403).send("If try delete the comment that is not your own");
         return;
     }
@@ -54,16 +53,15 @@ exports.commentsRouter.delete("/:id", access_token_guard_1.accessTokenGuard, (re
     }
 }));
 exports.commentsRouter.put("/:id", access_token_guard_1.accessTokenGuard, [comments_validation_middleware_1.commentValidationa], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const commentId = req.params.id;
     const content = req.body.content;
     const userId = req.user.id;
-    const comment = yield comments_service_1.commentsService.getCommentById(commentId);
-    if (!comment.data) {
+    const comment = yield comments_service_1.commentsService.getCommentById(commentId, userId);
+    if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
         return;
     }
-    if (((_a = comment.data) === null || _a === void 0 ? void 0 : _a.commentatorInfo.userId) !== userId) {
+    if (comment.status == result_object_1.resultStatus.ERROR) {
         res.status(http_status_code_1.default.FORBIDDEN_403).send("If try delete the comment that is not your own");
         return;
     }

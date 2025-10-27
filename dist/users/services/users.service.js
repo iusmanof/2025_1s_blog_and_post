@@ -25,7 +25,7 @@ exports.usersService = {
             const newUser = {
                 login,
                 email,
-                passwordhash,
+                password: passwordhash,
                 createdAt: new Date(),
             };
             return yield users_repository_1.usersRepository.create(newUser);

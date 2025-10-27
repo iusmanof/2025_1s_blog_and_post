@@ -29,14 +29,11 @@ function createCommentHandler(req, res) {
             return;
         }
         const result = yield comments_service_1.commentsService.create(userId, postId, content);
-        if (result.status === result_object_1.resultStatus.SUCCESS && result.data) {
-            res.status(http_status_code_1.default.CREATED_201).json(result.data);
-            return;
-        }
-        else {
+        if (result.status == result_object_1.resultStatus.ERROR) {
             res.status(http_status_code_1.default.BAD_REQUEST_400).json(result);
             return;
         }
+        res.status(http_status_code_1.default.CREATED_201).json(result.data);
     });
 }
 //# sourceMappingURL=create-comment.handler.js.map

@@ -37,12 +37,38 @@ export const commentsService = {
             data: comments
         }
     },
-    async getCommentById(commentId: string): Promise<ResultObject<commentsDataResultObject | null>> {
+    async getByCommentId(commentId: string): Promise<ResultObject<commentsDataResultObject | null>> {
         const comment = await commentsRepository.getCommentById(commentId)
         if (!comment) {
             return {
-                status: resultStatus.ERROR,
+                status: resultStatus.NOT_FOUND,
                 errorMessages: 'Failed to get a comment',
+                data: null,
+                extensions: []
+            }
+        }
+
+        return {
+            status: resultStatus.SUCCESS,
+            extensions: [],
+            data: comment
+        }
+    },
+    async getCommentById(commentId: string, userId?: string): Promise<ResultObject<commentsDataResultObject | null>> {
+        const comment = await commentsRepository.getCommentById(commentId)
+        if (!comment) {
+            return {
+                status: resultStatus.NOT_FOUND,
+                errorMessages: 'Failed to get a comment',
+                data: null,
+                extensions: []
+            }
+        }
+
+        if (comment.commentatorInfo.userId !== userId) {
+            return {
+                status: resultStatus.ERROR,
+                errorMessages: 'UserId not found',
                 data: null,
                 extensions: []
             }

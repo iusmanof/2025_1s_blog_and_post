@@ -2,7 +2,7 @@ import {describe} from "node:test";
 import express from "express";
 import {setupApp} from "../src/setup-app";
 import {generateAdminAuthToken} from "../src/core/utils/generate-admin-auth-token";
-import {getUserCollection, runDB, stopDb} from "../src/core/db/mongo.db";
+import {runDB, stopDb} from "../src/core/db/mongo.db";
 import {SETTINGS} from "../src/core/settings/settings";
 import {clearDb} from "./utils/clearDb";
 import request from "supertest";
@@ -22,7 +22,6 @@ describe("/auth", () => {
     })
 
     it('auth/login', async () => {
-        console.log('Users before test:', await getUserCollection().find({}).toArray());
         const newUser = {
             login: "efwef",
             password: "dfwef32",

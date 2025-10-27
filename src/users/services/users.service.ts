@@ -18,7 +18,7 @@ export const usersService = {
         const newUser: UserDbDto = {
             login,
             email,
-            passwordhash,
+            password: passwordhash,
             createdAt: new Date(),
         }
 

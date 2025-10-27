@@ -49,13 +49,39 @@ exports.commentsService = {
             };
         });
     },
-    getCommentById(commentId) {
+    getByCommentId(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
             const comment = yield comments_repository_1.commentsRepository.getCommentById(commentId);
             if (!comment) {
                 return {
-                    status: result_object_1.resultStatus.ERROR,
+                    status: result_object_1.resultStatus.NOT_FOUND,
                     errorMessages: 'Failed to get a comment',
+                    data: null,
+                    extensions: []
+                };
+            }
+            return {
+                status: result_object_1.resultStatus.SUCCESS,
+                extensions: [],
+                data: comment
+            };
+        });
+    },
+    getCommentById(commentId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const comment = yield comments_repository_1.commentsRepository.getCommentById(commentId);
+            if (!comment) {
+                return {
+                    status: result_object_1.resultStatus.NOT_FOUND,
+                    errorMessages: 'Failed to get a comment',
+                    data: null,
+                    extensions: []
+                };
+            }
+            if (comment.commentatorInfo.userId !== userId) {
+                return {
+                    status: result_object_1.resultStatus.ERROR,
+                    errorMessages: 'UserId not found',
                     data: null,
                     extensions: []
                 };

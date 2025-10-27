@@ -10,14 +10,13 @@ export const commentsRouter = Router();
 
 
 commentsRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
-    const commentId = req.params.id
-    const result = await commentsService.getCommentById(commentId)
+    const commentId = req.params.id;
+    const result = await commentsService.getByCommentId(commentId)
 
-    if (result.status === resultStatus.ERROR) {
+    if (result.status === resultStatus.NOT_FOUND) {
         res.status(httpStatusCode.NOT_FOUND_404).send("Not Found");
         return
     }
-
     res.status(httpStatusCode.OK_200).send(result.data)
 });
 
@@ -25,15 +24,15 @@ commentsRouter.delete("/:id",
     accessTokenGuard,
     async (req: Request<{ id: string }>, res: Response) => {
         const commentId = req.params.id
-        const userId = (req as any).user.id; // refactor
+        const userId = req.user.id;
 
-        const comment = await commentsService.getCommentById(commentId)
-        if (!comment.data) {  // refactor in service
+        const comment = await commentsService.getCommentById(commentId, userId)
+        if (comment.status == resultStatus.NOT_FOUND) {
             res.status(httpStatusCode.NOT_FOUND_404).send("Comment not found");
             return
         }
 
-        if (comment.data?.commentatorInfo.userId !== userId) { // refactor in service
+        if (comment.status == resultStatus.ERROR) {
             res.status(httpStatusCode.FORBIDDEN_403).send("If try delete the comment that is not your own");
             return
         }
@@ -60,15 +59,15 @@ commentsRouter.put("/:id",
     async (req: Request<{ id: string }, {}, { content: string }>, res: Response) => {
         const commentId = req.params.id;
         const content = req.body.content;
-        const userId = (req as any).user.id;
+        const userId = req.user.id;
 
-        const comment = await commentsService.getCommentById(commentId)
-        if (!comment.data) {
+        const comment = await commentsService.getCommentById(commentId, userId)
+        if (comment.status == resultStatus.NOT_FOUND) {
             res.status(httpStatusCode.NOT_FOUND_404).send("Comment not found");
             return
         }
 
-        if (comment.data?.commentatorInfo.userId !== userId) {
+        if (comment.status == resultStatus.ERROR) {
             res.status(httpStatusCode.FORBIDDEN_403).send("If try delete the comment that is not your own");
             return
         }
