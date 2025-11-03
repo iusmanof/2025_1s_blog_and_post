@@ -18,6 +18,8 @@ const crypto_1 = require("crypto");
 const email_adapter_1 = require("../adapters/email.adapter");
 const date_fns_1 = require("date-fns");
 const email_example_template_1 = require("../../core/types/email-example.template");
+const auth_repository_1 = require("../repository/auth.repository");
+const users_query_repository_1 = require("../../users/repositories/users.query.repository");
 exports.authService = {
     login(loginOrEmail, password) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -39,10 +41,13 @@ exports.authService = {
                     data: null
                 };
             }
-            const accessToken = yield jwt_adapter_1.jwtAdapter.signToken(user._id.toString());
+            const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(user._id.toString());
+            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(user._id.toString());
+            // console.log(accessToken)
+            console.log(refreshToken);
             return {
                 status: result_object_1.resultStatus.SUCCESS,
-                data: { accessToken },
+                data: { accessToken, refreshToken },
                 extensions: [],
             };
         });
@@ -146,6 +151,80 @@ exports.authService = {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: null
+            };
+        });
+    },
+    updateTokens(rf) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isBlackListed = yield auth_repository_1.authRepository.findRefreshTokenInBlackList(rf);
+            if (isBlackListed) {
+                return {
+                    status: result_object_1.resultStatus.UNAUTORIZED,
+                    data: null,
+                    errorMessages: 'Refresh Token',
+                    extensions: [{ message: "refresh token in black list", field: "refresh token" }],
+                };
+            }
+            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(rf);
+            if (!decoded || typeof decoded !== "object" || !("id" in decoded)) {
+                return {
+                    status: result_object_1.resultStatus.BAD_REQUEST,
+                    data: null,
+                    extensions: []
+                };
+            }
+            const a = {
+                // refactoring?
+                id: decoded.id,
+                iat: decoded.iat,
+            };
+            const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(a.id.toString());
+            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(a.id.toString());
+            yield auth_repository_1.authRepository.addTokenInBlackList(rf);
+            return {
+                status: result_object_1.resultStatus.SUCCESS,
+                data: { accessToken, refreshToken },
+                extensions: [],
+            };
+        });
+    },
+    expireToken(rftoken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isBlackListed = yield auth_repository_1.authRepository.findRefreshTokenInBlackList(rftoken);
+                if (isBlackListed) {
+                    return {
+                        status: result_object_1.resultStatus.UNAUTORIZED,
+                        data: null,
+                        errorMessages: 'Refresh Token',
+                        extensions: [{ message: "refresh token in black list", field: "refresh token" }],
+                    };
+                }
+                yield auth_repository_1.authRepository.addTokenInBlackList(rftoken);
+                return {
+                    status: result_object_1.resultStatus.SUCCESS,
+                    extensions: [],
+                    data: 'token added successfully'
+                };
+            }
+            catch (err) {
+                return {
+                    status: result_object_1.resultStatus.ERROR,
+                    data: null,
+                    extensions: [],
+                };
+            }
+        });
+    },
+    getMe(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield users_query_repository_1.usersQueryRepository.findById(userId);
+            if (!result)
+                return null;
+            return {
+                login: result === null || result === void 0 ? void 0 : result.login,
+                email: result === null || result === void 0 ? void 0 : result.email,
+                userId: result === null || result === void 0 ? void 0 : result.id
             };
         });
     }

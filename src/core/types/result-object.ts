@@ -5,6 +5,7 @@ export enum resultStatus {
     EXISTS = 'exists',
     BAD_REQUEST = 'bag-request',
     CODE_EXPIRED = 'code-expired',
+    UNAUTORIZED = 'unauthorized',
 }
 
 type ExtensionType = {

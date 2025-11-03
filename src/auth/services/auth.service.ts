@@ -7,9 +7,14 @@ import {emailAdapter} from "../adapters/email.adapter";
 import {add} from 'date-fns';
 import {UserDbDto} from "../../users/types/user-db-dto";
 import {emailExampleTemplate} from "../../core/types/email-example.template";
+import {authRepository} from "../repository/auth.repository";
+import {usersQueryRepository} from "../../users/repositories/users.query.repository";
 
 export const authService = {
-    async login(loginOrEmail: string, password: string): Promise<ResultObject<{ accessToken: string } | null>> {
+    async login(loginOrEmail: string, password: string): Promise<ResultObject<{
+        accessToken: string,
+        refreshToken: string
+    } | null>> {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail);
         if (!user) {
             return {
@@ -30,11 +35,14 @@ export const authService = {
             }
         }
 
-        const accessToken = await jwtAdapter.signToken(user._id.toString());
+        const accessToken = await jwtAdapter.signAccessToken(user._id.toString());
+        const refreshToken = await jwtAdapter.signRefreshToken(user._id.toString())
+        // console.log(accessToken)
+        console.log(refreshToken)
 
         return {
             status: resultStatus.SUCCESS,
-            data: {accessToken},
+            data: {accessToken, refreshToken},
             extensions: [],
         }
     },
@@ -46,9 +54,9 @@ export const authService = {
             password: passwordHash,
             createdAt: new Date(),
             emailConfirmation: {
-                    confirmationCode: randomUUID(),
-                    expirationDate: add(new Date(), {hours: 1, minutes: 30}),
-                    isConfirmed: false,
+                confirmationCode: randomUUID(),
+                expirationDate: add(new Date(), {hours: 1, minutes: 30}),
+                isConfirmed: false,
             }
 
         }
@@ -87,16 +95,16 @@ export const authService = {
             return {
                 status: resultStatus.BAD_REQUEST,
                 errorMessages: "Bad request",
-                extensions: [{ message: "Code already confirmed", field: "code"}],
+                extensions: [{message: "Code already confirmed", field: "code"}],
                 data: null
             }
         }
 
-        if ( user.emailConfirmation?.expirationDate! < new Date() ) {
+        if (user.emailConfirmation?.expirationDate! < new Date()) {
             return {
                 status: resultStatus.CODE_EXPIRED,
                 errorMessages: 'Bad request',
-                extensions: [{ message: "Code expired", field: "code" }],
+                extensions: [{message: "Code expired", field: "code"}],
                 data: null
             }
         }
@@ -116,7 +124,7 @@ export const authService = {
             return {
                 status: resultStatus.NOT_FOUND,
                 errorMessages: 'Email not found',
-                extensions: [{ message: 'Email not exists', field: 'email'}],
+                extensions: [{message: 'Email not exists', field: 'email'}],
                 data: null
             }
         }
@@ -129,7 +137,7 @@ export const authService = {
             }
         }
 
-        const codeRefreshed: string =  randomUUID();
+        const codeRefreshed: string = randomUUID();
         await usersRepository.findBYEmailAndRefreshCode(email, codeRefreshed);
 
 
@@ -147,6 +155,85 @@ export const authService = {
             extensions: [],
             data: null
         };
-    }
+    },
+    async updateTokens(rf: string): Promise<ResultObject<{} | null>> {
+        const isBlackListed = await authRepository.findRefreshTokenInBlackList(rf)
 
+        if (isBlackListed) {
+            return {
+                status: resultStatus.UNAUTORIZED,
+                data: null,
+                errorMessages: 'Refresh Token',
+                extensions: [{message: "refresh token in black list", field: "refresh token"}],
+            }
+
+        }
+
+        const decoded = await jwtAdapter.decodeToken(rf);
+
+        if (!decoded || typeof decoded !== "object" || !("id" in decoded)) {
+            return {
+                status: resultStatus.BAD_REQUEST,
+                data: null,
+                extensions: []
+            };
+        }
+
+        const a: { id: string; iat: number } = {
+            // refactoring?
+            id: decoded.id as string,
+            iat: decoded.iat as number,
+        };
+
+        const accessToken = await jwtAdapter.signAccessToken(a.id.toString())
+        const refreshToken = await jwtAdapter.signRefreshToken(a.id.toString())
+        await authRepository.addTokenInBlackList(rf)
+
+        return {
+            status: resultStatus.SUCCESS,
+            data: {accessToken, refreshToken},
+            extensions: [],
+        }
+    },
+    async expireToken(rftoken: string): Promise<ResultObject<string | null>> {
+        try {
+
+            const isBlackListed = await authRepository.findRefreshTokenInBlackList(rftoken)
+
+            if (isBlackListed) {
+                return {
+                    status: resultStatus.UNAUTORIZED,
+                    data: null,
+                    errorMessages: 'Refresh Token',
+                    extensions: [{message: "refresh token in black list", field: "refresh token"}],
+                }
+
+            }
+
+            await authRepository.addTokenInBlackList(rftoken)
+
+            return {
+                status: resultStatus.SUCCESS,
+                extensions: [],
+                data: 'token added successfully'
+            }
+        } catch (err) {
+            return {
+                status: resultStatus.ERROR,
+                data: null,
+                extensions: [],
+            };
+        }
+    },
+    async getMe(userId: string): Promise<{login: string, email: string, userId: string} | null>{
+        const result = await usersQueryRepository.findById(userId);
+
+        if(!result) return null;
+
+        return {
+            login: result?.login,
+            email: result?.email,
+            userId: result?.id
+        }
+    }
 }

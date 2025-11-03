@@ -3,6 +3,7 @@ import {blogsRepository} from "../../blogs/repositories/blogs.repository";
 import {postsRepository} from "../../posts/repositories/posts.repository";
 import {usersRepository} from "../../users/repositories/users.repository";
 import {commentsRepository} from "../../comments/repositories/comments.repository";
+import {authRepository} from "../../auth/repository/auth.repository";
 
 export const testingRouter = Router();
 
@@ -11,6 +12,7 @@ testingRouter.delete('/', async (req: Request, res: Response) => {
     await postsRepository.deleteAllPosts();
     await usersRepository.deleteAllUsers();
     await commentsRepository.deleteAllComments();
+    await authRepository.deleteRefreshTokenBlackList();
     res.status(204).send("All data is deleted");
 });
 

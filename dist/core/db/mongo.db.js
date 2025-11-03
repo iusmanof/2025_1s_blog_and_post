@@ -14,6 +14,7 @@ exports.getBlogCollection = getBlogCollection;
 exports.getPostCollection = getPostCollection;
 exports.getUserCollection = getUserCollection;
 exports.getCommentCollection = getCommentCollection;
+exports.getRefreshTokenCollection = getRefreshTokenCollection;
 exports.stopDb = stopDb;
 const mongodb_1 = require("mongodb");
 const settings_1 = require("../settings/settings");
@@ -22,6 +23,7 @@ let blogCollection;
 let postCollection;
 let userCollection;
 let commentCollection;
+let listRefreshTokenCollection;
 const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
     client = new mongodb_1.MongoClient(url);
     try {
@@ -30,8 +32,13 @@ const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
         blogCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_BLOGS);
         postCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_POSTS);
         userCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_USERS);
+        listRefreshTokenCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_LIST_REFRESH_TOKEN);
         commentCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_COMMENTS);
         console.log("Connect successfully to server");
+        // TTL refresh token black list
+        yield listRefreshTokenCollection.dropIndex("createdAt_1");
+        // 200 ?
+        yield listRefreshTokenCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 200 });
     }
     catch (e) {
         console.error("Don't connect to server");
@@ -64,6 +71,12 @@ function getCommentCollection() {
         throw new Error("Collection user not initialized");
     }
     return commentCollection;
+}
+function getRefreshTokenCollection() {
+    if (!listRefreshTokenCollection) {
+        throw new Error("Collection user not initialized");
+    }
+    return listRefreshTokenCollection;
 }
 function stopDb() {
     return __awaiter(this, void 0, void 0, function* () {

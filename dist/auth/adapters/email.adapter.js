@@ -27,7 +27,7 @@ exports.emailAdapter = {
                 },
             });
             (() => __awaiter(this, void 0, void 0, function* () {
-                const info = yield transporter.sendMail({
+                yield transporter.sendMail({
                     from: `"Sprint 2 " <igralex1@gmail.com>`,
                     to: email,
                     subject: "Hello user",

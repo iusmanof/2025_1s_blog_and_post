@@ -21,10 +21,10 @@ const http_status_code_1 = __importDefault(require("../../core/types/http-status
 const auth_service_1 = require("../services/auth.service");
 const result_object_1 = require("../../core/types/result-object");
 const access_token_guard_1 = require("../access-token.guard");
-const users_query_repository_1 = require("../../users/repositories/users.query.repository");
 const input_registration_validation_middleware_1 = require("../middlewares/input-registration-validation.middleware");
 const login_registration_validation_middleware_1 = require("../middlewares/login-registration.validation.middleware");
 const email_registration_validation_middleware_1 = require("../middlewares/email-registration-validation.middleware");
+const refresh_token_middleware_1 = require("../middlewares/refresh-token.middleware");
 exports.authRouter = (0, express_1.Router)();
 exports.authRouter.post("/login", password_validation_middleware_1.passwordValidation, login_or_email_validation_1.loginOrEmailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
@@ -33,6 +33,7 @@ exports.authRouter.post("/login", password_validation_middleware_1.passwordValid
         res.status(http_status_code_1.default.UNAUTHORIZED_401).json(result);
         return;
     }
+    res.cookie('refreshToken', result.data.refreshToken, { httpOnly: true, secure: true });
     res.status(http_status_code_1.default.OK_200).json({ accessToken: result.data.accessToken });
 }));
 exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,7 +43,7 @@ exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) 
         res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
         return;
     }
-    const me = yield users_query_repository_1.usersQueryRepository.findById(userId);
+    const me = yield auth_service_1.authService.getMe(userId);
     if (!me) {
         res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
         return;
@@ -75,5 +76,31 @@ exports.authRouter.post("/registration-email-resending", (req, res) => __awaiter
         return;
     }
     res.status(http_status_code_1.default.NO_CONTENT_204).send('resend');
+}));
+exports.authRouter.post('/refresh-token', refresh_token_middleware_1.isRefreshTokenExpire, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const rf = req.cookies.refreshToken;
+    if (!rf) {
+        res.status(http_status_code_1.default.UNAUTHORIZED_401).json({ message: "Refresh token missing" });
+        return;
+    }
+    const result = yield auth_service_1.authService.updateTokens(rf);
+    if (result.status === result_object_1.resultStatus.UNAUTORIZED) {
+        res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
+        return;
+    }
+    const { accessToken, refreshToken } = result.data;
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    res.status(http_status_code_1.default.OK_200).json({ accessToken: accessToken });
+}));
+exports.authRouter.post('/logout', refresh_token_middleware_1.checkRefreshTokenMiddleware, refresh_token_middleware_1.isRefreshTokenExpire, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.cookies.refreshToken;
+    const result = yield auth_service_1.authService.expireToken(token);
+    if (result.status === result_object_1.resultStatus.UNAUTORIZED) {
+        res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
+        return;
+    }
+    if (result.status === result_object_1.resultStatus.SUCCESS) {
+        res.sendStatus(http_status_code_1.default.NO_CONTENT_204);
+    }
 }));
 //# sourceMappingURL=auth.routes.js.map

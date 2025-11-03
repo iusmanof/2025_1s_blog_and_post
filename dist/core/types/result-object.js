@@ -9,5 +9,6 @@ var resultStatus;
     resultStatus["EXISTS"] = "exists";
     resultStatus["BAD_REQUEST"] = "bag-request";
     resultStatus["CODE_EXPIRED"] = "code-expired";
+    resultStatus["UNAUTORIZED"] = "unauthorized";
 })(resultStatus || (exports.resultStatus = resultStatus = {}));
 //# sourceMappingURL=result-object.js.map

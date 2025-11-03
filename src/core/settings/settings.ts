@@ -10,7 +10,10 @@ export const SETTINGS = {
     DB_COLLECTION_BLOGS: process.env.DB_COLLECTION_BLOGS as string || 'blogs',
     DB_COLLECTION_POSTS: process.env.DB_COLLECTION_POSTS as string || 'posts',
     DB_COLLECTION_USERS: process.env.DB_COLLECTION_USERS as string || 'users',
+    DB_COLLECTION_LIST_REFRESH_TOKEN: process.env.DB_COLLECTION_LIST_REFRESH_TOKEN || 'list_refresh_token',
     DB_COLLECTION_COMMENTS: process.env.DB_COLLECTION_COMMENTS as string || 'comments',
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string || 'ACCESS_TOKEN_SECRET',
-    ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 40,
+    ACCESS_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 10,
+    REFRESH_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string || 'REFRESH_TOKEN_SECRET',
+    REFRESH_TOKEN_SECRET_TIME: Number(process.env.ACCESS_TOKEN_SECRET_TIME) || 20,
 }

@@ -27,9 +27,15 @@ const accessTokenGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         return;
     }
     try {
-        const payload = yield jwt_adapter_1.jwtAdapter.verifyToken(token);
+        const payload = yield jwt_adapter_1.jwtAdapter.verifyAccessToken(token);
         if (!payload || typeof payload === 'string' || !('id' in payload)) {
             res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
+            return;
+        }
+        const decodedToken = yield jwt_adapter_1.jwtAdapter.decodeToken(token);
+        if (!decodedToken ||
+            (typeof decodedToken !== "string" && decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
+            res.status(http_status_code_1.default.UNAUTHORIZED_401).send("AT expired");
             return;
         }
         req.user = { id: payload.id };

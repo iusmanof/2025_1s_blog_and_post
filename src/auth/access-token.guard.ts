@@ -18,16 +18,23 @@ export const accessTokenGuard = async (req: Request, res: Response, next: NextFu
     }
 
     try {
-        const payload = await jwtAdapter.verifyToken(token);
+        const payload = await jwtAdapter.verifyAccessToken(token);
         if (!payload || typeof payload === 'string' || !('id' in payload)) {
             res.status(httpStatusCode.UNAUTHORIZED_401).send("Unauthorized");
+            return
+        }
+
+        const decodedToken = await jwtAdapter.decodeToken(token);
+        if (!decodedToken ||
+            (typeof decodedToken !== "string" && decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
+            res.status(httpStatusCode.UNAUTHORIZED_401).send("AT expired");
             return
         }
 
         req.user = {id: payload.id};
         next();
     } catch (e) {
-        res.status(httpStatusCode.UNAUTHORIZED_401).send("Token expired");
+            res.status(httpStatusCode.UNAUTHORIZED_401).send("Token expired");
         return
     }
 }

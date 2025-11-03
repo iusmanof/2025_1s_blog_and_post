@@ -21,8 +21,10 @@ const testing_route_1 = require("./testing/routes/testing.route");
 const users_route_1 = require("./users/routes/users.route");
 const auth_routes_1 = require("./auth/routes/auth.routes");
 const comments_route_1 = require("./comments/routes/comments.route");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const setupApp = (app) => {
     app.use(express_1.default.json());
+    app.use((0, cookie_parser_1.default)());
     app.use(paths_1.BLOGS_PATH, blog_route_1.blogRouter);
     app.use(paths_1.POSTS_PATH, post_route_1.postRouter);
     app.use(paths_1.USERS_PATH, users_route_1.userRouter);

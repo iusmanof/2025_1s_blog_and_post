@@ -46,7 +46,7 @@ exports.jwtAdapter = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const settings_1 = require("../../core/settings/settings");
 exports.jwtAdapter = {
-    signToken(id) {
+    signAccessToken(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.sign({ id }, settings_1.SETTINGS.ACCESS_TOKEN_SECRET, {
                 expiresIn: settings_1.SETTINGS.ACCESS_TOKEN_SECRET_TIME,
@@ -58,9 +58,16 @@ exports.jwtAdapter = {
             return jwt.decode(token);
         });
     },
-    verifyToken(token) {
+    verifyAccessToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.verify(token, settings_1.SETTINGS.ACCESS_TOKEN_SECRET);
+        });
+    },
+    signRefreshToken(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return jwt.sign({ id }, settings_1.SETTINGS.REFRESH_TOKEN_SECRET, {
+                expiresIn: settings_1.SETTINGS.REFRESH_TOKEN_SECRET_TIME,
+            });
         });
     }
 };

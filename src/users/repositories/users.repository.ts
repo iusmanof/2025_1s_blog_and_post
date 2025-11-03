@@ -1,5 +1,5 @@
 import {PaginationAndSorting} from "../../core/types/pagination-and-sorting";
-import { getUserCollection} from "../../core/db/mongo.db";
+import {getUserCollection} from "../../core/db/mongo.db";
 import {UserDbDto} from "../types/user-db-dto";
 import {ObjectId, WithId} from "mongodb";
 import {add} from "date-fns";
