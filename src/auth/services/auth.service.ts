@@ -179,10 +179,9 @@ export const authService = {
             };
         }
 
-        const a: { id: string; iat: number } = {
-            // refactoring?
-            id: decoded.id as string,
-            iat: decoded.iat as number,
+        const a: { id: string; iat: number | undefined } = {
+            id: decoded.id,
+            iat: decoded.iat,
         };
 
         const accessToken = await jwtAdapter.signAccessToken(a.id.toString())
