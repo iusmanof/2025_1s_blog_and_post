@@ -16,6 +16,7 @@ const posts_repository_1 = require("../../posts/repositories/posts.repository");
 const users_repository_1 = require("../../users/repositories/users.repository");
 const comments_repository_1 = require("../../comments/repositories/comments.repository");
 const auth_repository_1 = require("../../auth/repository/auth.repository");
+const security_devices_repository_1 = require("../../auth/repository/security-devices.repository");
 exports.testingRouter = (0, express_1.Router)();
 exports.testingRouter.delete('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield blogs_repository_1.blogsRepository.deleteAllBlogs();
@@ -23,6 +24,7 @@ exports.testingRouter.delete('/', (req, res) => __awaiter(void 0, void 0, void 0
     yield users_repository_1.usersRepository.deleteAllUsers();
     yield comments_repository_1.commentsRepository.deleteAllComments();
     yield auth_repository_1.authRepository.deleteRefreshTokenBlackList();
+    yield security_devices_repository_1.securityDevicesRepository.deleteAllDevices();
     res.status(204).send("All data is deleted");
 }));
 //# sourceMappingURL=testing.route.js.map

@@ -13,19 +13,23 @@ export const checkRefreshTokenMiddleware: RequestHandler = async (req, res, next
     }
 };
 
-export const isRefreshTokenExpire = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     const rftoken = req.cookies.refreshToken
-
-    const decodedToken = await jwtAdapter.decodeToken(rftoken);
-
-    // ?
-    if (
-        !decodedToken ||
-        (typeof decodedToken !== "string" && decodedToken.exp && decodedToken.exp * 1000 <= Date.now())
-    ) {
-        res.status(httpStatusCode.UNAUTHORIZED_401).send({errorsMessages: "Token expired"});
+    if (!rftoken) {
+         res
+            .status(httpStatusCode.UNAUTHORIZED_401)
+            .send({ errorsMessages: "No refresh token provided" });
         return
-    } else {
-        next();
     }
+
+    const verifyToken = await jwtAdapter.verifyRefreshToken(rftoken);
+
+    if (!verifyToken) {
+         res
+            .status(httpStatusCode.UNAUTHORIZED_401)
+            .send({ errorsMessages: "Token is not verified or expired" });
+        return
+    }
+    next()
 };
+

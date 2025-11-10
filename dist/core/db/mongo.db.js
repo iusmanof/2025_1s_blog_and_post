@@ -15,6 +15,7 @@ exports.getPostCollection = getPostCollection;
 exports.getUserCollection = getUserCollection;
 exports.getCommentCollection = getCommentCollection;
 exports.getRefreshTokenCollection = getRefreshTokenCollection;
+exports.getSecurityDeviceCollection = getSecurityDeviceCollection;
 exports.stopDb = stopDb;
 const mongodb_1 = require("mongodb");
 const settings_1 = require("../settings/settings");
@@ -24,6 +25,7 @@ let postCollection;
 let userCollection;
 let commentCollection;
 let listRefreshTokenCollection;
+let securityDevicesCollection;
 const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
     client = new mongodb_1.MongoClient(url);
     try {
@@ -34,11 +36,11 @@ const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
         userCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_USERS);
         listRefreshTokenCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_LIST_REFRESH_TOKEN);
         commentCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_COMMENTS);
+        securityDevicesCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_SECURITY_DEVICES);
         console.log("Connect successfully to server");
         // TTL refresh token black list
-        yield listRefreshTokenCollection.dropIndex("createdAt_1");
-        // 200 ?
-        yield listRefreshTokenCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 200 });
+        // await listRefreshTokenCollection.dropIndex("createdAt_1");
+        // await listRefreshTokenCollection.createIndex({createdAt: 1}, {expireAfterSeconds: 24})
     }
     catch (e) {
         console.error("Don't connect to server");
@@ -68,15 +70,21 @@ function getUserCollection() {
 }
 function getCommentCollection() {
     if (!commentCollection) {
-        throw new Error("Collection user not initialized");
+        throw new Error("Collection comment not initialized");
     }
     return commentCollection;
 }
 function getRefreshTokenCollection() {
     if (!listRefreshTokenCollection) {
-        throw new Error("Collection user not initialized");
+        throw new Error("Collection token not initialized");
     }
     return listRefreshTokenCollection;
+}
+function getSecurityDeviceCollection() {
+    if (!securityDevicesCollection) {
+        throw new Error("Collection security-device not initialized");
+    }
+    return securityDevicesCollection;
 }
 function stopDb() {
     return __awaiter(this, void 0, void 0, function* () {

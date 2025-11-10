@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isRefreshTokenExpire = exports.checkRefreshTokenMiddleware = void 0;
+exports.verifyRefreshToken = exports.checkRefreshTokenMiddleware = void 0;
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
 const jwt_adapter_1 = require("../adapters/jwt.adapter");
 const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -26,18 +26,22 @@ const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0
     }
 });
 exports.checkRefreshTokenMiddleware = checkRefreshTokenMiddleware;
-const isRefreshTokenExpire = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const rftoken = req.cookies.refreshToken;
-    const decodedToken = yield jwt_adapter_1.jwtAdapter.decodeToken(rftoken);
-    // ?
-    if (!decodedToken ||
-        (typeof decodedToken !== "string" && decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
-        res.status(http_status_code_1.default.UNAUTHORIZED_401).send({ errorsMessages: "Token expired" });
+    if (!rftoken) {
+        res
+            .status(http_status_code_1.default.UNAUTHORIZED_401)
+            .send({ errorsMessages: "No refresh token provided" });
         return;
     }
-    else {
-        next();
+    const verifyToken = yield jwt_adapter_1.jwtAdapter.verifyRefreshToken(rftoken);
+    if (!verifyToken) {
+        res
+            .status(http_status_code_1.default.UNAUTHORIZED_401)
+            .send({ errorsMessages: "Token is not verified or expired" });
+        return;
     }
+    next();
 });
-exports.isRefreshTokenExpire = isRefreshTokenExpire;
+exports.verifyRefreshToken = verifyRefreshToken;
 //# sourceMappingURL=refresh-token.middleware.js.map

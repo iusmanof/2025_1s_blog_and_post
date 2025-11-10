@@ -58,17 +58,27 @@ exports.jwtAdapter = {
             return jwt.decode(token);
         });
     },
+    parseJwtPayloadIat(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        });
+    },
     verifyAccessToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.verify(token, settings_1.SETTINGS.ACCESS_TOKEN_SECRET);
         });
     },
-    signRefreshToken(id) {
+    verifyRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return jwt.sign({ id }, settings_1.SETTINGS.REFRESH_TOKEN_SECRET, {
+            return jwt.verify(token, settings_1.SETTINGS.REFRESH_TOKEN_SECRET);
+        });
+    },
+    signRefreshToken(id, ipAddr, userAgent, deviceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return jwt.sign({ id, ipAddr, userAgent, deviceId }, settings_1.SETTINGS.REFRESH_TOKEN_SECRET, {
                 expiresIn: settings_1.SETTINGS.REFRESH_TOKEN_SECRET_TIME,
             });
         });
-    }
+    },
 };
 //# sourceMappingURL=jwt.adapter.js.map

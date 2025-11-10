@@ -18,7 +18,7 @@ const setup_app_1 = require("./setup-app");
 const settings_1 = require("./core/settings/settings");
 const app = (0, express_1.default)();
 const port = process.env.port || 3000;
-(0, setup_app_1.setupApp)(app);
+(0, setup_app_1.SETUP_APP)(app);
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, mongo_db_1.runDB)(settings_1.SETTINGS.MONGODB_URI);
     app.listen(port, () => {

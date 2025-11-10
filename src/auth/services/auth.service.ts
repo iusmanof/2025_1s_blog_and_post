@@ -7,14 +7,18 @@ import {emailAdapter} from "../adapters/email.adapter";
 import {add} from 'date-fns';
 import {UserDbDto} from "../../users/types/user-db-dto";
 import {emailExampleTemplate} from "../../core/types/email-example.template";
-import {authRepository} from "../repository/auth.repository";
 import {usersQueryRepository} from "../../users/repositories/users.query.repository";
+import {securityDevicesService} from "./security-devices.service";
+import {v4 as uuidv4} from "uuid";
+import {securityDevicesQueryRepository} from "../repository/security-devices.query-repository";
+import {securityDevicesRepository} from "../repository/security-devices.repository";
 
 export const authService = {
-    async login(loginOrEmail: string, password: string): Promise<ResultObject<{
+    async login(loginOrEmail: string, password: string, ipAddr: string, userAgent: string): Promise<ResultObject<{
         accessToken: string,
-        refreshToken: string
+        refreshToken: string,
     } | null>> {
+        // If Login OR Email Not FOund
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail);
         if (!user) {
             return {
@@ -25,6 +29,7 @@ export const authService = {
             }
         }
 
+        // CheckPassword
         const passwordCorrect = await bcryptAdapter.checkPassword(password, user.password);
         if (!passwordCorrect) {
             return {
@@ -35,10 +40,24 @@ export const authService = {
             }
         }
 
+        // Create AT
         const accessToken = await jwtAdapter.signAccessToken(user._id.toString());
-        const refreshToken = await jwtAdapter.signRefreshToken(user._id.toString())
-        // console.log(accessToken)
-        console.log(refreshToken)
+
+        // Create RF
+        const deviceId = uuidv4()
+        const refreshToken = await jwtAdapter.signRefreshToken(user._id.toString(), ipAddr, userAgent, deviceId)
+
+        const {id: payloadId, iat: payloadIat, exp: payloadExp,} = await jwtAdapter.parseJwtPayloadIat(refreshToken);
+        const securityDeviceDTO = {
+            userId: payloadId,
+            title: userAgent,
+            ip: ipAddr,
+            expiryDate: payloadExp,
+            lastActivateDate: payloadIat,
+            deviceId: deviceId,
+        };
+        await securityDevicesService.setDevice(securityDeviceDTO)
+
 
         return {
             status: resultStatus.SUCCESS,
@@ -156,78 +175,77 @@ export const authService = {
             data: null
         };
     },
-    async updateTokens(rf: string): Promise<ResultObject<{} | null>> {
-        const isBlackListed = await authRepository.findRefreshTokenInBlackList(rf)
+    async updateToken(rf: string, ipAddr: string, userAgent: string): Promise<ResultObject<{} | null>> {
+        const decoded = await jwtAdapter.decodeToken(rf);
 
-        if (isBlackListed) {
+        // find new device by deviceid and lastActivateDate
+        const oldDevice = await securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
+        if (!oldDevice) {
             return {
                 status: resultStatus.UNAUTORIZED,
                 data: null,
                 errorMessages: 'Refresh Token',
-                extensions: [{message: "refresh token in black list", field: "refresh token"}],
-            }
-
-        }
-
-        const decoded = await jwtAdapter.decodeToken(rf);
-
-        if (!decoded || typeof decoded !== "object" || !("id" in decoded)) {
-            return {
-                status: resultStatus.BAD_REQUEST,
-                data: null,
-                extensions: []
+                extensions: [{message: "refresh token expired or invalid", field: "refresh token"}],
             };
         }
 
-        const a: { id: string; iat: number | undefined } = {
-            id: decoded.id,
-            iat: decoded.iat,
-        };
+        // generate new token
+        const accessToken = await jwtAdapter.signAccessToken(decoded.id.toString());
+        const refreshToken = await jwtAdapter.signRefreshToken(
+            decoded.id.toString(),
+            ipAddr,
+            userAgent,
+            decoded.deviceId
+        );
+        const { iat: newIat, exp: newExp } = await jwtAdapter.parseJwtPayloadIat(refreshToken);
 
-        const accessToken = await jwtAdapter.signAccessToken(a.id.toString())
-        const refreshToken = await jwtAdapter.signRefreshToken(a.id.toString())
-        await authRepository.addTokenInBlackList(rf)
+
+        await securityDevicesRepository.updateDevice(decoded.deviceId, {
+            lastActivateDate: newIat,
+            ip: ipAddr,
+            title: userAgent,
+            expiryDate: newExp,
+        });
 
         return {
             status: resultStatus.SUCCESS,
             data: {accessToken, refreshToken},
             extensions: [],
-        }
+        };
     },
     async expireToken(rftoken: string): Promise<ResultObject<string | null>> {
-        try {
+        const decoded = await jwtAdapter.decodeToken(rftoken);
 
-            const isBlackListed = await authRepository.findRefreshTokenInBlackList(rftoken)
-
-            if (isBlackListed) {
-                return {
-                    status: resultStatus.UNAUTORIZED,
-                    data: null,
-                    errorMessages: 'Refresh Token',
-                    extensions: [{message: "refresh token in black list", field: "refresh token"}],
-                }
-
-            }
-
-            await authRepository.addTokenInBlackList(rftoken)
-
+        const oldDevice = await securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
+        if (!oldDevice) {
             return {
-                status: resultStatus.SUCCESS,
-                extensions: [],
-                data: 'token added successfully'
-            }
-        } catch (err) {
+                status: resultStatus.UNAUTORIZED,
+                data: null,
+                errorMessages: 'Refresh Token',
+                extensions: [{message: "refresh token expired or invalid", field: "refresh token"}],
+            };
+        }
+
+        const {count} = await securityDevicesRepository.deleteDevice(decoded.deviceId);
+        if (count === 0) {
             return {
-                status: resultStatus.ERROR,
+                status: resultStatus.UNAUTORIZED,
                 data: null,
                 extensions: [],
             };
         }
+
+        return {
+            status: resultStatus.SUCCESS,
+            data: null,
+            extensions: [],
+        };
+
     },
-    async getMe(userId: string): Promise<{login: string, email: string, userId: string} | null>{
+    async getMe(userId: string): Promise<{ login: string, email: string, userId: string } | null> {
         const result = await usersQueryRepository.findById(userId);
 
-        if(!result) return null;
+        if (!result) return null;
 
         return {
             login: result?.login,
@@ -236,3 +254,5 @@ export const authService = {
         }
     }
 }
+
+

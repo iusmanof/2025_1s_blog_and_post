@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupApp = void 0;
+exports.SETUP_APP = void 0;
 const express_1 = __importDefault(require("express"));
 const paths_1 = require("./core/paths/paths");
 const blog_route_1 = require("./blogs/routes/blog.route");
@@ -22,7 +22,9 @@ const users_route_1 = require("./users/routes/users.route");
 const auth_routes_1 = require("./auth/routes/auth.routes");
 const comments_route_1 = require("./comments/routes/comments.route");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const setupApp = (app) => {
+const security_devices_routes_1 = require("./auth/routes/security-devices.routes");
+const SETUP_APP = (app) => {
+    app.set('trust proxy', true);
     app.use(express_1.default.json());
     app.use((0, cookie_parser_1.default)());
     app.use(paths_1.BLOGS_PATH, blog_route_1.blogRouter);
@@ -31,10 +33,11 @@ const setupApp = (app) => {
     app.use(paths_1.TESTING_PATH, testing_route_1.testingRouter);
     app.use(paths_1.AUTH_PATH, auth_routes_1.authRouter);
     app.use(paths_1.COMMENTS_PATH, comments_route_1.commentsRouter);
+    app.use(paths_1.SECURITY_DEVICES_PATH, security_devices_routes_1.securityDevicesRouter);
     app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         yield res.send("blogs api");
     }));
     return app;
 };
-exports.setupApp = setupApp;
+exports.SETUP_APP = SETUP_APP;
 //# sourceMappingURL=setup-app.js.map

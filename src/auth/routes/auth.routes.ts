@@ -14,8 +14,15 @@ import {
 import {emailRegistrationValidationMiddleware} from "../middlewares/email-registration-validation.middleware";
 import {
     checkRefreshTokenMiddleware,
-    isRefreshTokenExpire,
+    verifyRefreshToken,
 } from "../middlewares/refresh-token.middleware";
+import {rateLimitMiddleware} from "../middlewares/rate-limit.middleware";
+
+const loginRequestLimit = rateLimitMiddleware(5, 10)
+const registrationRequestLimit = rateLimitMiddleware(5, 10)
+const registrationEmailResendingRequestLimit = rateLimitMiddleware(5, 10)
+const registrationConfirmationRequestLimit = rateLimitMiddleware(5, 10)
+
 
 export const authRouter = Router()
 
@@ -23,10 +30,16 @@ authRouter.post("/login",
     passwordValidation,
     loginOrEmailValidation,
     inputValidationMiddleware,
+    loginRequestLimit,
     async (req: Request<{}, LoginOrEmailDto>, res: Response) => {
         const {loginOrEmail, password} = req.body;
+        const ipAddr= req.headers['x-forwarded-for']
+            ? req.headers['x-forwarded-for'][0]
+            : req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown ip'
+        const userAgent: string  = req.headers['user-agent'] ?? "userAgent undefined";
 
-        const result = await authService.login(loginOrEmail, password);
+        // Create RT AT using  Login Password IP User-agent
+        const result = await authService.login(loginOrEmail, password, ipAddr, userAgent);
 
         if (result.status === resultStatus.ERROR || result.data === null) {
             res.status(httpStatusCode.UNAUTHORIZED_401).json(result);
@@ -56,6 +69,7 @@ authRouter.get("/me",
     });
 
 authRouter.post("/registration-confirmation",
+    registrationConfirmationRequestLimit,
     async (req: Request<{}, {}, { code: string }>, res: Response) => {
         const code = req.body.code;
 
@@ -70,7 +84,9 @@ authRouter.post("/registration-confirmation",
         res.sendStatus(httpStatusCode.NO_CONTENT_204);
     })
 
+
 authRouter.post("/registration",
+    registrationRequestLimit,
     emailRegistrationValidationMiddleware,
     loginRegistrationValidationMiddleware,
     passwordValidation,
@@ -88,6 +104,7 @@ authRouter.post("/registration",
     })
 
 authRouter.post("/registration-email-resending",
+    registrationEmailResendingRequestLimit,
     async (req: Request, res: Response) => {
         const {email} = req.body
 
@@ -105,16 +122,20 @@ interface TokenPair {
 }
 
 authRouter.post('/refresh-token',
-    isRefreshTokenExpire,
+    verifyRefreshToken,
     async (req: Request, res: Response) => {
         const rf = req.cookies.refreshToken
+        const ipAddr= req.headers['x-forwarded-for']
+            ? req.headers['x-forwarded-for'][0]
+            : req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown ip'
+        const userAgent: string  = req.headers['user-agent'] ?? "userAgent undefined";
 
         if (!rf) {
             res.status(httpStatusCode.UNAUTHORIZED_401).json({message: "Refresh token missing"});
             return
         }
 
-        const result = await authService.updateTokens(rf);
+        const result = await authService.updateToken(rf, ipAddr, userAgent);
 
         if (result.status === resultStatus.UNAUTORIZED) {
             res.sendStatus(httpStatusCode.UNAUTHORIZED_401)
@@ -129,7 +150,7 @@ authRouter.post('/refresh-token',
 
 authRouter.post('/logout',
     checkRefreshTokenMiddleware,
-    isRefreshTokenExpire,
+    verifyRefreshToken,
     async (req: Request, res: Response) => {
         const token = req.cookies.refreshToken
 

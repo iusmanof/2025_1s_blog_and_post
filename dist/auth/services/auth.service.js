@@ -18,11 +18,15 @@ const crypto_1 = require("crypto");
 const email_adapter_1 = require("../adapters/email.adapter");
 const date_fns_1 = require("date-fns");
 const email_example_template_1 = require("../../core/types/email-example.template");
-const auth_repository_1 = require("../repository/auth.repository");
 const users_query_repository_1 = require("../../users/repositories/users.query.repository");
+const security_devices_service_1 = require("./security-devices.service");
+const uuid_1 = require("uuid");
+const security_devices_query_repository_1 = require("../repository/security-devices.query-repository");
+const security_devices_repository_1 = require("../repository/security-devices.repository");
 exports.authService = {
-    login(loginOrEmail, password) {
+    login(loginOrEmail, password, ipAddr, userAgent) {
         return __awaiter(this, void 0, void 0, function* () {
+            // If Login OR Email Not FOund
             const user = yield users_repository_1.usersRepository.findByLoginOrEmail(loginOrEmail);
             if (!user) {
                 return {
@@ -32,6 +36,7 @@ exports.authService = {
                     data: null
                 };
             }
+            // CheckPassword
             const passwordCorrect = yield bcrypt_adapter_1.bcryptAdapter.checkPassword(password, user.password);
             if (!passwordCorrect) {
                 return {
@@ -41,10 +46,21 @@ exports.authService = {
                     data: null
                 };
             }
+            // Create AT
             const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(user._id.toString());
-            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(user._id.toString());
-            // console.log(accessToken)
-            console.log(refreshToken);
+            // Create RF
+            const deviceId = (0, uuid_1.v4)();
+            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(user._id.toString(), ipAddr, userAgent, deviceId);
+            const { id: payloadId, iat: payloadIat, exp: payloadExp, } = yield jwt_adapter_1.jwtAdapter.parseJwtPayloadIat(refreshToken);
+            const securityDeviceDTO = {
+                userId: payloadId,
+                title: userAgent,
+                ip: ipAddr,
+                expiryDate: payloadExp,
+                lastActivateDate: payloadIat,
+                deviceId: deviceId,
+            };
+            yield security_devices_service_1.securityDevicesService.setDevice(securityDeviceDTO);
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 data: { accessToken, refreshToken },
@@ -154,33 +170,29 @@ exports.authService = {
             };
         });
     },
-    updateTokens(rf) {
+    updateToken(rf, ipAddr, userAgent) {
         return __awaiter(this, void 0, void 0, function* () {
-            const isBlackListed = yield auth_repository_1.authRepository.findRefreshTokenInBlackList(rf);
-            if (isBlackListed) {
+            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(rf);
+            // find new device by deviceid and lastActivateDate
+            const oldDevice = yield security_devices_query_repository_1.securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
+            if (!oldDevice) {
                 return {
                     status: result_object_1.resultStatus.UNAUTORIZED,
                     data: null,
                     errorMessages: 'Refresh Token',
-                    extensions: [{ message: "refresh token in black list", field: "refresh token" }],
+                    extensions: [{ message: "refresh token expired or invalid", field: "refresh token" }],
                 };
             }
-            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(rf);
-            if (!decoded || typeof decoded !== "object" || !("id" in decoded)) {
-                return {
-                    status: result_object_1.resultStatus.BAD_REQUEST,
-                    data: null,
-                    extensions: []
-                };
-            }
-            const a = {
-                // refactoring?
-                id: decoded.id,
-                iat: decoded.iat,
-            };
-            const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(a.id.toString());
-            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(a.id.toString());
-            yield auth_repository_1.authRepository.addTokenInBlackList(rf);
+            // generate new token
+            const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(decoded.id.toString());
+            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(decoded.id.toString(), ipAddr, userAgent, decoded.deviceId);
+            const { iat: newIat, exp: newExp } = yield jwt_adapter_1.jwtAdapter.parseJwtPayloadIat(refreshToken);
+            yield security_devices_repository_1.securityDevicesRepository.updateDevice(decoded.deviceId, {
+                lastActivateDate: newIat,
+                ip: ipAddr,
+                title: userAgent,
+                expiryDate: newExp,
+            });
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 data: { accessToken, refreshToken },
@@ -190,30 +202,29 @@ exports.authService = {
     },
     expireToken(rftoken) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const isBlackListed = yield auth_repository_1.authRepository.findRefreshTokenInBlackList(rftoken);
-                if (isBlackListed) {
-                    return {
-                        status: result_object_1.resultStatus.UNAUTORIZED,
-                        data: null,
-                        errorMessages: 'Refresh Token',
-                        extensions: [{ message: "refresh token in black list", field: "refresh token" }],
-                    };
-                }
-                yield auth_repository_1.authRepository.addTokenInBlackList(rftoken);
+            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(rftoken);
+            const oldDevice = yield security_devices_query_repository_1.securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
+            if (!oldDevice) {
                 return {
-                    status: result_object_1.resultStatus.SUCCESS,
-                    extensions: [],
-                    data: 'token added successfully'
+                    status: result_object_1.resultStatus.UNAUTORIZED,
+                    data: null,
+                    errorMessages: 'Refresh Token',
+                    extensions: [{ message: "refresh token expired or invalid", field: "refresh token" }],
                 };
             }
-            catch (err) {
+            const { count } = yield security_devices_repository_1.securityDevicesRepository.deleteDevice(decoded.deviceId);
+            if (count === 0) {
                 return {
-                    status: result_object_1.resultStatus.ERROR,
+                    status: result_object_1.resultStatus.UNAUTORIZED,
                     data: null,
                     extensions: [],
                 };
             }
+            return {
+                status: result_object_1.resultStatus.SUCCESS,
+                data: null,
+                extensions: [],
+            };
         });
     },
     getMe(userId) {
