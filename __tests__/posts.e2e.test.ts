@@ -1,83 +1,86 @@
 import express from "express";
-import {setupApp} from "../src/setup-app";
-import {generateAdminAuthToken} from "../src/core/utils/generate-admin-auth-token";
-import {runDB, stopDb} from "../src/core/db/mongo.db";
-import {clearDb} from "./utils/clearDb";
+import { SETUP_APP } from "../src/setup-app";
+import { generateAdminAuthToken } from "../src/core/utils/generate-admin-auth-token";
+import { runDB, stopDb } from "../src/core/db/mongo.db";
+import { clearDb } from "./utils/clearDb";
 import request from "supertest";
 import httpStatusCode from "../src/core/types/http-status-code";
-import {createBlog} from "./utils/create-blog";
-import {createPost, createPostWithBlogId} from "./utils/create-post";
+import { createBlog } from "./utils/create-blog";
+import { createPost, createPostWithBlogId } from "./utils/create-post";
 
-describe('/posts', () => {
-    const app = express();
-    setupApp(app);
-    const adminCredentials = generateAdminAuthToken()
+jest.mock("uuid", () => ({
+    v4: () => "123456789",
+}));
 
-    beforeAll(async () => {
-        await runDB('mongodb://localhost:27017/test-DB');
-        await clearDb(app);
-    })
+describe("/posts", () => {
+  const app = express();
+    SETUP_APP(app);
+  const adminCredentials = generateAdminAuthToken();
 
-    afterAll(async () => {
-        await stopDb()
-    })
+  beforeAll(async () => {
+    await runDB("mongodb://localhost:27017/test-DB");
+    await clearDb(app);
+  });
 
-    it('GET /posts', async () =>{
-        const blogId = await createBlog(app, adminCredentials);
-        await createPostWithBlogId(app, adminCredentials, blogId);
+  afterAll(async () => {
+    await stopDb();
+  });
 
-        const getResponse = await request(app)
-            .get("/posts")
-            .expect(httpStatusCode.OK_200)
+  it("GET /posts", async () => {
+    const blogId = await createBlog(app, adminCredentials);
+    await createPostWithBlogId(app, adminCredentials, blogId);
 
-        expect(Array.isArray(getResponse.body.items)).toBe(true)
-        expect(getResponse.body.items[0]).toHaveProperty('title');
-        expect(getResponse.body).toHaveProperty('page')
-        expect(getResponse.body).toHaveProperty('pageSize')
-        expect(getResponse.body).toHaveProperty('totalCount')
-        expect(getResponse.body).toHaveProperty('page')
-        expect(getResponse.body).toHaveProperty('pageSize')
-    })
+    const getResponse = await request(app)
+      .get("/posts")
+      .expect(httpStatusCode.OK_200);
 
-    it("GET /posts/:id", async () =>{
-        const postId = await  createPost(app, adminCredentials);
+    expect(Array.isArray(getResponse.body.items)).toBe(true);
+    expect(getResponse.body.items[0]).toHaveProperty("title");
+    expect(getResponse.body).toHaveProperty("page");
+    expect(getResponse.body).toHaveProperty("pageSize");
+    expect(getResponse.body).toHaveProperty("totalCount");
+    expect(getResponse.body).toHaveProperty("page");
+    expect(getResponse.body).toHaveProperty("pageSize");
+  });
 
-        const getResponse = await request(app)
-            .get(`/posts/${postId}`)
-            .expect(httpStatusCode.OK_200)
+  it("GET /posts/:id", async () => {
+    const postId = await createPost(app, adminCredentials);
 
-        expect(getResponse.body).toHaveProperty('id', postId);
-    })
+    const getResponse = await request(app)
+      .get(`/posts/${postId}`)
+      .expect(httpStatusCode.OK_200);
 
-    it("POST /posts", async () => {
-        const blogId = await createBlog(app, adminCredentials);
-        await createPostWithBlogId(app, adminCredentials, blogId);
-    })
+    expect(getResponse.body).toHaveProperty("id", postId);
+  });
 
-    it("PUT /posts", async () => {
-        const postId = await createPost(app, adminCredentials);
+  it("POST /posts", async () => {
+    const blogId = await createBlog(app, adminCredentials);
+    await createPostWithBlogId(app, adminCredentials, blogId);
+  });
 
-        const updatePost = {
-            "id": postId,
-            "title": "Title Post UPDATED",
-            "content": "valid UPDATED",
-            "shortDescription": "shor desc ",
-        }
+  it("PUT /posts", async () => {
+    const postId = await createPost(app, adminCredentials);
 
-        await request(app)
-            .put(`/posts/${postId}`)
-            .set("Authorization", adminCredentials)
-            .send(updatePost)
-            .expect(httpStatusCode.NO_CONTENT_204)
-    })
+    const updatePost = {
+      id: postId,
+      title: "Title Post UPDATED",
+      content: "valid UPDATED",
+      shortDescription: "shor desc ",
+    };
 
-    it("DELETE /posts/:id", async () => {
-        const postId = await createPost(app, adminCredentials);
+    await request(app)
+      .put(`/posts/${postId}`)
+      .set("Authorization", adminCredentials)
+      .send(updatePost)
+      .expect(httpStatusCode.NO_CONTENT_204);
+  });
 
-        await request(app)
-            .delete(`/posts/${postId}`)
-            .set("Authorization", adminCredentials)
-            .expect(httpStatusCode.NO_CONTENT_204)
-    })
+  it("DELETE /posts/:id", async () => {
+    const postId = await createPost(app, adminCredentials);
 
-})
+    await request(app)
+      .delete(`/posts/${postId}`)
+      .set("Authorization", adminCredentials)
+      .expect(httpStatusCode.NO_CONTENT_204);
+  });
+});

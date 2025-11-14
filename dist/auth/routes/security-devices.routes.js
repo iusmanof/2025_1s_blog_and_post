@@ -20,24 +20,30 @@ const result_object_1 = require("../../core/types/result-object");
 const refresh_token_middleware_1 = require("../middlewares/refresh-token.middleware");
 const user_id_belongs_to_another_middleware_1 = require("../middlewares/user-id-belongs-to-another.middleware");
 exports.securityDevicesRouter = (0, express_1.Router)();
-exports.securityDevicesRouter.get('/', refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.securityDevicesRouter.get("/", refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.refreshToken;
     const devices = yield security_devices_service_1.securityDevicesService.getDevices(refreshToken);
     if (!devices) {
-        res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401).json({ error: "Unauthorized" });
+        res
+            .sendStatus(http_status_code_1.default.UNAUTHORIZED_401)
+            .json({ error: "Unauthorized" });
     }
     res.status(http_status_code_1.default.OK_200).send(devices);
 }));
-exports.securityDevicesRouter.delete('/', refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.securityDevicesRouter.delete("/", refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.refreshToken;
     yield security_devices_service_1.securityDevicesService.terminateAllSessionExcludeCurrent(refreshToken);
-    res.status(http_status_code_1.default.NO_CONTENT_204).json({ message: "Delete all devices" });
+    res
+        .status(http_status_code_1.default.NO_CONTENT_204)
+        .json({ message: "Delete all devices" });
 }));
-exports.securityDevicesRouter.delete('/:deviceId', refresh_token_middleware_1.verifyRefreshToken, user_id_belongs_to_another_middleware_1.userIdBelongsToAnotherMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.securityDevicesRouter.delete("/:deviceId", refresh_token_middleware_1.verifyRefreshToken, user_id_belongs_to_another_middleware_1.userIdBelongsToAnotherMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const deviceId = req.params.deviceId;
     const result = yield security_devices_service_1.securityDevicesService.deleteById(deviceId);
     if (result.status === result_object_1.resultStatus.NOT_FOUND) {
-        res.status(http_status_code_1.default.NOT_FOUND_404).json({ errorsMessages: result.extensions });
+        res
+            .status(http_status_code_1.default.NOT_FOUND_404)
+            .json({ errorsMessages: result.extensions });
         return;
     }
     res.status(http_status_code_1.default.NO_CONTENT_204).json({ test: "test" });

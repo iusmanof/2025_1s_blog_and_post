@@ -60,7 +60,7 @@ exports.jwtAdapter = {
     },
     parseJwtPayloadIat(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+            return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
         });
     },
     verifyAccessToken(token) {

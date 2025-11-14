@@ -1,66 +1,58 @@
-import {Router} from "express";
-import {basicAuth} from "../../core/milldlewares/super-admin.guard-middleware";
-import {titleValidation} from "../../core/milldlewares/validation/titleValidation";
-import {contentValidation} from "../../core/milldlewares/validation/contentValidation";
-import {shortDescriptionValidation} from "../../core/milldlewares/validation/shortDescriptionValidation";
-import {
-    inputValidationMiddleware,
-} from "../../core/milldlewares/validation/input-validation-middleware";
-import {paginationAndSortingValidation} from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
-import {createPostHandler} from "./handlers/create-post.handler";
-import {updatePostHandler} from "./handlers/update-post.handler";
-import {getPostsHandler} from "./handlers/get-posts.handler";
-import {deletePostHandler} from "./handlers/delete-post.handler";
-import {getPostByIdHandler} from "./handlers/get-post-by-id.handler";
-import {createCommentHandler} from "./handlers/create-comment.handler";
-import {getCommentsByPostIdHandler} from "./handlers/get-comment.handler";
-import {accessTokenGuard} from "../../auth/access-token.guard";
-import {commentValidationa} from "../../core/milldlewares/validation/comments-validation.middleware";
-import {postIdValidationMiddleware} from "./middlewares/post-id-validation.middleware";
-import {userIdValidationMiddleware} from "./middlewares/user-id-validation.middleware";
+import { Router } from "express";
+import { basicAuth } from "../../core/milldlewares/super-admin.guard-middleware";
+import { titleValidation } from "../../core/milldlewares/validation/titleValidation";
+import { contentValidation } from "../../core/milldlewares/validation/contentValidation";
+import { shortDescriptionValidation } from "../../core/milldlewares/validation/shortDescriptionValidation";
+import { inputValidationMiddleware } from "../../core/milldlewares/validation/input-validation-middleware";
+import { paginationAndSortingValidation } from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
+import { createPostHandler } from "./handlers/create-post.handler";
+import { updatePostHandler } from "./handlers/update-post.handler";
+import { getPostsHandler } from "./handlers/get-posts.handler";
+import { deletePostHandler } from "./handlers/delete-post.handler";
+import { getPostByIdHandler } from "./handlers/get-post-by-id.handler";
+import { createCommentHandler } from "./handlers/create-comment.handler";
+import { getCommentsByPostIdHandler } from "./handlers/get-comment.handler";
+import { accessTokenGuard } from "../../auth/access-token.guard";
+import { commentValidationa } from "../../core/milldlewares/validation/comments-validation.middleware";
+import { postIdValidationMiddleware } from "./middlewares/post-id-validation.middleware";
+import { userIdValidationMiddleware } from "./middlewares/user-id-validation.middleware";
 
 export const postRouter = Router();
 
-postRouter.get("/",
-    paginationAndSortingValidation(),
-    getPostsHandler
-);
+postRouter.get("/", paginationAndSortingValidation(), getPostsHandler);
 
-postRouter.get("/:id",
-    getPostByIdHandler
-);
+postRouter.get("/:id", getPostByIdHandler);
 
-postRouter.post("/",
-    basicAuth,
-    [titleValidation, contentValidation, shortDescriptionValidation],
-    inputValidationMiddleware,
-    createPostHandler
+postRouter.post(
+  "/",
+  basicAuth,
+  [titleValidation, contentValidation, shortDescriptionValidation],
+  inputValidationMiddleware,
+  createPostHandler,
 );
 
 postRouter.put(
-    "/:id",
-    basicAuth,
-    [titleValidation, contentValidation, shortDescriptionValidation],
-    inputValidationMiddleware,
-    updatePostHandler
+  "/:id",
+  basicAuth,
+  [titleValidation, contentValidation, shortDescriptionValidation],
+  inputValidationMiddleware,
+  updatePostHandler,
 );
 
-postRouter.delete(
-    "/:id",
-    basicAuth,
-    deletePostHandler
+postRouter.delete("/:id", basicAuth, deletePostHandler);
+
+postRouter.post(
+  "/:postId/comments",
+  accessTokenGuard,
+  commentValidationa,
+  inputValidationMiddleware,
+  postIdValidationMiddleware,
+  userIdValidationMiddleware,
+  createCommentHandler,
 );
 
-postRouter.post("/:postId/comments",
-    accessTokenGuard,
-    commentValidationa,
-    inputValidationMiddleware,
-    postIdValidationMiddleware,
-    userIdValidationMiddleware,
-    createCommentHandler
-);
-
-postRouter.get("/:postId/comments",
-    paginationAndSortingValidation(),
-    getCommentsByPostIdHandler
+postRouter.get(
+  "/:postId/comments",
+  paginationAndSortingValidation(),
+  getCommentsByPostIdHandler,
 );

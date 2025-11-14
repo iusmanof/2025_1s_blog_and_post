@@ -14,7 +14,7 @@ const input_validation_middleware_1 = require("../../core/milldlewares/validatio
 const users_input_validation_middleware_1 = require("../../core/milldlewares/validation/users-input.validation-middleware");
 exports.userRouter = (0, express_1.Router)();
 exports.userRouter.use(super_admin_guard_middleware_1.basicAuth);
-exports.userRouter.get('/', super_admin_guard_middleware_1.basicAuth, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithEmailAndLogin)(), input_validation_middleware_1.inputValidationMiddleware, get_users_handler_1.getUsersHandler);
-exports.userRouter.post('/', super_admin_guard_middleware_1.basicAuth, login_validation_middleware_1.loginValidation, password_validation_middleware_1.passwordValidation, email_validation_middleware_1.emailValidation, users_input_validation_middleware_1.usersInputValidationMiddleware, create_user_handler_1.createUserHandler);
-exports.userRouter.delete('/:id', super_admin_guard_middleware_1.basicAuth, delete_user_handler_1.deleteUserHandler);
+exports.userRouter.get("/", super_admin_guard_middleware_1.basicAuth, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithEmailAndLogin)(), input_validation_middleware_1.inputValidationMiddleware, get_users_handler_1.getUsersHandler);
+exports.userRouter.post("/", super_admin_guard_middleware_1.basicAuth, login_validation_middleware_1.loginValidation, password_validation_middleware_1.passwordValidation, email_validation_middleware_1.emailValidation, users_input_validation_middleware_1.usersInputValidationMiddleware, create_user_handler_1.createUserHandler);
+exports.userRouter.delete("/:id", super_admin_guard_middleware_1.basicAuth, delete_user_handler_1.deleteUserHandler);
 //# sourceMappingURL=users.route.js.map

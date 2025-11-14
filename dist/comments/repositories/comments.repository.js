@@ -25,9 +25,9 @@ exports.commentsRepository = {
                 content: content,
                 commentatorInfo: {
                     userId: userData.id,
-                    userLogin: userData.login
+                    userLogin: userData.login,
                 },
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
             };
             const result = yield (0, mongo_db_1.getCommentCollection)().insertOne(comment);
             return {
@@ -40,9 +40,9 @@ exports.commentsRepository = {
     },
     getCommentsByPostId(postId, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
+            const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
-            const sortDir = sortDirection === 'asc' ? 1 : -1;
+            const sortDir = sortDirection === "asc" ? 1 : -1;
             const search = { postId: postId };
             const result = yield (0, mongo_db_1.getCommentCollection)()
                 .find(search)
@@ -53,24 +53,27 @@ exports.commentsRepository = {
             if (!result) {
                 return null;
             }
-            const totalCount = (yield (0, mongo_db_1.getCommentCollection)().find(search).toArray()).length;
+            const totalCount = (yield (0, mongo_db_1.getCommentCollection)().find(search).toArray())
+                .length;
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
                 pageSize: +pageSize,
                 totalCount: +totalCount,
-                items: result.map(comment => ({
+                items: result.map((comment) => ({
                     id: comment._id.toString(),
                     content: comment.content,
                     commentatorInfo: comment.commentatorInfo,
                     createdAt: comment.createdAt,
-                }))
+                })),
             };
         });
     },
     getCommentById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield (0, mongo_db_1.getCommentCollection)().findOne({ _id: new mongodb_1.ObjectId(commentId) });
+            const result = yield (0, mongo_db_1.getCommentCollection)().findOne({
+                _id: new mongodb_1.ObjectId(commentId),
+            });
             if (!result) {
                 return null;
             }
@@ -84,7 +87,9 @@ exports.commentsRepository = {
     },
     deleteById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield (0, mongo_db_1.getCommentCollection)().deleteOne({ _id: new mongodb_1.ObjectId(commentId) });
+            const result = yield (0, mongo_db_1.getCommentCollection)().deleteOne({
+                _id: new mongodb_1.ObjectId(commentId),
+            });
             if (result.deletedCount === 0) {
                 return null;
             }
@@ -98,12 +103,12 @@ exports.commentsRepository = {
     },
     updateById(commentId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield (0, mongo_db_1.getCommentCollection)().updateOne({ "_id": new mongodb_1.ObjectId(commentId) }, { $set: { "content": content } });
+            const result = yield (0, mongo_db_1.getCommentCollection)().updateOne({ _id: new mongodb_1.ObjectId(commentId) }, { $set: { content: content } });
             if (result.matchedCount === 0) {
                 return null;
             }
             return result;
         });
-    }
+    },
 };
 //# sourceMappingURL=comments.repository.js.map

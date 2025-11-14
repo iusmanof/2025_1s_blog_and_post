@@ -1,59 +1,49 @@
-import {query} from "express-validator";
+import { query } from "express-validator";
 
-const DEFAULT_SEARCH_TERM = null
-const DEFAULT_SORT_BY = 'createdAt'
-const DEFAULT_SORT_DIRECTION = 'desc'
-const DEFAULT_PAGE_NUMBER = 1
-const DEFAULT_PAGE_SIZE = 10
-const DEFAULT_SEARCH_LOGIN_TERM = null
-const DEFAULT_SEARCH_EMAIL_TERM = null
+const DEFAULT_SEARCH_TERM = null;
+const DEFAULT_SORT_BY = "createdAt";
+const DEFAULT_SORT_DIRECTION = "desc";
+const DEFAULT_PAGE_NUMBER = 1;
+const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_SEARCH_LOGIN_TERM = null;
+const DEFAULT_SEARCH_EMAIL_TERM = null;
 
 export function paginationAndSortingValidation() {
-    return [
-        query('sortBy')
-            .optional()
-            .default(DEFAULT_SORT_BY)
-            .isString()
-            .trim(),
-        query('sortDirection')
-            .optional()
-            .default(DEFAULT_SORT_DIRECTION)
-            .isString()
-            .trim(),
-        query('pageNumber')
-            .optional()
-            .default(DEFAULT_PAGE_NUMBER)
-            .isNumeric(),
-        query('pageSize')
-            .optional()
-            .default(DEFAULT_PAGE_SIZE)
-            .isNumeric(),
-    ]
+  return [
+    query("sortBy").optional().default(DEFAULT_SORT_BY).isString().trim(),
+    query("sortDirection")
+      .optional()
+      .default(DEFAULT_SORT_DIRECTION)
+      .isString()
+      .trim(),
+    query("pageNumber").optional().default(DEFAULT_PAGE_NUMBER).isNumeric(),
+    query("pageSize").optional().default(DEFAULT_PAGE_SIZE).isNumeric(),
+  ];
 }
 
 export function paginationAndSortingValidationWithSearchName() {
-    return [
-        query('searchNameTerm')
-            .optional()
-            .default(DEFAULT_SEARCH_TERM)
-            .isString()
-            .trim(),
-        ...paginationAndSortingValidation()
-    ]
+  return [
+    query("searchNameTerm")
+      .optional()
+      .default(DEFAULT_SEARCH_TERM)
+      .isString()
+      .trim(),
+    ...paginationAndSortingValidation(),
+  ];
 }
 
 export function paginationAndSortingValidationWithEmailAndLogin() {
-    return [
-        query('searchLoginTerm')
-            .optional()
-            .default(DEFAULT_SEARCH_LOGIN_TERM)
-            .isString()
-            .trim(),
-        query('searchEmailTerm')
-            .optional()
-            .default(DEFAULT_SEARCH_EMAIL_TERM)
-            .isString()
-            .trim(),
-        ...paginationAndSortingValidation(),
-    ]
+  return [
+    query("searchLoginTerm")
+      .optional()
+      .default(DEFAULT_SEARCH_LOGIN_TERM)
+      .isString()
+      .trim(),
+    query("searchEmailTerm")
+      .optional()
+      .default(DEFAULT_SEARCH_EMAIL_TERM)
+      .isString()
+      .trim(),
+    ...paginationAndSortingValidation(),
+  ];
 }

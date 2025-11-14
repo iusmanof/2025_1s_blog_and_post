@@ -64,7 +64,9 @@ exports.usersRepository = {
     },
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deleteResult = yield (0, mongo_db_1.getUserCollection)().deleteOne({ _id: new mongodb_1.ObjectId(id) });
+            const deleteResult = yield (0, mongo_db_1.getUserCollection)().deleteOne({
+                _id: new mongodb_1.ObjectId(id),
+            });
             return deleteResult.deletedCount === 1;
         });
     },
@@ -75,17 +77,30 @@ exports.usersRepository = {
     },
     findByConfirmationCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().findOne({ "emailConfirmation.confirmationCode": code });
+            return (0, mongo_db_1.getUserCollection)().findOne({
+                "emailConfirmation.confirmationCode": code,
+            });
         });
     },
     findBYEmailAndRefreshCode(email, code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getUserCollection)().updateOne({ email }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expirationDate": (0, date_fns_1.add)(new Date(), { hours: 1, minutes: 30 }) } });
+            return yield (0, mongo_db_1.getUserCollection)().updateOne({ email }, {
+                $set: {
+                    "emailConfirmation.confirmationCode": code,
+                    "emailConfirmation.expirationDate": (0, date_fns_1.add)(new Date(), {
+                        hours: 1,
+                        minutes: 30,
+                    }),
+                },
+            });
         });
     },
     findExpiredCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().findOne({ "emailConfirmation.confirmationCode": code, "emailConfirmation.expirationDate": { $gt: new Date() } });
+            return (0, mongo_db_1.getUserCollection)().findOne({
+                "emailConfirmation.confirmationCode": code,
+                "emailConfirmation.expirationDate": { $gt: new Date() },
+            });
         });
     },
     confirmCode(code) {

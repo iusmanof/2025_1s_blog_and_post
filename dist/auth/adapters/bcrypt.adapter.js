@@ -25,6 +25,6 @@ exports.bcryptAdapter = {
         return __awaiter(this, void 0, void 0, function* () {
             return bcrypt_1.default.compare(password, hash);
         });
-    }
+    },
 };
 //# sourceMappingURL=bcrypt.adapter.js.map

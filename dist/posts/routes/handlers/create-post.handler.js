@@ -21,9 +21,7 @@ function createPostHandler(req, res) {
         const apiErrorMsg = [];
         if (!postCreated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            res
-                .status(http_status_code_1.default.NOT_FOUND_404)
-                .json({ errorsMessages: apiErrorMsg });
+            res.status(http_status_code_1.default.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
             return;
         }
         res.status(http_status_code_1.default.CREATED_201).json(postCreated);

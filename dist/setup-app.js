@@ -24,7 +24,7 @@ const comments_route_1 = require("./comments/routes/comments.route");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const security_devices_routes_1 = require("./auth/routes/security-devices.routes");
 const SETUP_APP = (app) => {
-    app.set('trust proxy', true);
+    app.set("trust proxy", true);
     app.use(express_1.default.json());
     app.use((0, cookie_parser_1.default)());
     app.use(paths_1.BLOGS_PATH, blog_route_1.blogRouter);

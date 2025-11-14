@@ -1,71 +1,74 @@
 import express from "express";
-import {setupApp} from "../src/setup-app";
-import {generateAdminAuthToken} from "../src/core/utils/generate-admin-auth-token";
-import {runDB, stopDb} from "../src/core/db/mongo.db";
-import {clearDb} from "./utils/clearDb";
+import { SETUP_APP } from "../src/setup-app";
+import { generateAdminAuthToken } from "../src/core/utils/generate-admin-auth-token";
+import { runDB, stopDb } from "../src/core/db/mongo.db";
+import { clearDb } from "./utils/clearDb";
 import request from "supertest";
 import httpStatusCode from "../src/core/types/http-status-code";
-import {SETTINGS} from "../src/core/settings/settings";
+import { SETTINGS } from "../src/core/settings/settings";
 
-describe('/users', () => {
-    const app = express();
-    setupApp(app);
-    const adminCredentials = generateAdminAuthToken()
-    let createdUserId: string;
+jest.mock("uuid", () => ({
+    v4: () => "123456789",
+}));
 
-    beforeAll(async () => {
-        await runDB(SETTINGS.MONGODB_URI_TEST_DBNAME);
-        await clearDb(app);
+describe("/users", () => {
+  const app = express();
+  SETUP_APP(app);
+  const adminCredentials = generateAdminAuthToken();
+  let createdUserId: string;
 
-        const newUser = {
-            login: 'testlogin',
-            email: 't@es.tom',
-            password: 'pass123'
-        };
-        const response = await request(app)
-            .post('/users')
-            .set("Authorization", adminCredentials)
-            .send(newUser)
-            .expect(httpStatusCode.CREATED_201);
+  beforeAll(async () => {
+    await runDB(SETTINGS.MONGODB_URI_TEST_DBNAME);
+    await clearDb(app);
 
-        createdUserId = response.body.id;
-    })
+    const newUser = {
+      login: "testlogin",
+      email: "t@es.tom",
+      password: "pass123",
+    };
+    const response = await request(app)
+      .post("/users")
+      .set("Authorization", adminCredentials)
+      .send(newUser)
+      .expect(httpStatusCode.CREATED_201);
 
-    afterAll(async () => {
-        await stopDb()
-    })
+    createdUserId = response.body.id;
+  });
 
-    it('GET /users', async () => {
-        const getResponse = await request(app)
-            .get("/users")
-            .set("Authorization", adminCredentials)
-            .expect(httpStatusCode.OK_200)
+  afterAll(async () => {
+    await stopDb();
+  });
 
-        expect(Array.isArray(getResponse.body.items)).toBe(true)
-        expect(getResponse.body).toHaveProperty('pageSize')
-        expect(getResponse.body).toHaveProperty('totalCount')
-        expect(getResponse.body).toHaveProperty('page')
-        expect(getResponse.body).toHaveProperty('pageSize')
-    })
+  it("GET /users", async () => {
+    const getResponse = await request(app)
+      .get("/users")
+      .set("Authorization", adminCredentials)
+      .expect(httpStatusCode.OK_200);
 
-    it('POST /users BAD_REQUEST_400', async () => {
-        const newUser = {
-            login: 'testlogin',
-            email: 'testlogin@google.com',
-            password: ''
-        };
+    expect(Array.isArray(getResponse.body.items)).toBe(true);
+    expect(getResponse.body).toHaveProperty("pageSize");
+    expect(getResponse.body).toHaveProperty("totalCount");
+    expect(getResponse.body).toHaveProperty("page");
+    expect(getResponse.body).toHaveProperty("pageSize");
+  });
 
-        await request(app)
-            .post('/users')
-            .set("Authorization", adminCredentials)
-            .send(newUser)
-            .expect(httpStatusCode.BAD_REQUEST_400)
-    })
-    it('DELETE /users', async () => {
+  it("POST /users BAD_REQUEST_400", async () => {
+    const newUser = {
+      login: "testlogin",
+      email: "testlogin@google.com",
+      password: "",
+    };
 
-        await request(app)
-            .delete(`/users/${createdUserId}`)
-            .set("Authorization", adminCredentials)
-            .expect(204);
-    });
-})
+    await request(app)
+      .post("/users")
+      .set("Authorization", adminCredentials)
+      .send(newUser)
+      .expect(httpStatusCode.BAD_REQUEST_400);
+  });
+  it("DELETE /users", async () => {
+    await request(app)
+      .delete(`/users/${createdUserId}`)
+      .set("Authorization", adminCredentials)
+      .expect(204);
+  });
+});

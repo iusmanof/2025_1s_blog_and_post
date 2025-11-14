@@ -18,7 +18,7 @@ const comments_repository_1 = require("../../comments/repositories/comments.repo
 const auth_repository_1 = require("../../auth/repository/auth.repository");
 const security_devices_repository_1 = require("../../auth/repository/security-devices.repository");
 exports.testingRouter = (0, express_1.Router)();
-exports.testingRouter.delete('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.testingRouter.delete("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield blogs_repository_1.blogsRepository.deleteAllBlogs();
     yield posts_repository_1.postsRepository.deleteAllPosts();
     yield users_repository_1.usersRepository.deleteAllUsers();

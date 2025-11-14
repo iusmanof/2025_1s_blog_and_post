@@ -1,4 +1,4 @@
 export type ListRefreshToken = {
-    token: string;
-    createdAt: Date;
-}
+  token: string;
+  createdAt: Date;
+};

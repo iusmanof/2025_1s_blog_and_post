@@ -1,7 +1,5 @@
-import {param} from "express-validator";
+import { param } from "express-validator";
 
 export const queryIdMiddleware = [
-    param('id')
-        .isMongoId()
-        .withMessage("Invalid MongoId")
-]
+  param("id").isMongoId().withMessage("Invalid MongoId"),
+];

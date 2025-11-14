@@ -5,9 +5,7 @@ const sortQueryFieldsUtil = (query) => {
     const pageNumber = !isNaN(Number(query.pageNumber))
         ? Number(query.pageNumber)
         : 1;
-    const pageSize = !isNaN(Number(query.pageSize))
-        ? Number(query.pageSize)
-        : 10;
+    const pageSize = !isNaN(Number(query.pageSize)) ? Number(query.pageSize) : 10;
     const sortBy = query.sortBy ? query.sortBy : "createdAt";
     const sortDirection = query.sortDirection === "asc" ? 1 : -1;
     const searchLoginTerm = query.searchLoginTerm || null;
@@ -18,7 +16,7 @@ const sortQueryFieldsUtil = (query) => {
         sortDirection,
         sortBy,
         searchLoginTerm,
-        searchEmailTerm
+        searchEmailTerm,
     };
 };
 exports.sortQueryFieldsUtil = sortQueryFieldsUtil;

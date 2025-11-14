@@ -1,13 +1,16 @@
-import {RequestWithParams} from "../../../core/types/RequestTypes";
-import {Response} from "express";
+import { RequestWithParams } from "../../../core/types/RequestTypes";
+import { Response } from "express";
 import PostService from "../../services/post.service";
 import HTTP_STATUS from "../../../core/types/http-status-code";
 
-export async function getPostByIdHandler(req: RequestWithParams<{ id: string }>, res: Response)  {
-    const postFounded = await PostService.findById(req.params.id)
-    if (!postFounded){
-        res.status(HTTP_STATUS.NOT_FOUND_404).send("No posts found.");
-        return
-    }
-    res.status(200).json(postFounded)
+export async function getPostByIdHandler(
+  req: RequestWithParams<{ id: string }>,
+  res: Response,
+) {
+  const postFounded = await PostService.findById(req.params.id);
+  if (!postFounded) {
+    res.status(HTTP_STATUS.NOT_FOUND_404).send("No posts found.");
+    return;
+  }
+  res.status(200).json(postFounded);
 }

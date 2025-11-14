@@ -19,7 +19,7 @@ exports.securityDevicesService = {
         return __awaiter(this, void 0, void 0, function* () {
             const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(refreshToken);
             const devices = yield security_devices_repository_1.securityDevicesRepository.findAllDevicesByUserId(decoded.id);
-            return devices.map(d => {
+            return devices.map((d) => {
                 return {
                     ip: d.ip,
                     title: d.title,
@@ -36,21 +36,20 @@ exports.securityDevicesService = {
     },
     deleteById(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // DeviceId not found
             const result = yield security_devices_query_repository_1.securityDevicesQueryRepository.geByDeviceId(deviceId);
             if (!result) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
-                    errorMessages: 'DeviceId not found',
-                    extensions: [{ message: 'DeviceId not found', field: 'DeviceId' }],
-                    data: null
+                    errorMessages: "DeviceId not found",
+                    extensions: [{ message: "DeviceId not found", field: "DeviceId" }],
+                    data: null,
                 };
             }
             yield security_devices_repository_1.securityDevicesRepository.deleteDevice(deviceId);
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: null
+                data: null,
             };
         });
     },
@@ -59,6 +58,6 @@ exports.securityDevicesService = {
             const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(refreshToken);
             yield security_devices_repository_1.securityDevicesRepository.deleteAllDevicesExcludeCurrent(decoded.deviceId);
         });
-    }
+    },
 };
 //# sourceMappingURL=security-devices.service.js.map

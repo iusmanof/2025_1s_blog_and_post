@@ -29,6 +29,6 @@ exports.authRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, mongo_db_1.getRefreshTokenCollection)().deleteMany({});
         });
-    }
+    },
 };
 //# sourceMappingURL=auth.repository.js.map

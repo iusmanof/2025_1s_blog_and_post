@@ -15,11 +15,11 @@ const users_repository_1 = require("../../../users/repositories/users.repository
 exports.emailValidation = (0, express_validator_1.body)("email")
     .trim()
     .isEmail()
-    .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+    .matches(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)
     .withMessage("Email is not correct")
     .custom((email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_repository_1.usersRepository.findByLoginOrEmail(email);
-    if (user) { // если пользователь найден
+    if (user) {
         throw new Error("Email already exists");
     }
     return true;

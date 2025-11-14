@@ -46,8 +46,10 @@ exports.securityDevicesRepository = {
     },
     deleteAllDevicesExcludeCurrent(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getSecurityDeviceCollection)().deleteMany({ deviceId: { $ne: deviceId } });
+            yield (0, mongo_db_1.getSecurityDeviceCollection)().deleteMany({
+                deviceId: { $ne: deviceId },
+            });
         });
-    }
+    },
 };
 //# sourceMappingURL=security-devices.repository.js.map

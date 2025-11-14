@@ -1,7 +1,6 @@
 export type errorMessage = {
-    "errorsMessages":
-        {
-            "message": string,
-            "field": string
-        }[]
-}
+  errorsMessages: {
+    message: string;
+    field: string;
+  }[];
+};

@@ -26,29 +26,30 @@ const mongodb_1 = require("mongodb");
 const posts_repository_1 = require("../../posts/repositories/posts.repository");
 exports.blogsRepository = {
     getAllBlogs: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc', searchNameTerm } = query;
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", searchNameTerm, } = query;
         const skip = (pageNumber - 1) * pageSize;
-        const sortDir = sortDirection === 'asc' ? 1 : -1;
-        const search = searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {};
+        const sortDir = sortDirection === "asc" ? 1 : -1;
+        const search = searchNameTerm
+            ? { name: { $regex: searchNameTerm, $options: "i" } }
+            : {};
         const result = yield (0, mongo_db_1.getBlogCollection)()
             .find(search)
             .sort({ [sortBy]: sortDir })
             .skip(+skip)
             .limit(+pageSize)
             .toArray();
-        // objectID
         const blogWithId = result.map((_a) => {
             var { _id } = _a, rest = __rest(_a, ["_id"]);
             return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
         });
-        // return await blogWithId;
-        const totalCount = (yield (0, mongo_db_1.getBlogCollection)().find(search).toArray()).length;
+        const totalCount = (yield (0, mongo_db_1.getBlogCollection)().find(search).toArray())
+            .length;
         return {
-            "pagesCount": +Math.ceil(totalCount / pageSize),
-            "page": +pageNumber,
-            "pageSize": +pageSize,
-            "totalCount": +totalCount,
-            "items": blogWithId
+            pagesCount: +Math.ceil(totalCount / pageSize),
+            page: +pageNumber,
+            pageSize: +pageSize,
+            totalCount: +totalCount,
+            items: blogWithId,
         };
     }),
     getBlogById(id) {

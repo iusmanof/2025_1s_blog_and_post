@@ -1,22 +1,21 @@
 import request from "supertest";
 import httpStatusCode from "../../src/core/types/http-status-code";
-import {Express} from "express";
+import { Express } from "express";
 
-export async function createBlog(app: Express, adminCredentials: string): Promise<string> {
-    const newBlog = {
-        name: "New Blog Test",
-        description: "test description",
-        websiteUrl: "https://test.test"
-    };
-    const response = await request(app)
-        .post("/blogs")
-        .set("Authorization", adminCredentials)
-        .send(newBlog)
-        .expect(httpStatusCode.CREATED_201);
+export async function createBlog(
+  app: Express,
+  adminCredentials: string,
+): Promise<string> {
+  const newBlog = {
+    name: "New Blog Test",
+    description: "test description",
+    websiteUrl: "https://test.test",
+  };
+  const response = await request(app)
+    .post("/blogs")
+    .set("Authorization", adminCredentials)
+    .send(newBlog)
+    .expect(httpStatusCode.CREATED_201);
 
-    return response.body.id;
+  return response.body.id;
 }
-
-
-
-

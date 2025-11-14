@@ -1,40 +1,46 @@
-import {NextFunction, Request, Response} from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatusCode from "../core/types/http-status-code";
-import {jwtAdapter} from "./adapters/jwt.adapter";
+import { jwtAdapter } from "./adapters/jwt.adapter";
 
-export const accessTokenGuard = async (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.header('Authorization');
+export const accessTokenGuard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const authHeader = req.header("Authorization");
 
-    if (!authHeader) {
-        res.status(httpStatusCode.UNAUTHORIZED_401).send('Unauthorized');
-        return
+  if (!authHeader) {
+    res.status(httpStatusCode.UNAUTHORIZED_401).send("Unauthorized");
+    return;
+  }
+
+  const [type, token] = authHeader.split(" ");
+
+  if (type !== "Bearer") {
+    res.status(httpStatusCode.UNAUTHORIZED_401).send("Unauthorized");
+    return;
+  }
+
+  try {
+    const payload = await jwtAdapter.verifyAccessToken(token);
+    if (!payload || typeof payload === "string" || !("id" in payload)) {
+      res.status(httpStatusCode.UNAUTHORIZED_401).send("Unauthorized");
+      return;
     }
 
-    const [type, token] = authHeader.split(' ');
-
-    if (type !== "Bearer") {
-        res.status(httpStatusCode.UNAUTHORIZED_401).send('Unauthorized');
-        return
+    const decodedToken = await jwtAdapter.decodeToken(token);
+    if (
+      !decodedToken ||
+      (decodedToken.exp && decodedToken.exp * 1000 <= Date.now())
+    ) {
+      res.status(httpStatusCode.UNAUTHORIZED_401).send("AT expired");
+      return;
     }
 
-    try {
-        const payload = await jwtAdapter.verifyAccessToken(token);
-        if (!payload || typeof payload === 'string' || !('id' in payload)) {
-            res.status(httpStatusCode.UNAUTHORIZED_401).send("Unauthorized");
-            return
-        }
-
-        const decodedToken = await jwtAdapter.decodeToken(token);
-        if (!decodedToken ||
-            (typeof decodedToken !== "string" && decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
-            res.status(httpStatusCode.UNAUTHORIZED_401).send("AT expired");
-            return
-        }
-
-        req.user = {id: payload.id};
-        next();
-    } catch (e) {
-            res.status(httpStatusCode.UNAUTHORIZED_401).send("Token expired");
-        return
-    }
-}
+    req.user = { id: payload.id };
+    next();
+  } catch (e) {
+    res.status(httpStatusCode.UNAUTHORIZED_401).send("Token expired");
+    return;
+  }
+};

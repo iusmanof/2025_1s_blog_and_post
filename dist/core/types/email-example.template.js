@@ -7,6 +7,6 @@ exports.emailExampleTemplate = {
                  <p>To finish registration please follow the link below:
                      <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
                  </p>`;
-    }
+    },
 };
 //# sourceMappingURL=email-example.template.js.map

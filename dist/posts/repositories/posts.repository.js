@@ -26,9 +26,9 @@ const mongodb_1 = require("mongodb");
 const blogs_repository_1 = require("../../blogs/repositories/blogs.repository");
 exports.postsRepository = {
     getAllPosts: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
         const skip = (pageNumber - 1) * pageSize;
-        const sortDir = sortDirection === 'asc' ? 1 : -1;
+        const sortDir = sortDirection === "asc" ? 1 : -1;
         const result = yield (0, mongo_db_1.getPostCollection)()
             .find({})
             .sort({ [sortBy]: sortDir })
@@ -43,11 +43,11 @@ exports.postsRepository = {
         // return resultWithId;
         const totalCount = yield (0, mongo_db_1.getPostCollection)().countDocuments({});
         return {
-            "pagesCount": +Math.ceil(totalCount / pageSize),
-            "page": +pageNumber,
-            "pageSize": +pageSize,
-            "totalCount": +totalCount,
-            "items": resultWithId
+            pagesCount: +Math.ceil(totalCount / pageSize),
+            page: +pageNumber,
+            pageSize: +pageSize,
+            totalCount: +totalCount,
+            items: resultWithId,
         };
     }),
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -112,9 +112,9 @@ exports.postsRepository = {
         yield (0, mongo_db_1.getPostCollection)().deleteMany({});
     }),
     getPostByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
-        const { pageNumber = 1, pageSize = 10, sortBy = 'createdAt', sortDirection = 'desc' } = query;
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
         const skip = (pageNumber - 1) * pageSize;
-        const sortDir = sortDirection === 'asc' ? 1 : -1;
+        const sortDir = sortDirection === "asc" ? 1 : -1;
         const result = yield (0, mongo_db_1.getPostCollection)()
             .find({ blogId })
             .sort({ [sortBy]: sortDir })
@@ -127,13 +127,13 @@ exports.postsRepository = {
         });
         const totalCount = yield (0, mongo_db_1.getPostCollection)().countDocuments({ blogId });
         const resultWithMeta = {
-            "pagesCount": +Math.ceil(totalCount / pageSize),
-            "page": +pageNumber,
-            "pageSize": +pageSize,
-            "totalCount": +totalCount,
-            "items": postWithId
+            pagesCount: +Math.ceil(totalCount / pageSize),
+            page: +pageNumber,
+            pageSize: +pageSize,
+            totalCount: +totalCount,
+            items: postWithId,
         };
         return yield resultWithMeta;
-    })
+    }),
 };
 //# sourceMappingURL=posts.repository.js.map

@@ -18,7 +18,9 @@ const jwt_adapter_1 = require("../adapters/jwt.adapter");
 const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const rftoken = req.cookies.refreshToken;
     if (!rftoken) {
-        res.status(http_status_code_1.default.UNAUTHORIZED_401).send({ errorsMessages: "Unauthorized" });
+        res
+            .status(http_status_code_1.default.UNAUTHORIZED_401)
+            .send({ errorsMessages: "Unauthorized" });
         return;
     }
     else {

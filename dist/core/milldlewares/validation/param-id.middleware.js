@@ -9,9 +9,9 @@ const paramIdMiddleware = (req, res, next) => {
             errors: [
                 {
                     message: "Invalid blogId",
-                    field: "blogId"
-                }
-            ]
+                    field: "blogId",
+                },
+            ],
         });
     }
     return next();

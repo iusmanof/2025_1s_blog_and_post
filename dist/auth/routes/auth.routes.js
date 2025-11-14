@@ -34,18 +34,24 @@ exports.authRouter = (0, express_1.Router)();
 exports.authRouter.post("/login", password_validation_middleware_1.passwordValidation, login_or_email_validation_1.loginOrEmailValidation, input_validation_middleware_1.inputValidationMiddleware, loginRequestLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { loginOrEmail, password } = req.body;
-    const ipAddr = req.headers['x-forwarded-for']
-        ? req.headers['x-forwarded-for'][0]
-        : req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown ip';
-    const userAgent = (_a = req.headers['user-agent']) !== null && _a !== void 0 ? _a : "userAgent undefined";
-    // Create RT AT using  Login Password IP User-agent
+    const ipAddr = req.headers["x-forwarded-for"]
+        ? req.headers["x-forwarded-for"][0]
+        : req.headers["x-forwarded-for"] ||
+            req.socket.remoteAddress ||
+            "unknown ip";
+    const userAgent = (_a = req.headers["user-agent"]) !== null && _a !== void 0 ? _a : "userAgent undefined";
     const result = yield auth_service_1.authService.login(loginOrEmail, password, ipAddr, userAgent);
     if (result.status === result_object_1.resultStatus.ERROR || result.data === null) {
         res.status(http_status_code_1.default.UNAUTHORIZED_401).json(result);
         return;
     }
-    res.cookie('refreshToken', result.data.refreshToken, { httpOnly: true, secure: true });
-    res.status(http_status_code_1.default.OK_200).json({ accessToken: result.data.accessToken });
+    res.cookie("refreshToken", result.data.refreshToken, {
+        httpOnly: true,
+        secure: true,
+    });
+    res
+        .status(http_status_code_1.default.OK_200)
+        .json({ accessToken: result.data.accessToken });
 }));
 exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -64,8 +70,11 @@ exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) 
 exports.authRouter.post("/registration-confirmation", registrationConfirmationRequestLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const code = req.body.code;
     const result = yield auth_service_1.authService.confirmUser(code);
-    if (result.status === result_object_1.resultStatus.BAD_REQUEST || result.status === result_object_1.resultStatus.CODE_EXPIRED) {
-        res.status(http_status_code_1.default.BAD_REQUEST_400).json({ errorsMessages: result.extensions });
+    if (result.status === result_object_1.resultStatus.BAD_REQUEST ||
+        result.status === result_object_1.resultStatus.CODE_EXPIRED) {
+        res
+            .status(http_status_code_1.default.BAD_REQUEST_400)
+            .json({ errorsMessages: result.extensions });
         return;
     }
     res.sendStatus(http_status_code_1.default.NO_CONTENT_204);
@@ -74,7 +83,9 @@ exports.authRouter.post("/registration", registrationRequestLimit, email_registr
     const { login, email, password } = req.body;
     const result = yield auth_service_1.authService.registerUser(login, email, password);
     if (result.status === result_object_1.resultStatus.EXISTS) {
-        res.status(http_status_code_1.default.BAD_REQUEST_400).json({ errorsMessages: result.extensions });
+        res
+            .status(http_status_code_1.default.BAD_REQUEST_400)
+            .json({ errorsMessages: result.extensions });
         return;
     }
     res.sendStatus(http_status_code_1.default.NO_CONTENT_204);
@@ -82,21 +93,28 @@ exports.authRouter.post("/registration", registrationRequestLimit, email_registr
 exports.authRouter.post("/registration-email-resending", registrationEmailResendingRequestLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
     const result = yield auth_service_1.authService.resendCode(email);
-    if (result.status === result_object_1.resultStatus.BAD_REQUEST || result.status === result_object_1.resultStatus.NOT_FOUND) {
-        res.status(http_status_code_1.default.BAD_REQUEST_400).json({ errorsMessages: result.extensions });
+    if (result.status === result_object_1.resultStatus.BAD_REQUEST ||
+        result.status === result_object_1.resultStatus.NOT_FOUND) {
+        res
+            .status(http_status_code_1.default.BAD_REQUEST_400)
+            .json({ errorsMessages: result.extensions });
         return;
     }
-    res.status(http_status_code_1.default.NO_CONTENT_204).send('resend');
+    res.status(http_status_code_1.default.NO_CONTENT_204).send("resend");
 }));
-exports.authRouter.post('/refresh-token', refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post("/refresh-token", refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const rf = req.cookies.refreshToken;
-    const ipAddr = req.headers['x-forwarded-for']
-        ? req.headers['x-forwarded-for'][0]
-        : req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown ip';
-    const userAgent = (_a = req.headers['user-agent']) !== null && _a !== void 0 ? _a : "userAgent undefined";
+    const ipAddr = req.headers["x-forwarded-for"]
+        ? req.headers["x-forwarded-for"][0]
+        : req.headers["x-forwarded-for"] ||
+            req.socket.remoteAddress ||
+            "unknown ip";
+    const userAgent = (_a = req.headers["user-agent"]) !== null && _a !== void 0 ? _a : "userAgent undefined";
     if (!rf) {
-        res.status(http_status_code_1.default.UNAUTHORIZED_401).json({ message: "Refresh token missing" });
+        res
+            .status(http_status_code_1.default.UNAUTHORIZED_401)
+            .json({ message: "Refresh token missing" });
         return;
     }
     const result = yield auth_service_1.authService.updateToken(rf, ipAddr, userAgent);
@@ -105,10 +123,10 @@ exports.authRouter.post('/refresh-token', refresh_token_middleware_1.verifyRefre
         return;
     }
     const { accessToken, refreshToken } = result.data;
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
     res.status(http_status_code_1.default.OK_200).json({ accessToken: accessToken });
 }));
-exports.authRouter.post('/logout', refresh_token_middleware_1.checkRefreshTokenMiddleware, refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post("/logout", refresh_token_middleware_1.checkRefreshTokenMiddleware, refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.refreshToken;
     const result = yield auth_service_1.authService.expireToken(token);
     if (result.status === result_object_1.resultStatus.UNAUTORIZED) {

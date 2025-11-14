@@ -19,8 +19,11 @@ const http_status_code_1 = __importDefault(require("../../../core/types/http-sta
 const post_service_1 = __importDefault(require("../../services/post.service"));
 function createCommentHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!req.user) {
+            res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
+            return;
+        }
+        const userId = req.user.id;
         const postId = req.params.postId;
         const content = req.body.content;
         const post = yield post_service_1.default.findById(postId);
@@ -29,7 +32,7 @@ function createCommentHandler(req, res) {
             return;
         }
         const result = yield comments_service_1.commentsService.create(userId, postId, content);
-        if (result.status == result_object_1.resultStatus.ERROR) {
+        if (result.status === result_object_1.resultStatus.ERROR) {
             res.status(http_status_code_1.default.BAD_REQUEST_400).json(result);
             return;
         }

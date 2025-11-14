@@ -39,6 +39,6 @@ exports.usersService = {
             }
             return yield users_repository_1.usersRepository.delete(id);
         });
-    }
+    },
 };
 //# sourceMappingURL=users.service.js.map

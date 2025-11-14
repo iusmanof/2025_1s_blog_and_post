@@ -17,15 +17,15 @@ const rateLimitMiddleware = (limitRequest, timeRequest) => {
             next();
             return;
         }
-        // 10 sec
         if (nowTime - record.firstRequestTime > timeRequest * 1000) {
             rateLimits[url] = { countLimit: startCount, firstRequestTime: nowTime };
             next();
             return;
         }
-        // 5 limit request
         if (record.countLimit >= limitRequest) {
-            res.status(http_status_code_1.default.TOO_MANY_REQUESTS_429).json({ message: "Rate limit reached" });
+            res
+                .status(http_status_code_1.default.TOO_MANY_REQUESTS_429)
+                .json({ message: "Rate limit reached" });
             return;
         }
         record.countLimit += 1;

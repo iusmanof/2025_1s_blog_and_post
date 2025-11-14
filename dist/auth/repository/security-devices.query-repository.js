@@ -26,9 +26,9 @@ exports.securityDevicesQueryRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getSecurityDeviceCollection)().findOne({
                 deviceId: deviceId,
-                lastActivateDate: iat
+                lastActivateDate: iat,
             });
         });
-    }
+    },
 };
 //# sourceMappingURL=security-devices.query-repository.js.map

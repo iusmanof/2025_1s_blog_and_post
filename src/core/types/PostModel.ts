@@ -15,16 +15,16 @@ export type PostMongoDb = PostModel & {
 };
 
 export type PostQuery = {
-    sortBy?: string;
-    sortDirection?: string;
-    pageNumber?: number;
-    pageSize?: number;
-}
+  sortBy?: string;
+  sortDirection?: string;
+  pageNumber?: number;
+  pageSize?: number;
+};
 
 export type PostPromise = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: PostModel[]
-}
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: PostModel[];
+};

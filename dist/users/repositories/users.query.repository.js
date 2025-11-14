@@ -15,7 +15,7 @@ const mongodb_1 = require("mongodb");
 exports.usersQueryRepository = {
     findAllUsers(sortQueryDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { sortBy, sortDirection, pageSize, pageNumber, searchEmailTerm, searchLoginTerm } = sortQueryDto;
+            const { sortBy, sortDirection, pageSize, pageNumber, searchEmailTerm, searchLoginTerm, } = sortQueryDto;
             const skip = (pageNumber - 1) * pageSize;
             const filter = this._getFilter(searchLoginTerm, searchEmailTerm);
             const totalCount = yield (0, mongo_db_1.getUserCollection)().countDocuments(filter);
@@ -55,10 +55,10 @@ exports.usersQueryRepository = {
         // let filter: { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } = {};
         const filters = [];
         if (loginQuery) {
-            filters.push({ login: { $regex: loginQuery, $options: 'i' } });
+            filters.push({ login: { $regex: loginQuery, $options: "i" } });
         }
         if (emailQuery) {
-            filters.push({ email: { $regex: emailQuery, $options: 'i' } });
+            filters.push({ email: { $regex: emailQuery, $options: "i" } });
         }
         if (filters.length === 0) {
             return {};
@@ -68,6 +68,6 @@ exports.usersQueryRepository = {
         }
         // @ts-ignore
         return { $or: filters };
-    }
+    },
 };
 //# sourceMappingURL=users.query.repository.js.map

@@ -23,7 +23,7 @@ function getCommentsByPostIdHandler(req, res) {
         const query = req.query;
         const post = yield post_service_1.default.findById(postId);
         if (!post) {
-            res.status(http_status_code_2.default.NOT_FOUND_404).send('Post not found');
+            res.status(http_status_code_2.default.NOT_FOUND_404).send("Post not found");
             return;
         }
         const result = yield comments_service_1.commentsService.getCommentByPostId(postId, query);

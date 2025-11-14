@@ -16,25 +16,25 @@ exports.accessTokenGuard = void 0;
 const http_status_code_1 = __importDefault(require("../core/types/http-status-code"));
 const jwt_adapter_1 = require("./adapters/jwt.adapter");
 const accessTokenGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const authHeader = req.header('Authorization');
+    const authHeader = req.header("Authorization");
     if (!authHeader) {
-        res.status(http_status_code_1.default.UNAUTHORIZED_401).send('Unauthorized');
+        res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
         return;
     }
-    const [type, token] = authHeader.split(' ');
+    const [type, token] = authHeader.split(" ");
     if (type !== "Bearer") {
-        res.status(http_status_code_1.default.UNAUTHORIZED_401).send('Unauthorized');
+        res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
         return;
     }
     try {
         const payload = yield jwt_adapter_1.jwtAdapter.verifyAccessToken(token);
-        if (!payload || typeof payload === 'string' || !('id' in payload)) {
+        if (!payload || typeof payload === "string" || !("id" in payload)) {
             res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
             return;
         }
         const decodedToken = yield jwt_adapter_1.jwtAdapter.decodeToken(token);
         if (!decodedToken ||
-            (typeof decodedToken !== "string" && decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
+            (decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
             res.status(http_status_code_1.default.UNAUTHORIZED_401).send("AT expired");
             return;
         }

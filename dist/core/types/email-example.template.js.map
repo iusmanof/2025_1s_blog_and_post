@@ -1,1 +1,1 @@
-{"version":3,"file":"email-example.template.js","sourceRoot":"","sources":["../../../src/core/types/email-example.template.ts"],"names":[],"mappings":";;;AAAa,QAAA,oBAAoB,GAAG;IAChC,iBAAiB,EAAE,CAAC,IAAY,EAAE,EAAE;QAChC,OAAO;;wEAEyD,IAAI;sBACtD,CAAA;IAClB,CAAC;CACJ,CAAA"}
+{"version":3,"file":"email-example.template.js","sourceRoot":"","sources":["../../../src/core/types/email-example.template.ts"],"names":[],"mappings":";;;AAAa,QAAA,oBAAoB,GAAG;IAClC,iBAAiB,EAAE,CAAC,IAAY,EAAE,EAAE;QAClC,OAAO;;wEAE6D,IAAI;sBACtD,CAAC;IACrB,CAAC;CACF,CAAC"}

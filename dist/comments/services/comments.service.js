@@ -19,15 +19,15 @@ exports.commentsService = {
             if (!commentsInfo) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
-                    errorMessages: 'Failed to create a comment',
+                    errorMessages: "Failed to create a comment",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: commentsInfo
+                data: commentsInfo,
             };
         });
     },
@@ -37,15 +37,15 @@ exports.commentsService = {
             if (!comments) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
-                    errorMessages: 'Comments not found',
+                    errorMessages: "Comments not found",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: comments
+                data: comments,
             };
         });
     },
@@ -55,15 +55,15 @@ exports.commentsService = {
             if (!comment) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
-                    errorMessages: 'Failed to get a comment',
+                    errorMessages: "Failed to get a comment",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: comment
+                data: comment,
             };
         });
     },
@@ -73,23 +73,23 @@ exports.commentsService = {
             if (!comment) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
-                    errorMessages: 'Failed to get a comment',
+                    errorMessages: "Failed to get a comment",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             if (comment.commentatorInfo.userId !== userId) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
-                    errorMessages: 'UserId not found',
+                    errorMessages: "UserId not found",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: comment
+                data: comment,
             };
         });
     },
@@ -99,15 +99,15 @@ exports.commentsService = {
             if (!result) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
-                    errorMessages: 'Failed to delete a comment',
+                    errorMessages: "Failed to delete a comment",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: result
+                data: result,
             };
         });
     },
@@ -117,21 +117,20 @@ exports.commentsService = {
             if (!result) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
-                    errorMessages: 'Failed to update a comment',
+                    errorMessages: "Failed to update a comment",
                     data: null,
-                    extensions: []
+                    extensions: [],
                 };
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: result
+                data: result,
             };
         });
     },
     findById() {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
-    }
+        return __awaiter(this, void 0, void 0, function* () { });
+    },
 };
 //# sourceMappingURL=comments.service.js.map

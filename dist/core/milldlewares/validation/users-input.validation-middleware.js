@@ -16,7 +16,9 @@ const usersInputValidationMiddleware = (req, res, next) => {
                 field: "path" in err ? err.path : err.type,
             };
         });
-        res.status(http_status_code_1.default.BAD_REQUEST_400).send({ errorsMessages: errorsArray });
+        res
+            .status(http_status_code_1.default.BAD_REQUEST_400)
+            .send({ errorsMessages: errorsArray });
         return;
     }
     next();

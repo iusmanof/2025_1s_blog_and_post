@@ -39,7 +39,9 @@ exports.commentsRouter.delete("/:id", access_token_guard_1.accessTokenGuard, (re
         return;
     }
     if (comment.status == result_object_1.resultStatus.ERROR) {
-        res.status(http_status_code_1.default.FORBIDDEN_403).send("If try delete the comment that is not your own");
+        res
+            .status(http_status_code_1.default.FORBIDDEN_403)
+            .send("If try delete the comment that is not your own");
         return;
     }
     const result = yield comments_service_1.commentsService.deleteById(commentId);
@@ -62,7 +64,9 @@ exports.commentsRouter.put("/:id", access_token_guard_1.accessTokenGuard, [comme
         return;
     }
     if (comment.status == result_object_1.resultStatus.ERROR) {
-        res.status(http_status_code_1.default.FORBIDDEN_403).send("If try delete the comment that is not your own");
+        res
+            .status(http_status_code_1.default.FORBIDDEN_403)
+            .send("If try delete the comment that is not your own");
         return;
     }
     const result = yield comments_service_1.commentsService.updateById(commentId, content);

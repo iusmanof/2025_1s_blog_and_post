@@ -12,29 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const posts_repository_1 = require("../repositories/posts.repository");
 const PostService = {
     findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        // Business logic layer
         return yield posts_repository_1.postsRepository.getAllPosts(query);
     }),
     findById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        // Business logic layer
         return yield posts_repository_1.postsRepository.getPostById(id);
     }),
     create: (body) => __awaiter(void 0, void 0, void 0, function* () {
-        // Business logic layer
         return yield posts_repository_1.postsRepository.createPost(body);
     }),
     update: (id, body) => __awaiter(void 0, void 0, void 0, function* () {
-        // Business logic layer
         return yield posts_repository_1.postsRepository.updatePost(id, body);
     }),
     delete: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        // Business logic layer
         return yield posts_repository_1.postsRepository.deletePost(id);
     }),
     findPostsByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
-        // Business logic layer
         return yield posts_repository_1.postsRepository.getPostByBlogId(blogId, query);
-    })
+    }),
 };
 exports.default = PostService;
 //# sourceMappingURL=post.service.js.map

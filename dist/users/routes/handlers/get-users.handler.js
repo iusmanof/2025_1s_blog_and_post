@@ -19,14 +19,14 @@ const http_status_code_1 = __importDefault(require("../../../core/types/http-sta
 function getUsersHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const query = req.query;
-        const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm, searchEmailTerm } = (0, sort_query_default_util_1.sortQueryFieldsUtil)(query);
+        const { pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm, searchEmailTerm, } = (0, sort_query_default_util_1.sortQueryFieldsUtil)(query);
         const users = yield users_query_repository_1.usersQueryRepository.findAllUsers({
             pageNumber,
             pageSize,
             sortBy,
             sortDirection,
             searchLoginTerm,
-            searchEmailTerm
+            searchEmailTerm,
         });
         return res.status(http_status_code_1.default.OK_200).send(users);
     });
