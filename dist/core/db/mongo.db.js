@@ -38,9 +38,6 @@ const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
         commentCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_COMMENTS);
         securityDevicesCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_SECURITY_DEVICES);
         console.log("Connect successfully to server");
-        // TTL refresh token black list
-        // await listRefreshTokenCollection.dropIndex("createdAt_1");
-        // await listRefreshTokenCollection.createIndex({createdAt: 1}, {expireAfterSeconds: 24})
     }
     catch (e) {
         console.error("Don't connect to server");

@@ -21,12 +21,10 @@ const userIdBelongsToAnotherMiddleware = (req, res, next) => __awaiter(void 0, v
     const targerDeviceId = req.params.deviceId;
     const { id: decodedUserId } = yield jwt_adapter_1.jwtAdapter.decodeToken(rftoken);
     const targetDevice = yield security_devices_query_repository_1.securityDevicesQueryRepository.geByDeviceId(targerDeviceId);
-    // DeviceId(url) not found if DB
     if (!targetDevice) {
         res.status(http_status_code_1.default.NOT_FOUND_404).json({ test: "not found" });
         return;
     }
-    // UserId(url) not equal UserId(RefreshTOken)
     if ((targetDevice === null || targetDevice === void 0 ? void 0 : targetDevice.userId) !== decodedUserId) {
         res.status(http_status_code_1.default.FORBIDDEN_403).send({ error: "Forbidden" });
         return;
