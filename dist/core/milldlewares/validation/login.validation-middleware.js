@@ -11,7 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginValidation = void 0;
 const express_validator_1 = require("express-validator");
-const users_repository_1 = require("../../../users/repositories/users.repository");
+const composition_root_1 = require("../../../composition.root");
+// import { usersRepository } from "../../../users/repositories/users.repository";
 exports.loginValidation = (0, express_validator_1.body)("login")
     .isString()
     .trim()
@@ -19,7 +20,7 @@ exports.loginValidation = (0, express_validator_1.body)("login")
     .matches(/^[a-zA-Z0-9_-]*$/)
     .withMessage("Login is not correct")
     .custom((login) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_repository_1.usersRepository.findByLoginOrEmail(login);
+    const user = yield composition_root_1.usersRepository.findByLoginOrEmail(login);
     if (user) {
         throw new Error("login already exist");
     }

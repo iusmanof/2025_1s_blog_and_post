@@ -6,10 +6,10 @@ import {
 } from "../../core/types/PostModel";
 import { getPostCollection } from "../../core/db/mongo.db";
 import { ObjectId } from "mongodb";
-import { blogsRepository } from "../../blogs/repositories/blogs.repository";
+import {blogsRepository} from "../../composition.root";
 
-export const postsRepository = {
-  getAllPosts: async (query: PostQuery) => {
+export class PostsRepository {
+  async  getAllPosts (query: PostQuery) {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -50,9 +50,9 @@ export const postsRepository = {
       pageSize: +pageSize,
       totalCount: +totalCount,
       items: resultWithId,
-    };
-  },
-  getPostById: async (id: string) => {
+    }
+  }
+  async getPostById (id: string) {
     const result = await getPostCollection().findOne({ _id: new ObjectId(id) });
     if (!result) {
       return null;
@@ -62,8 +62,8 @@ export const postsRepository = {
       id: _id.toString(),
     }));
     return postWithId[0];
-  },
-  createPost: async (post: PostModel) => {
+  }
+  async createPost (post: PostModel)  {
     const blog = await blogsRepository.getBlogById(post.blogId);
 
     const postCreated = {
@@ -79,8 +79,8 @@ export const postsRepository = {
       ...postCreated,
       id: result.insertedId.toString(),
     };
-  },
-  createPostByBlogId: async (post: PostModel, blogId: string) => {
+  }
+  async createPostByBlogId(post: PostModel, blogId: string) {
     const blog = await blogsRepository.getBlogById(post.blogId);
 
     const postCreated = {
@@ -96,14 +96,14 @@ export const postsRepository = {
       ...postCreated,
       id: result.insertedId.toString(),
     };
-  },
-  deletePost: async (id: string) => {
+  }
+  async  deletePost(id: string)  {
     const isDeleted = await getPostCollection().deleteOne({
       _id: new ObjectId(id),
     });
     return (await isDeleted.deletedCount) !== 0;
-  },
-  updatePost: async (id: string, post: PostModelWithId) => {
+  }
+  async updatePost(id: string, post: PostModelWithId)  {
     const updateFields: Partial<PostModelWithId> = {
       title: post.title,
       shortDescription: post.shortDescription,
@@ -121,14 +121,14 @@ export const postsRepository = {
       },
     );
     return (await isUpdated.matchedCount) !== 0;
-  },
-  deleteAllPosts: async () => {
+  }
+  async deleteAllPosts() {
     await getPostCollection().deleteMany({});
-  },
-  getPostByBlogId: async (
+  }
+  async getPostByBlogId(
     blogId: string,
     query: PostQuery,
-  ): Promise<PostPromise> => {
+  ): Promise<PostPromise> {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -162,5 +162,5 @@ export const postsRepository = {
     };
 
     return await resultWithMeta;
-  },
-};
+  }
+}

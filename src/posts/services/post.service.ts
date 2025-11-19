@@ -1,29 +1,29 @@
-import { postsRepository } from "../repositories/posts.repository";
 import {
   PostModel,
   PostModelWithId,
   PostQuery,
 } from "../../core/types/PostModel";
+import {PostsRepository} from "../repositories/posts.repository";
 
-const PostService = {
-  findMany: async (query: PostQuery) => {
-    return await postsRepository.getAllPosts(query);
-  },
-  findById: async (id: string) => {
-    return await postsRepository.getPostById(id);
-  },
-  create: async (body: PostModel) => {
-    return await postsRepository.createPost(body);
-  },
-  update: async (id: string, body: PostModelWithId) => {
-    return await postsRepository.updatePost(id, body);
-  },
-  delete: async (id: string) => {
-    return await postsRepository.deletePost(id);
-  },
-  findPostsByBlogId: async (blogId: string, query: PostQuery): Promise<any> => {
-    return await postsRepository.getPostByBlogId(blogId, query);
-  },
-};
+export class PostService {
+    constructor(public readonly postsRepository: PostsRepository) {}
+  async findMany(query: PostQuery) {
+    return await this.postsRepository.getAllPosts(query);
+  }
+  async findById (id: string) {
+    return await this.postsRepository.getPostById(id);
+  }
+  async create(body: PostModel)  {
+    return await this.postsRepository.createPost(body);
+  }
+  async update (id: string, body: PostModelWithId)  {
+    return await this.postsRepository.updatePost(id, body);
+  }
+  async delete (id: string)  {
+    return await this.postsRepository.deletePost(id);
+  }
+  async findPostsByBlogId (blogId: string, query: PostQuery): Promise<any>  {
+    return await this.postsRepository.getPostByBlogId(blogId, query);
+  }
+}
 
-export default PostService;

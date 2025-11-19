@@ -1,5 +1,6 @@
 import { body } from "express-validator";
-import { usersRepository } from "../../users/repositories/users.repository";
+import {usersRepository} from "../../composition.root";
+// import { usersRepository } from "../../users/repositories/users.repository";
 
 export const emailRegistrationValidationMiddleware = body("email")
   .trim()

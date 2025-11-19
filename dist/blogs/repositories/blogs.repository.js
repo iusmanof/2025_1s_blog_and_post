@@ -20,38 +20,40 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsRepository = void 0;
+exports.BlogsRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
-const posts_repository_1 = require("../../posts/repositories/posts.repository");
-exports.blogsRepository = {
-    getAllBlogs: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", searchNameTerm, } = query;
-        const skip = (pageNumber - 1) * pageSize;
-        const sortDir = sortDirection === "asc" ? 1 : -1;
-        const search = searchNameTerm
-            ? { name: { $regex: searchNameTerm, $options: "i" } }
-            : {};
-        const result = yield (0, mongo_db_1.getBlogCollection)()
-            .find(search)
-            .sort({ [sortBy]: sortDir })
-            .skip(+skip)
-            .limit(+pageSize)
-            .toArray();
-        const blogWithId = result.map((_a) => {
-            var { _id } = _a, rest = __rest(_a, ["_id"]);
-            return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
+const composition_root_1 = require("../../composition.root");
+class BlogsRepository {
+    getAllBlogs(query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", searchNameTerm, } = query;
+            const skip = (pageNumber - 1) * pageSize;
+            const sortDir = sortDirection === "asc" ? 1 : -1;
+            const search = searchNameTerm
+                ? { name: { $regex: searchNameTerm, $options: "i" } }
+                : {};
+            const result = yield (0, mongo_db_1.getBlogCollection)()
+                .find(search)
+                .sort({ [sortBy]: sortDir })
+                .skip(+skip)
+                .limit(+pageSize)
+                .toArray();
+            const blogWithId = result.map((_a) => {
+                var { _id } = _a, rest = __rest(_a, ["_id"]);
+                return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
+            });
+            const totalCount = (yield (0, mongo_db_1.getBlogCollection)().find(search).toArray())
+                .length;
+            return {
+                pagesCount: +Math.ceil(totalCount / pageSize),
+                page: +pageNumber,
+                pageSize: +pageSize,
+                totalCount: +totalCount,
+                items: blogWithId,
+            };
         });
-        const totalCount = (yield (0, mongo_db_1.getBlogCollection)().find(search).toArray())
-            .length;
-        return {
-            pagesCount: +Math.ceil(totalCount / pageSize),
-            page: +pageNumber,
-            pageSize: +pageSize,
-            totalCount: +totalCount,
-            items: blogWithId,
-        };
-    }),
+    }
     getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield (0, mongo_db_1.getBlogCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
@@ -64,7 +66,7 @@ exports.blogsRepository = {
             });
             return blogWIthId[0];
         });
-    },
+    }
     createBlog(blog) {
         return __awaiter(this, void 0, void 0, function* () {
             const blogCreatedWithDate = {
@@ -77,7 +79,7 @@ exports.blogsRepository = {
             const result = yield (0, mongo_db_1.getBlogCollection)().insertOne(Object.assign({}, blogCreatedWithDate));
             return Object.assign(Object.assign({}, blogCreatedWithDate), { id: result.insertedId.toString() });
         });
-    },
+    }
     updateBlog(id, blog) {
         return __awaiter(this, void 0, void 0, function* () {
             const isUpdated = yield (0, mongo_db_1.getBlogCollection)().updateOne({ _id: new mongodb_1.ObjectId(id) }, {
@@ -89,12 +91,12 @@ exports.blogsRepository = {
             });
             return isUpdated.matchedCount !== 0;
         });
-    },
+    }
     createPostByBlogId(body, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield posts_repository_1.postsRepository.createPostByBlogId(body, blogId);
+            return yield composition_root_1.postsRepository.createPostByBlogId(body, blogId);
         });
-    },
+    }
     deleteBlog(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const isDeleted = yield (0, mongo_db_1.getBlogCollection)().deleteOne({
@@ -102,11 +104,12 @@ exports.blogsRepository = {
             });
             return isDeleted.deletedCount !== 0;
         });
-    },
+    }
     deleteAllBlogs() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getBlogCollection)().deleteMany({});
         });
-    },
-};
+    }
+}
+exports.BlogsRepository = BlogsRepository;
 //# sourceMappingURL=blogs.repository.js.map

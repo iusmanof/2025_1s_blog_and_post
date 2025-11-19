@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentsService = void 0;
+exports.CommentsService = void 0;
 const result_object_1 = require("../../core/types/result-object");
-const comments_repository_1 = require("../repositories/comments.repository");
-exports.commentsService = {
+const composition_root_1 = require("../../composition.root");
+class CommentsService {
     create(userId, postId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const commentsInfo = yield comments_repository_1.commentsRepository.create(userId, postId, content);
+            const commentsInfo = yield composition_root_1.commentsRepository.create(userId, postId, content);
             if (!commentsInfo) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -30,10 +30,10 @@ exports.commentsService = {
                 data: commentsInfo,
             };
         });
-    },
+    }
     getCommentByPostId(postId, query) {
         return __awaiter(this, void 0, void 0, function* () {
-            const comments = yield comments_repository_1.commentsRepository.getCommentsByPostId(postId, query);
+            const comments = yield composition_root_1.commentsRepository.getCommentsByPostId(postId, query);
             if (!comments) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -48,10 +48,10 @@ exports.commentsService = {
                 data: comments,
             };
         });
-    },
+    }
     getByCommentId(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const comment = yield comments_repository_1.commentsRepository.getCommentById(commentId);
+            const comment = yield composition_root_1.commentsRepository.getCommentById(commentId);
             if (!comment) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
@@ -66,10 +66,10 @@ exports.commentsService = {
                 data: comment,
             };
         });
-    },
+    }
     getCommentById(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const comment = yield comments_repository_1.commentsRepository.getCommentById(commentId);
+            const comment = yield composition_root_1.commentsRepository.getCommentById(commentId);
             if (!comment) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
@@ -92,10 +92,10 @@ exports.commentsService = {
                 data: comment,
             };
         });
-    },
+    }
     deleteById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield comments_repository_1.commentsRepository.deleteById(commentId);
+            const result = yield composition_root_1.commentsRepository.deleteById(commentId);
             if (!result) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -110,10 +110,10 @@ exports.commentsService = {
                 data: result,
             };
         });
-    },
+    }
     updateById(commentId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield comments_repository_1.commentsRepository.updateById(commentId, content);
+            const result = yield composition_root_1.commentsRepository.updateById(commentId, content);
             if (!result) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -128,9 +128,7 @@ exports.commentsService = {
                 data: result,
             };
         });
-    },
-    findById() {
-        return __awaiter(this, void 0, void 0, function* () { });
-    },
-};
+    }
+}
+exports.CommentsService = CommentsService;
 //# sourceMappingURL=comments.service.js.map

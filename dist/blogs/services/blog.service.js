@@ -9,26 +9,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const blogs_repository_1 = require("../repositories/blogs.repository");
-const BlogService = {
-    findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield blogs_repository_1.blogsRepository.getAllBlogs(query);
-    }),
-    findById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield blogs_repository_1.blogsRepository.getBlogById(id);
-    }),
-    create: (body) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield blogs_repository_1.blogsRepository.createBlog(body);
-    }),
-    createPostByBlogId: (body, blogId) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield blogs_repository_1.blogsRepository.createPostByBlogId(body, blogId);
-    }),
-    update: (id, body) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield blogs_repository_1.blogsRepository.updateBlog(id, body);
-    }),
-    delete: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield blogs_repository_1.blogsRepository.deleteBlog(id);
-    }),
-};
-exports.default = BlogService;
+exports.BlogService = void 0;
+class BlogService {
+    constructor(blogsRepository) {
+        this.blogsRepository = blogsRepository;
+    }
+    findMany(query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.getAllBlogs(query);
+        });
+    }
+    findById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.getBlogById(id);
+        });
+    }
+    create(body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.createBlog(body);
+        });
+    }
+    createPostByBlogId(body, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.createPostByBlogId(body, blogId);
+        });
+    }
+    update(id, body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.updateBlog(id, body);
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.deleteBlog(id);
+        });
+    }
+}
+exports.BlogService = BlogService;
 //# sourceMappingURL=blog.service.js.map

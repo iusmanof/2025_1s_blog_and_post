@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
 import httpStatusCode from "../../core/types/http-status-code";
-import { commentsService } from "../services/comments.service";
 import { accessTokenGuard } from "../../auth/access-token.guard";
 import { resultStatus } from "../../core/types/result-object";
 import { commentValidationa } from "../../core/milldlewares/validation/comments-validation.middleware";
 import { inputValidationMiddleware } from "../../core/milldlewares/validation/input-validation-middleware";
+import {commentsService} from "../../composition.root";
 
 export const commentsRouter = Router();
 

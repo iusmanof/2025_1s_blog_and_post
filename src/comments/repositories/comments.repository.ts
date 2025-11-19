@@ -3,11 +3,11 @@ import {
   commentsDataResultObject,
   commentsDBResultObject,
 } from "../types/comments-data-result-object";
-import { usersQueryRepository } from "../../users/repositories/users.query.repository";
 import { ObjectId } from "mongodb";
 import { CommentsQuery } from "../types/comments-query";
+import {usersQueryRepository} from "../../composition.root";
 
-export const commentsRepository = {
+export class CommentsRepository {
   async create(
     userId: string,
     postId: string,
@@ -36,7 +36,7 @@ export const commentsRepository = {
       createdAt: comment.createdAt,
       id: result.insertedId.toString(),
     };
-  },
+  }
   async getCommentsByPostId(
     postId: string,
     query: CommentsQuery,
@@ -78,7 +78,7 @@ export const commentsRepository = {
         createdAt: comment.createdAt,
       })),
     };
-  },
+  }
   async getCommentById(
     commentId: string,
   ): Promise<commentsDataResultObject | null> {
@@ -96,7 +96,7 @@ export const commentsRepository = {
       commentatorInfo: result.commentatorInfo,
       createdAt: result.createdAt,
     };
-  },
+  }
   async deleteById(commentId: string) {
     const result = await getCommentCollection().deleteOne({
       _id: new ObjectId(commentId),
@@ -105,10 +105,10 @@ export const commentsRepository = {
       return null;
     }
     return result;
-  },
+  }
   async deleteAllComments() {
     await getCommentCollection().deleteMany({});
-  },
+  }
   async updateById(commentId: string, content: string): Promise<{} | null> {
     const result = await getCommentCollection().updateOne(
       { _id: new ObjectId(commentId) },
@@ -118,5 +118,5 @@ export const commentsRepository = {
       return null;
     }
     return result;
-  },
-};
+  }
+}

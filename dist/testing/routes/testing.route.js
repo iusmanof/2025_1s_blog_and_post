@@ -11,20 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testingRouter = void 0;
 const express_1 = require("express");
-const blogs_repository_1 = require("../../blogs/repositories/blogs.repository");
-const posts_repository_1 = require("../../posts/repositories/posts.repository");
-const users_repository_1 = require("../../users/repositories/users.repository");
-const comments_repository_1 = require("../../comments/repositories/comments.repository");
-const auth_repository_1 = require("../../auth/repository/auth.repository");
-const security_devices_repository_1 = require("../../auth/repository/security-devices.repository");
+const composition_root_1 = require("../../composition.root");
 exports.testingRouter = (0, express_1.Router)();
 exports.testingRouter.delete("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield blogs_repository_1.blogsRepository.deleteAllBlogs();
-    yield posts_repository_1.postsRepository.deleteAllPosts();
-    yield users_repository_1.usersRepository.deleteAllUsers();
-    yield comments_repository_1.commentsRepository.deleteAllComments();
-    yield auth_repository_1.authRepository.deleteRefreshTokenBlackList();
-    yield security_devices_repository_1.securityDevicesRepository.deleteAllDevices();
+    yield composition_root_1.blogsRepository.deleteAllBlogs();
+    yield composition_root_1.postsRepository.deleteAllPosts();
+    yield composition_root_1.usersRepository.deleteAllUsers();
+    yield composition_root_1.commentsRepository.deleteAllComments();
+    yield composition_root_1.authRepository.deleteRefreshTokenBlackList();
+    yield composition_root_1.securityDevicesRepository.deleteAllDevices();
     res.status(204).send("All data is deleted");
 }));
 //# sourceMappingURL=testing.route.js.map

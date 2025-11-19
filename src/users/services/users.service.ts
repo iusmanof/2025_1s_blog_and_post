@@ -1,19 +1,21 @@
 import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
-import { usersRepository } from "../repositories/users.repository";
+import {UsersRepository} from "../repositories/users.repository";
 import { UserCreateDto } from "../types/user-create-dto";
 import { UserDbDto } from "../types/user-db-dto";
-import { bcryptAdapter } from "../../auth/adapters/bcrypt.adapter";
+import {BcryptAdapter} from "../../auth/adapters/bcrypt.adapter";
 
-export const usersService = {
+export class UsersService{
+    constructor(public readonly usersRepository: UsersRepository, private readonly bcryptAdapter: BcryptAdapter) {
+    }
   async findMany(
     queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
   ): Promise<{ items: UserDbDto[]; totalCount: number }> {
-    return usersRepository.findMany(queryDto);
-  },
+    return this.usersRepository.findMany(queryDto);
+  }
   async create(dto: UserCreateDto): Promise<string> {
     const { login, password, email } = dto;
 
-    const passwordhash = await bcryptAdapter.generateHash(password);
+    const passwordhash = await this.bcryptAdapter.generateHash(password);
 
     const newUser: UserDbDto = {
       login,
@@ -22,13 +24,45 @@ export const usersService = {
       createdAt: new Date(),
     };
 
-    return await usersRepository.create(newUser);
-  },
+    return await this.usersRepository.create(newUser);
+  }
   async delete(id: string): Promise<boolean> {
-    const user = await usersRepository.findById(id);
+    const user = await this.usersRepository.findById(id);
     if (!user) {
       return false;
     }
-    return await usersRepository.delete(id);
-  },
-};
+    return await this.usersRepository.delete(id);
+  }
+}
+
+
+
+
+// export const usersService = {
+//     async findMany(
+//         queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
+//     ): Promise<{ items: UserDbDto[]; totalCount: number }> {
+//         return usersRepository.findMany(queryDto);
+//     },
+//     async create(dto: UserCreateDto): Promise<string> {
+//         const { login, password, email } = dto;
+//
+//         const passwordhash = await bcryptAdapter.generateHash(password);
+//
+//         const newUser: UserDbDto = {
+//             login,
+//             email,
+//             password: passwordhash,
+//             createdAt: new Date(),
+//         };
+//
+//         return await usersRepository.create(newUser);
+//     },
+//     async delete(id: string): Promise<boolean> {
+//         const user = await usersRepository.findById(id);
+//         if (!user) {
+//             return false;
+//         }
+//         return await usersRepository.delete(id);
+//     },
+// };

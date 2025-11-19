@@ -9,36 +9,67 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersService = void 0;
-const users_repository_1 = require("../repositories/users.repository");
-const bcrypt_adapter_1 = require("../../auth/adapters/bcrypt.adapter");
-exports.usersService = {
+exports.UsersService = void 0;
+class UsersService {
+    constructor(usersRepository, bcryptAdapter) {
+        this.usersRepository = usersRepository;
+        this.bcryptAdapter = bcryptAdapter;
+    }
     findMany(queryDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            return users_repository_1.usersRepository.findMany(queryDto);
+            return this.usersRepository.findMany(queryDto);
         });
-    },
+    }
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             const { login, password, email } = dto;
-            const passwordhash = yield bcrypt_adapter_1.bcryptAdapter.generateHash(password);
+            const passwordhash = yield this.bcryptAdapter.generateHash(password);
             const newUser = {
                 login,
                 email,
                 password: passwordhash,
                 createdAt: new Date(),
             };
-            return yield users_repository_1.usersRepository.create(newUser);
+            return yield this.usersRepository.create(newUser);
         });
-    },
+    }
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield users_repository_1.usersRepository.findById(id);
+            const user = yield this.usersRepository.findById(id);
             if (!user) {
                 return false;
             }
-            return yield users_repository_1.usersRepository.delete(id);
+            return yield this.usersRepository.delete(id);
         });
-    },
-};
+    }
+}
+exports.UsersService = UsersService;
+// export const usersService = {
+//     async findMany(
+//         queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
+//     ): Promise<{ items: UserDbDto[]; totalCount: number }> {
+//         return usersRepository.findMany(queryDto);
+//     },
+//     async create(dto: UserCreateDto): Promise<string> {
+//         const { login, password, email } = dto;
+//
+//         const passwordhash = await bcryptAdapter.generateHash(password);
+//
+//         const newUser: UserDbDto = {
+//             login,
+//             email,
+//             password: passwordhash,
+//             createdAt: new Date(),
+//         };
+//
+//         return await usersRepository.create(newUser);
+//     },
+//     async delete(id: string): Promise<boolean> {
+//         const user = await usersRepository.findById(id);
+//         if (!user) {
+//             return false;
+//         }
+//         return await usersRepository.delete(id);
+//     },
+// };
 //# sourceMappingURL=users.service.js.map

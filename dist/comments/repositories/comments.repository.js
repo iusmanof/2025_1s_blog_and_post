@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentsRepository = void 0;
+exports.CommentsRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
-const users_query_repository_1 = require("../../users/repositories/users.query.repository");
 const mongodb_1 = require("mongodb");
-exports.commentsRepository = {
+const composition_root_1 = require("../../composition.root");
+class CommentsRepository {
     create(userId, postId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userData = yield users_query_repository_1.usersQueryRepository.findById(userId);
+            const userData = yield composition_root_1.usersQueryRepository.findById(userId);
             if (!userData) {
                 return null;
             }
@@ -37,7 +37,7 @@ exports.commentsRepository = {
                 id: result.insertedId.toString(),
             };
         });
-    },
+    }
     getCommentsByPostId(postId, query) {
         return __awaiter(this, void 0, void 0, function* () {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
@@ -68,7 +68,7 @@ exports.commentsRepository = {
                 })),
             };
         });
-    },
+    }
     getCommentById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield (0, mongo_db_1.getCommentCollection)().findOne({
@@ -84,7 +84,7 @@ exports.commentsRepository = {
                 createdAt: result.createdAt,
             };
         });
-    },
+    }
     deleteById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield (0, mongo_db_1.getCommentCollection)().deleteOne({
@@ -95,12 +95,12 @@ exports.commentsRepository = {
             }
             return result;
         });
-    },
+    }
     deleteAllComments() {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, mongo_db_1.getCommentCollection)().deleteMany({});
         });
-    },
+    }
     updateById(commentId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield (0, mongo_db_1.getCommentCollection)().updateOne({ _id: new mongodb_1.ObjectId(commentId) }, { $set: { content: content } });
@@ -109,6 +109,7 @@ exports.commentsRepository = {
             }
             return result;
         });
-    },
-};
+    }
+}
+exports.CommentsRepository = CommentsRepository;
 //# sourceMappingURL=comments.repository.js.map

@@ -4,7 +4,6 @@ import { inputValidationMiddleware } from "../../core/milldlewares/validation/in
 import { loginOrEmailValidation } from "../../core/milldlewares/validation/login-or-email.validation";
 import { LoginOrEmailDto } from "../types/login-or-email.dto";
 import httpStatusCode from "../../core/types/http-status-code";
-import { authService } from "../services/auth.service";
 import { resultStatus } from "../../core/types/result-object";
 import { accessTokenGuard } from "../access-token.guard";
 import { inputRegistrationValidationMiddleware } from "../middlewares/input-registration-validation.middleware";
@@ -15,6 +14,7 @@ import {
   verifyRefreshToken,
 } from "../middlewares/refresh-token.middleware";
 import { rateLimitMiddleware } from "../middlewares/rate-limit.middleware";
+import {authService} from "../../composition.root";
 
 const loginRequestLimit = rateLimitMiddleware(5, 10);
 const registrationRequestLimit = rateLimitMiddleware(5, 10);

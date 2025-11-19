@@ -42,43 +42,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.jwtAdapter = void 0;
+exports.JwtAdapter = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const settings_1 = require("../../core/settings/settings");
-exports.jwtAdapter = {
+class JwtAdapter {
     signAccessToken(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.sign({ id }, settings_1.SETTINGS.ACCESS_TOKEN_SECRET, {
                 expiresIn: settings_1.SETTINGS.ACCESS_TOKEN_SECRET_TIME,
             });
         });
-    },
+    }
     decodeToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.decode(token);
         });
-    },
+    }
     parseJwtPayloadIat(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
         });
-    },
+    }
     verifyAccessToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.verify(token, settings_1.SETTINGS.ACCESS_TOKEN_SECRET);
         });
-    },
+    }
     verifyRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.verify(token, settings_1.SETTINGS.REFRESH_TOKEN_SECRET);
         });
-    },
+    }
     signRefreshToken(id, ipAddr, userAgent, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.sign({ id, ipAddr, userAgent, deviceId }, settings_1.SETTINGS.REFRESH_TOKEN_SECRET, {
                 expiresIn: settings_1.SETTINGS.REFRESH_TOKEN_SECRET_TIME,
             });
         });
-    },
-};
+    }
+}
+exports.JwtAdapter = JwtAdapter;
 //# sourceMappingURL=jwt.adapter.js.map

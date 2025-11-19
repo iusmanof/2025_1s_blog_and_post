@@ -9,26 +9,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const posts_repository_1 = require("../repositories/posts.repository");
-const PostService = {
-    findMany: (query) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield posts_repository_1.postsRepository.getAllPosts(query);
-    }),
-    findById: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield posts_repository_1.postsRepository.getPostById(id);
-    }),
-    create: (body) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield posts_repository_1.postsRepository.createPost(body);
-    }),
-    update: (id, body) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield posts_repository_1.postsRepository.updatePost(id, body);
-    }),
-    delete: (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield posts_repository_1.postsRepository.deletePost(id);
-    }),
-    findPostsByBlogId: (blogId, query) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield posts_repository_1.postsRepository.getPostByBlogId(blogId, query);
-    }),
-};
-exports.default = PostService;
+exports.PostService = void 0;
+class PostService {
+    constructor(postsRepository) {
+        this.postsRepository = postsRepository;
+    }
+    findMany(query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.getAllPosts(query);
+        });
+    }
+    findById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.getPostById(id);
+        });
+    }
+    create(body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.createPost(body);
+        });
+    }
+    update(id, body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.updatePost(id, body);
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.deletePost(id);
+        });
+    }
+    findPostsByBlogId(blogId, query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.getPostByBlogId(blogId, query);
+        });
+    }
+}
+exports.PostService = PostService;
 //# sourceMappingURL=post.service.js.map

@@ -7,10 +7,10 @@ import {
 } from "../../core/types/BlogModel";
 import { ObjectId } from "mongodb";
 import { PostModel } from "../../core/types/PostModel";
-import { postsRepository } from "../../posts/repositories/posts.repository";
+import {postsRepository} from "../../composition.root";
 
-export const blogsRepository = {
-  getAllBlogs: async (query: BlogQuery) => {
+export class BlogsRepository {
+  async getAllBlogs (query: BlogQuery) {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -47,7 +47,7 @@ export const blogsRepository = {
       totalCount: +totalCount,
       items: blogWithId,
     };
-  },
+  }
   async getBlogById(id: string) {
     const result = await getBlogCollection().findOne({ _id: new ObjectId(id) });
     if (!result) {
@@ -58,7 +58,7 @@ export const blogsRepository = {
       id: _id.toString(),
     }));
     return blogWIthId[0];
-  },
+  }
   async createBlog(blog: BlogBase) {
     const blogCreatedWithDate: BlogMongoDb = {
       name: blog.name!,
@@ -76,7 +76,7 @@ export const blogsRepository = {
       ...blogCreatedWithDate,
       id: result.insertedId.toString(),
     };
-  },
+  }
   async updateBlog(id: string, blog: BlogBase) {
     const isUpdated = await getBlogCollection().updateOne(
       { _id: new ObjectId(id) },
@@ -90,18 +90,18 @@ export const blogsRepository = {
     );
 
     return isUpdated.matchedCount !== 0;
-  },
+  }
   async createPostByBlogId(body: PostModel, blogId: string) {
     return await postsRepository.createPostByBlogId(body, blogId);
-  },
+  }
   async deleteBlog(id: string) {
     const isDeleted = await getBlogCollection().deleteOne({
       _id: new ObjectId(id),
     });
 
     return isDeleted.deletedCount !== 0;
-  },
+  }
   async deleteAllBlogs() {
     return await getBlogCollection().deleteMany({});
-  },
-};
+  }
+}

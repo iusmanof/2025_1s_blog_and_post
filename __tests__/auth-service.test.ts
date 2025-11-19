@@ -4,10 +4,9 @@ import { getUserCollection, runDB, stopDb } from "../src/core/db/mongo.db";
 import { add } from "date-fns";
 import { UserDbDto } from "../src/users/types/user-db-dto";
 import { afterEach } from "node:test";
-import { emailAdapter } from "../src/auth/adapters/email.adapter";
-import { authService } from "../src/auth/services/auth.service";
 import { resultStatus } from "../src/core/types/result-object";
 import { emailExampleTemplate } from "../src/core/types/email-example.template";
+import {authService, emailAdapter} from "../src/composition.root";
 
 jest.mock("../src/auth/adapters/email.adapter");
 jest.mock("uuid", () => ({

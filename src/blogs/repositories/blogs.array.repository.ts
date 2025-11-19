@@ -2,10 +2,10 @@ import { BlogBase, BlogWithId } from "../../core/types/BlogModel";
 
 let blogsDB: BlogWithId[] = [];
 
-export const blogsArrayRepository = {
+export class BlogsArrayRepository {
   getAllBlogs() {
     return blogsDB;
-  },
+  }
   createBlog(blog: BlogBase) {
     const blogCreated: BlogWithId = {
       id: Math.floor(Math.random() * 1000000).toString(),
@@ -15,12 +15,12 @@ export const blogsArrayRepository = {
     };
     blogsDB = [...blogsDB, blogCreated];
     return blogCreated;
-  },
+  }
   getBlogById(id: string): BlogWithId | undefined {
     let blogFounded: BlogWithId | undefined;
     blogFounded = blogsDB.find((v) => v.id === id);
     return blogFounded;
-  },
+  }
   updateBlog(id: string, blog: BlogBase) {
     const blogID = blogsDB.findIndex((b) => b.id === id);
 
@@ -40,7 +40,7 @@ export const blogsArrayRepository = {
       ];
       return true;
     }
-  },
+  }
   deleteBlog(id: string): boolean {
     const blogID = blogsDB.findIndex((v) => v.id === id);
 
@@ -50,8 +50,8 @@ export const blogsArrayRepository = {
       blogsDB = blogsDB.filter((v) => v.id !== id);
       return true;
     }
-  },
+  }
   deleteAllBlogs() {
     blogsDB = [];
-  },
-};
+  }
+}

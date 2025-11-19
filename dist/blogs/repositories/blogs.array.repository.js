@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsArrayRepository = void 0;
+exports.BlogsArrayRepository = void 0;
 let blogsDB = [];
-exports.blogsArrayRepository = {
+class BlogsArrayRepository {
     getAllBlogs() {
         return blogsDB;
-    },
+    }
     createBlog(blog) {
         const blogCreated = {
             id: Math.floor(Math.random() * 1000000).toString(),
@@ -15,12 +15,12 @@ exports.blogsArrayRepository = {
         };
         blogsDB = [...blogsDB, blogCreated];
         return blogCreated;
-    },
+    }
     getBlogById(id) {
         let blogFounded;
         blogFounded = blogsDB.find((v) => v.id === id);
         return blogFounded;
-    },
+    }
     updateBlog(id, blog) {
         const blogID = blogsDB.findIndex((b) => b.id === id);
         if (blogID === -1) {
@@ -35,7 +35,7 @@ exports.blogsArrayRepository = {
             ];
             return true;
         }
-    },
+    }
     deleteBlog(id) {
         const blogID = blogsDB.findIndex((v) => v.id === id);
         if (blogID == -1) {
@@ -45,9 +45,10 @@ exports.blogsArrayRepository = {
             blogsDB = blogsDB.filter((v) => v.id !== id);
             return true;
         }
-    },
+    }
     deleteAllBlogs() {
         blogsDB = [];
-    },
-};
+    }
+}
+exports.BlogsArrayRepository = BlogsArrayRepository;
 //# sourceMappingURL=blogs.array.repository.js.map

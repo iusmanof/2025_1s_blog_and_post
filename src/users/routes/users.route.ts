@@ -1,35 +1,83 @@
-import { Router } from "express";
-import { basicAuth } from "../../core/milldlewares/super-admin.guard-middleware";
-import { paginationAndSortingValidationWithEmailAndLogin } from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
-import { getUsersHandler } from "./handlers/get-users.handler";
-import { createUserHandler } from "./handlers/create-user.handler";
-import { deleteUserHandler } from "./handlers/delete-user.handler";
-import { passwordValidation } from "../../core/milldlewares/validation/password.validation-middleware";
-import { loginValidation } from "../../core/milldlewares/validation/login.validation-middleware";
-import { emailValidation } from "../../core/milldlewares/validation/email.validation-middleware";
-import { inputValidationMiddleware } from "../../core/milldlewares/validation/input-validation-middleware";
-import { usersInputValidationMiddleware } from "../../core/milldlewares/validation/users-input.validation-middleware";
+import {Request, Response, Router} from "express";
+import {basicAuth} from "../../core/milldlewares/super-admin.guard-middleware";
+import {
+    paginationAndSortingValidationWithEmailAndLogin
+} from "../../core/milldlewares/validation/query-pagination-sorting.validation-middleware";
+import {passwordValidation} from "../../core/milldlewares/validation/password.validation-middleware";
+import {loginValidation} from "../../core/milldlewares/validation/login.validation-middleware";
+import {emailValidation} from "../../core/milldlewares/validation/email.validation-middleware";
+import {inputValidationMiddleware} from "../../core/milldlewares/validation/input-validation-middleware";
+import {usersInputValidationMiddleware} from "../../core/milldlewares/validation/users-input.validation-middleware";
+import {UserCreateDto} from "../types/user-create-dto";
+import {UserResponseCreateDto} from "../types/user-response-create-dto";
+import {usersQueryRepository, usersService} from "../../composition.root";
+import httpStatusCode from "../../core/types/http-status-code";
+import {IPagination, PaginationAndSortingUser} from "../../core/types/pagination-and-sorting";
+import {sortQueryFieldsUtil} from "../../core/utils/sort-query-default.util";
+import HttpStatusCode from "../../core/types/http-status-code";
 
 export const userRouter = Router();
 
 userRouter.use(basicAuth);
 
 userRouter.get(
-  "/",
-  basicAuth,
-  paginationAndSortingValidationWithEmailAndLogin(),
-  inputValidationMiddleware,
-  getUsersHandler,
+    "/",
+    basicAuth,
+    paginationAndSortingValidationWithEmailAndLogin(),
+    inputValidationMiddleware,
+    async function getUsersHandler(
+        req: Request,
+        res: Response<IPagination<UserResponseCreateDto[]>>,
+    ) {
+        const query = req.query as unknown as PaginationAndSortingUser;
+        const {
+            pageNumber,
+            pageSize,
+            sortBy,
+            sortDirection,
+            searchLoginTerm,
+            searchEmailTerm,
+        } = sortQueryFieldsUtil(query);
+
+        const users = await usersQueryRepository.findAllUsers({
+            pageNumber,
+            pageSize,
+            sortBy,
+            sortDirection,
+            searchLoginTerm,
+            searchEmailTerm,
+        });
+
+        return res.status(httpStatusCode.OK_200).send(users);
+    },
 );
 
 userRouter.post(
-  "/",
-  basicAuth,
-  loginValidation,
-  passwordValidation,
-  emailValidation,
-  usersInputValidationMiddleware,
-  createUserHandler,
-);
+    "/",
+    basicAuth,
+    loginValidation,
+    passwordValidation,
+    emailValidation,
+    usersInputValidationMiddleware,
+    async (req: Request<UserCreateDto>, res: Response<UserResponseCreateDto>) => {
+        const {login, password, email} = req.body;
 
-userRouter.delete("/:id", basicAuth, deleteUserHandler);
+        const userId = await usersService.create({login, password, email});
+        const newUser = await usersQueryRepository.findById(userId);
+
+        return res.status(httpStatusCode.CREATED_201).send(newUser!)
+    }
+)
+
+userRouter.delete("/:id", basicAuth,
+    async function deleteUserHandler(
+        req: Request<{ id: string }>,
+        res: Response<string>,
+    ) {
+        const user = await usersService.delete(req.params.id);
+        if (!user) {
+            return res.status(httpStatusCode.NOT_FOUND_404).send("Not Found");
+        }
+        return res.status(HttpStatusCode.NO_CONTENT_204).send("Deleted");
+    }
+);

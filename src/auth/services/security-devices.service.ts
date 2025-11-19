@@ -1,13 +1,18 @@
 import { SecurityDeviceDbDto } from "../types/security-device-db.dto";
-import { securityDevicesRepository } from "../repository/security-devices.repository";
-import { securityDevicesQueryRepository } from "../repository/security-devices.query-repository";
 import { ResultObject, resultStatus } from "../../core/types/result-object";
-import { jwtAdapter } from "../adapters/jwt.adapter";
+import {JwtAdapter} from "../adapters/jwt.adapter";
+import {SecurityDevicesRepository} from "../repository/security-devices.repository";
+import {SecurityDevicesQueryRepository} from "../repository/security-devices.query-repository";
 
-export const securityDevicesService = {
+export class SecurityDevicesService {
+    constructor(
+        public readonly jwtAdapter: JwtAdapter,
+        public readonly securityDevicesRepository: SecurityDevicesRepository,
+        public readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+    ) {}
   async getDevices(refreshToken: string): Promise<any[]> {
-    const decoded = await jwtAdapter.decodeToken(refreshToken);
-    const devices = await securityDevicesRepository.findAllDevicesByUserId(
+    const decoded = await this.jwtAdapter.decodeToken(refreshToken);
+    const devices = await this.securityDevicesRepository.findAllDevicesByUserId(
       decoded.id,
     );
 
@@ -19,12 +24,12 @@ export const securityDevicesService = {
         deviceId: d.deviceId,
       };
     });
-  },
+  }
   async setDevice(dto: SecurityDeviceDbDto) {
-    await securityDevicesRepository.addDevice(dto);
-  },
+    await this.securityDevicesRepository.addDevice(dto);
+  }
   async deleteById(deviceId: string): Promise<ResultObject<string | null>> {
-    const result = await securityDevicesQueryRepository.geByDeviceId(deviceId);
+    const result = await this.securityDevicesQueryRepository.geByDeviceId(deviceId);
     if (!result) {
       return {
         status: resultStatus.NOT_FOUND,
@@ -34,18 +39,18 @@ export const securityDevicesService = {
       };
     }
 
-    await securityDevicesRepository.deleteDevice(deviceId);
+    await this.securityDevicesRepository.deleteDevice(deviceId);
     return {
       status: resultStatus.SUCCESS,
       extensions: [],
       data: null,
     };
-  },
+  }
   async terminateAllSessionExcludeCurrent(refreshToken: string) {
-    const decoded = await jwtAdapter.decodeToken(refreshToken);
+    const decoded = await this.jwtAdapter.decodeToken(refreshToken);
 
-    await securityDevicesRepository.deleteAllDevicesExcludeCurrent(
+    await this.securityDevicesRepository.deleteAllDevicesExcludeCurrent(
       decoded.deviceId,
     );
-  },
-};
+  }
+}

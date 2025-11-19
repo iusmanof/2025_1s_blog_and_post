@@ -1,30 +1,21 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPostHandler = createPostHandler;
-const post_service_1 = __importDefault(require("../../services/post.service"));
-const http_status_code_1 = __importDefault(require("../../../core/types/http-status-code"));
-function createPostHandler(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const postCreated = yield post_service_1.default.create(req.body);
-        const apiErrorMsg = [];
-        if (!postCreated) {
-            apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            res.status(http_status_code_1.default.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
-            return;
-        }
-        res.status(http_status_code_1.default.CREATED_201).json(postCreated);
-    });
-}
+// import { Request, Response } from "express";
+// import { PostModel } from "../../../core/types/PostModel";
+// import { FieldError } from "../../../core/types/FieldError";
+// import PostService from "../../services/post.service";
+// import HTTP_STATUS from "../../../core/types/http-status-code";
+//
+// // export async function createPostHandler(
+// //   req: Request<PostModel>,
+// //   res: Response,
+// // ) {
+// //   const postCreated = await PostService.create(req.body);
+// //   const apiErrorMsg: FieldError[] = [];
+// //   if (!postCreated) {
+// //     apiErrorMsg.push({ message: "ID Not found", field: "id" });
+// //     res.status(HTTP_STATUS.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
+// //     return;
+// //   }
+// //   res.status(HTTP_STATUS.CREATED_201).json(postCreated);
+// // }
 //# sourceMappingURL=create-post.handler.js.map

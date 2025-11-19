@@ -1,12 +1,12 @@
 import { ResultObject, resultStatus } from "../../core/types/result-object";
-import { commentsRepository } from "../repositories/comments.repository";
 import {
   commentsDataResultObject,
   commentsDBResultObject,
 } from "../types/comments-data-result-object";
 import { CommentsQuery } from "../types/comments-query";
+import {commentsRepository} from "../../composition.root";
 
-export const commentsService = {
+export class CommentsService {
   async create(
     userId: string,
     postId: string,
@@ -31,7 +31,7 @@ export const commentsService = {
       extensions: [],
       data: commentsInfo,
     };
-  },
+  }
   async getCommentByPostId(
     postId: string,
     query: CommentsQuery,
@@ -53,7 +53,7 @@ export const commentsService = {
       extensions: [],
       data: comments,
     };
-  },
+  }
   async getByCommentId(
     commentId: string,
   ): Promise<ResultObject<commentsDataResultObject | null>> {
@@ -72,7 +72,7 @@ export const commentsService = {
       extensions: [],
       data: comment,
     };
-  },
+  }
   async getCommentById(
     commentId: string,
     userId?: string,
@@ -101,7 +101,7 @@ export const commentsService = {
       extensions: [],
       data: comment,
     };
-  },
+  }
   async deleteById(commentId: string): Promise<ResultObject<{} | null>> {
     const result = await commentsRepository.deleteById(commentId);
     if (!result) {
@@ -118,7 +118,7 @@ export const commentsService = {
       extensions: [],
       data: result,
     };
-  },
+  }
   async updateById(
     commentId: string,
     content: string,
@@ -138,6 +138,5 @@ export const commentsService = {
       extensions: [],
       data: result,
     };
-  },
-  async findById() {},
-};
+  }
+}

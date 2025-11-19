@@ -10,6 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src/**/*", "express.d.ts"],

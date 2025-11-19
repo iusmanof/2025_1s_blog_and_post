@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { jwtAdapter } from "../adapters/jwt.adapter";
-import { securityDevicesQueryRepository } from "../repository/security-devices.query-repository";
 import httpStatusCode from "../../core/types/http-status-code";
+import {jwtAdapter, securityDevicesQueryRepository} from "../../composition.root";
 
 export const userIdBelongsToAnotherMiddleware: RequestHandler = async (
   req: Request,

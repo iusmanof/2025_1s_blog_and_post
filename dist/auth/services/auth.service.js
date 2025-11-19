@@ -9,24 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authService = void 0;
-const users_repository_1 = require("../../users/repositories/users.repository");
-const bcrypt_adapter_1 = require("../adapters/bcrypt.adapter");
+exports.AuthService = void 0;
 const result_object_1 = require("../../core/types/result-object");
-const jwt_adapter_1 = require("../adapters/jwt.adapter");
 const crypto_1 = require("crypto");
-const email_adapter_1 = require("../adapters/email.adapter");
 const date_fns_1 = require("date-fns");
 const email_example_template_1 = require("../../core/types/email-example.template");
-const users_query_repository_1 = require("../../users/repositories/users.query.repository");
-const security_devices_service_1 = require("./security-devices.service");
 const uuid_1 = require("uuid");
-const security_devices_query_repository_1 = require("../repository/security-devices.query-repository");
-const security_devices_repository_1 = require("../repository/security-devices.repository");
-exports.authService = {
+class AuthService {
+    constructor(jwtAdapter, emailAdapter, bcryptAdapter, securityDevicesService, securityDevicesQueryRepository, securityDevicesRepository, usersQueryRepository, usersRepository) {
+        this.jwtAdapter = jwtAdapter;
+        this.emailAdapter = emailAdapter;
+        this.bcryptAdapter = bcryptAdapter;
+        this.securityDevicesService = securityDevicesService;
+        this.securityDevicesQueryRepository = securityDevicesQueryRepository;
+        this.securityDevicesRepository = securityDevicesRepository;
+        this.usersQueryRepository = usersQueryRepository;
+        this.usersRepository = usersRepository;
+    }
     login(loginOrEmail, password, ipAddr, userAgent) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield users_repository_1.usersRepository.findByLoginOrEmail(loginOrEmail);
+            const user = yield this.usersRepository.findByLoginOrEmail(loginOrEmail);
             if (!user) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -35,7 +37,7 @@ exports.authService = {
                     data: null,
                 };
             }
-            const passwordCorrect = yield bcrypt_adapter_1.bcryptAdapter.checkPassword(password, user.password);
+            const passwordCorrect = yield this.bcryptAdapter.checkPassword(password, user.password);
             if (!passwordCorrect) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -44,10 +46,10 @@ exports.authService = {
                     data: null,
                 };
             }
-            const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(user._id.toString());
+            const accessToken = yield this.jwtAdapter.signAccessToken(user._id.toString());
             const deviceId = (0, uuid_1.v4)();
-            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(user._id.toString(), ipAddr, userAgent, deviceId);
-            const { id: payloadId, iat: payloadIat, exp: payloadExp, } = yield jwt_adapter_1.jwtAdapter.parseJwtPayloadIat(refreshToken);
+            const refreshToken = yield this.jwtAdapter.signRefreshToken(user._id.toString(), ipAddr, userAgent, deviceId);
+            const { id: payloadId, iat: payloadIat, exp: payloadExp, } = yield this.jwtAdapter.parseJwtPayloadIat(refreshToken);
             const securityDeviceDTO = {
                 userId: payloadId,
                 title: userAgent,
@@ -56,17 +58,17 @@ exports.authService = {
                 lastActivateDate: payloadIat,
                 deviceId: deviceId,
             };
-            yield security_devices_service_1.securityDevicesService.setDevice(securityDeviceDTO);
+            yield this.securityDevicesService.setDevice(securityDeviceDTO);
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 data: { accessToken, refreshToken },
                 extensions: [],
             };
         });
-    },
+    }
     registerUser(login, email, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const passwordHash = yield bcrypt_adapter_1.bcryptAdapter.generateHash(password);
+            const passwordHash = yield this.bcryptAdapter.generateHash(password);
             const newUser = {
                 login: login,
                 email: email,
@@ -76,12 +78,12 @@ exports.authService = {
                     confirmationCode: (0, crypto_1.randomUUID)(),
                     expirationDate: (0, date_fns_1.add)(new Date(), { hours: 1, minutes: 30 }),
                     isConfirmed: false,
-                },
+                }
             };
-            yield users_repository_1.usersRepository.create(newUser);
+            yield this.usersRepository.create(newUser);
             if (newUser.emailConfirmation) {
                 try {
-                    yield email_adapter_1.emailAdapter.nodemailer(email, email_example_template_1.emailExampleTemplate.registrationEmail(newUser.emailConfirmation.confirmationCode));
+                    yield this.emailAdapter.nodemailer(email, email_example_template_1.emailExampleTemplate.registrationEmail(newUser.emailConfirmation.confirmationCode));
                 }
                 catch (err) {
                     console.log("send email error");
@@ -93,11 +95,11 @@ exports.authService = {
                 data: "code send",
             };
         });
-    },
+    }
     confirmUser(code) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const user = yield users_repository_1.usersRepository.findByConfirmationCode(code);
+            const user = yield this.usersRepository.findByConfirmationCode(code);
             if (!user) {
                 return {
                     status: result_object_1.resultStatus.BAD_REQUEST,
@@ -122,18 +124,18 @@ exports.authService = {
                     data: null,
                 };
             }
-            yield users_repository_1.usersRepository.confirmCode(code);
+            yield this.usersRepository.confirmCode(code);
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: user,
             };
         });
-    },
+    }
     resendCode(email) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const user = yield users_repository_1.usersRepository.findByEmail(email);
+            const user = yield this.usersRepository.findByEmail(email);
             if (!user) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
@@ -151,9 +153,9 @@ exports.authService = {
                 };
             }
             const codeRefreshed = (0, crypto_1.randomUUID)();
-            yield users_repository_1.usersRepository.findBYEmailAndRefreshCode(email, codeRefreshed);
+            yield this.usersRepository.findBYEmailAndRefreshCode(email, codeRefreshed);
             try {
-                yield email_adapter_1.emailAdapter.nodemailer(email, email_example_template_1.emailExampleTemplate.registrationEmail(codeRefreshed));
+                yield this.emailAdapter.nodemailer(email, email_example_template_1.emailExampleTemplate.registrationEmail(codeRefreshed));
             }
             catch (err) {
                 console.log("send email error");
@@ -164,11 +166,11 @@ exports.authService = {
                 data: null,
             };
         });
-    },
+    }
     updateToken(rf, ipAddr, userAgent) {
         return __awaiter(this, void 0, void 0, function* () {
-            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(rf);
-            const oldDevice = yield security_devices_query_repository_1.securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
+            const decoded = yield this.jwtAdapter.decodeToken(rf);
+            const oldDevice = yield this.securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
             if (!oldDevice) {
                 return {
                     status: result_object_1.resultStatus.UNAUTORIZED,
@@ -182,10 +184,10 @@ exports.authService = {
                     ],
                 };
             }
-            const accessToken = yield jwt_adapter_1.jwtAdapter.signAccessToken(decoded.id.toString());
-            const refreshToken = yield jwt_adapter_1.jwtAdapter.signRefreshToken(decoded.id.toString(), ipAddr, userAgent, decoded.deviceId);
-            const { iat: newIat, exp: newExp } = yield jwt_adapter_1.jwtAdapter.parseJwtPayloadIat(refreshToken);
-            yield security_devices_repository_1.securityDevicesRepository.updateDevice(decoded.deviceId, {
+            const accessToken = yield this.jwtAdapter.signAccessToken(decoded.id.toString());
+            const refreshToken = yield this.jwtAdapter.signRefreshToken(decoded.id.toString(), ipAddr, userAgent, decoded.deviceId);
+            const { iat: newIat, exp: newExp } = yield this.jwtAdapter.parseJwtPayloadIat(refreshToken);
+            yield this.securityDevicesRepository.updateDevice(decoded.deviceId, {
                 lastActivateDate: newIat,
                 ip: ipAddr,
                 title: userAgent,
@@ -197,11 +199,11 @@ exports.authService = {
                 extensions: [],
             };
         });
-    },
+    }
     expireToken(rftoken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(rftoken);
-            const oldDevice = yield security_devices_query_repository_1.securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
+            const decoded = yield this.jwtAdapter.decodeToken(rftoken);
+            const oldDevice = yield this.securityDevicesQueryRepository.findByIdAndIat(decoded.deviceId, decoded.iat);
             if (!oldDevice) {
                 return {
                     status: result_object_1.resultStatus.UNAUTORIZED,
@@ -215,7 +217,7 @@ exports.authService = {
                     ],
                 };
             }
-            const { count } = yield security_devices_repository_1.securityDevicesRepository.deleteDevice(decoded.deviceId);
+            const { count } = yield this.securityDevicesRepository.deleteDevice(decoded.deviceId);
             if (count === 0) {
                 return {
                     status: result_object_1.resultStatus.UNAUTORIZED,
@@ -229,10 +231,10 @@ exports.authService = {
                 extensions: [],
             };
         });
-    },
+    }
     getMe(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield users_query_repository_1.usersQueryRepository.findById(userId);
+            const result = yield this.usersQueryRepository.findById(userId);
             if (!result)
                 return null;
             return {
@@ -241,6 +243,7 @@ exports.authService = {
                 userId: result === null || result === void 0 ? void 0 : result.id,
             };
         });
-    },
-};
+    }
+}
+exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

@@ -1,11 +1,10 @@
-import {usersService} from "../src/users/services/users.service";
 import request from "supertest";
 import express from "express";
 import {SETUP_APP} from "../src/setup-app";
 import {runDB, stopDb} from "../src/core/db/mongo.db";
 import {clearDb} from "./utils/clearDb";
-import {securityDevicesQueryRepository} from "../src/auth/repository/security-devices.query-repository";
 import cookieParser from "cookie-parser";
+import {securityDevicesQueryRepository, usersService} from "../src/composition.root";
 
 jest.mock("uuid", () => ({
     v4: () => "123456789",

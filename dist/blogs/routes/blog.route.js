@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,27 +18,88 @@ const super_admin_guard_middleware_1 = require("../../core/milldlewares/super-ad
 const nameValidation_1 = require("../../core/milldlewares/validation/nameValidation");
 const websiteValidation_1 = require("../../core/milldlewares/validation/websiteValidation");
 const input_validation_middleware_1 = require("../../core/milldlewares/validation/input-validation-middleware");
-const BlogHandler_1 = __importDefault(require("./handlers/BlogHandler"));
 const query_pagination_sorting_validation_middleware_1 = require("../../core/milldlewares/validation/query-pagination-sorting.validation-middleware");
 const titleValidation_1 = require("../../core/milldlewares/validation/titleValidation");
 const contentValidation_1 = require("../../core/milldlewares/validation/contentValidation");
 const shortDescriptionValidation_1 = require("../../core/milldlewares/validation/shortDescriptionValidation");
-const get_blogs_handler_1 = require("./handlers/get-blogs.handler");
 const query_id_middleware_1 = require("../../core/milldlewares/validation/query-id.middleware");
-const get_blog_by_id_handler_1 = require("./handlers/get-blog-by-id.handler");
-const create_blog_handler_1 = require("./handlers/create-blog.handler");
-const delete_blog_handler_1 = require("./handlers/delete-blog.handler");
-const update_blog_handler_1 = require("./handlers/update-blog.handler");
 const param_id_middleware_1 = require("../../core/milldlewares/validation/param-id.middleware");
+const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
+const express_validator_1 = require("express-validator");
+const http_status_code_2 = __importDefault(require("../../core/types/http-status-code"));
+const composition_root_1 = require("../../composition.root");
 exports.blogRouter = (0, express_1.Router)();
-exports.blogRouter.get("/", (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithSearchName)(), get_blogs_handler_1.getBlogsHandler);
-exports.blogRouter.get("/:id", query_id_middleware_1.queryIdMiddleware, get_blog_by_id_handler_1.getBlogByIdHandler);
-exports.blogRouter.post("/", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, create_blog_handler_1.createBlogHandler);
-exports.blogRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, update_blog_handler_1.updateBlogHandler);
-exports.blogRouter.delete("/:id", query_id_middleware_1.queryIdMiddleware, super_admin_guard_middleware_1.basicAuth, delete_blog_handler_1.deleteBlogHandler);
-/////////////////////
-// REFACTORING LATER
-/////////////////////
-exports.blogRouter.post("/:blogId/posts", super_admin_guard_middleware_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, BlogHandler_1.default.POST_BLOG_ID_POSTS);
-exports.blogRouter.get("/:blogId/posts", param_id_middleware_1.paramIdMiddleware, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), BlogHandler_1.default.GET_BLOG_ID_POSTS);
+exports.blogRouter.get("/", (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithSearchName)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogs = yield composition_root_1.blogService.findMany(req.query);
+    res.status(http_status_code_1.default.OK_200).send(blogs);
+}));
+exports.blogRouter.get("/:id", query_id_middleware_1.queryIdMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+    const blog = yield composition_root_1.blogService.findById(req.params.id);
+    if (!blog) {
+        res.status(http_status_code_1.default.NOT_FOUND_404).send("Blog not found.");
+        return;
+    }
+    res.status(200).json(blog);
+}));
+exports.blogRouter.post("/", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogCreated = yield composition_root_1.blogService.create(req.body);
+    return yield res.status(http_status_code_1.default.CREATED_201).json(blogCreated);
+}));
+exports.blogRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogIsUpdated = yield composition_root_1.blogService.update(req.params.id, req.body);
+    const apiErrorMsg = [];
+    if (!blogIsUpdated) {
+        apiErrorMsg.push({ message: "ID Not found", field: "id" });
+        return yield res
+            .status(http_status_code_1.default.NOT_FOUND_404)
+            .json({ errorsMessages: apiErrorMsg });
+    }
+    return yield res.status(http_status_code_1.default.NO_CONTENT_204).send();
+}));
+exports.blogRouter.delete("/:id", query_id_middleware_1.queryIdMiddleware, super_admin_guard_middleware_1.basicAuth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        res.status(404).json({ errors: errors.array() });
+        return;
+    }
+    const blog = yield composition_root_1.blogService.delete(req.params.id);
+    if (!blog) {
+        res.status(http_status_code_1.default.NOT_FOUND_404).send("Not found");
+        return;
+    }
+    res.status(http_status_code_1.default.NO_CONTENT_204).send();
+}));
+exports.blogRouter.post("/:blogId/posts", super_admin_guard_middleware_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const blog = yield composition_root_1.blogService.findById(req.params.blogId);
+    if (!blog) {
+        res.status(http_status_code_2.default.NOT_FOUND_404).send("Blog not found.");
+        return;
+    }
+    const blogCreated = yield composition_root_1.blogService.createPostByBlogId(req.body, req.params.blogId);
+    res.status(http_status_code_2.default.CREATED_201).json(blogCreated);
+}));
+exports.blogRouter.get("/:blogId/posts", param_id_middleware_1.paramIdMiddleware, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        res.status(http_status_code_2.default.NOT_FOUND_404).json({ errors: errors.array() });
+        return;
+    }
+    const blogId = req.params.blogId;
+    const blog = yield composition_root_1.blogService.findById(blogId);
+    if (!blog) {
+        res.status(http_status_code_2.default.NOT_FOUND_404).send("Blog not found.");
+        return;
+    }
+    const posts = yield composition_root_1.postService.findPostsByBlogId(blogId, req.query);
+    if (!posts) {
+        res.status(http_status_code_2.default.NOT_FOUND_404).send("Posts not found.");
+        return;
+    }
+    res.status(200).json(posts);
+}));
 //# sourceMappingURL=blog.route.js.map

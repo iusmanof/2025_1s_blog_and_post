@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.accessTokenGuard = void 0;
 const http_status_code_1 = __importDefault(require("../core/types/http-status-code"));
-const jwt_adapter_1 = require("./adapters/jwt.adapter");
+const composition_root_1 = require("../composition.root");
 const accessTokenGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.header("Authorization");
     if (!authHeader) {
@@ -27,12 +27,12 @@ const accessTokenGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         return;
     }
     try {
-        const payload = yield jwt_adapter_1.jwtAdapter.verifyAccessToken(token);
+        const payload = yield composition_root_1.jwtAdapter.verifyAccessToken(token);
         if (!payload || typeof payload === "string" || !("id" in payload)) {
             res.status(http_status_code_1.default.UNAUTHORIZED_401).send("Unauthorized");
             return;
         }
-        const decodedToken = yield jwt_adapter_1.jwtAdapter.decodeToken(token);
+        const decodedToken = yield composition_root_1.jwtAdapter.decodeToken(token);
         if (!decodedToken ||
             (decodedToken.exp && decodedToken.exp * 1000 <= Date.now())) {
             res.status(http_status_code_1.default.UNAUTHORIZED_401).send("AT expired");

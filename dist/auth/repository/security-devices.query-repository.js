@@ -9,19 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.securityDevicesQueryRepository = void 0;
+exports.SecurityDevicesQueryRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
-exports.securityDevicesQueryRepository = {
+class SecurityDevicesQueryRepository {
     findAll() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getSecurityDeviceCollection)().find({}).toArray();
         });
-    },
+    }
     geByDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getSecurityDeviceCollection)().findOne({ deviceId: deviceId });
         });
-    },
+    }
     findByIdAndIat(deviceId, iat) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getSecurityDeviceCollection)().findOne({
@@ -29,6 +29,7 @@ exports.securityDevicesQueryRepository = {
                 lastActivateDate: iat,
             });
         });
-    },
-};
+    }
+}
+exports.SecurityDevicesQueryRepository = SecurityDevicesQueryRepository;
 //# sourceMappingURL=security-devices.query-repository.js.map

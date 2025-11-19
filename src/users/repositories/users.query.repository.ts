@@ -7,7 +7,7 @@ import {
   PaginationAndSortingUser,
 } from "../../core/types/pagination-and-sorting";
 
-export const usersQueryRepository = {
+export class UsersQueryRepository {
   async findAllUsers(
     sortQueryDto: PaginationAndSortingUser,
   ): Promise<IPagination<UserResponseCreateDto[]>> {
@@ -36,14 +36,14 @@ export const usersQueryRepository = {
       totalCount,
       items: users.map((u) => this._getInView(u)),
     };
-  },
+  }
   async findById(id: string): Promise<UserResponseCreateDto | null> {
     const user = await getUserCollection().findOne({ _id: new ObjectId(id) });
     if (!user) {
       return null;
     }
     return this._getInView(user);
-  },
+  }
   _getInView(user: WithId<UserDbDto>): UserResponseCreateDto {
     return {
       id: user._id.toString(),
@@ -51,7 +51,7 @@ export const usersQueryRepository = {
       email: user.email,
       createdAt: user.createdAt ? user.createdAt.toISOString() : null,
     };
-  },
+  }
   _getFilter(
     loginQuery: string | null,
     emailQuery: string | null,
@@ -78,5 +78,5 @@ export const usersQueryRepository = {
     }
     // @ts-ignore
     return { $or: filters };
-  },
-};
+  }
+}

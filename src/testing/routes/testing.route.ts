@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
-import { blogsRepository } from "../../blogs/repositories/blogs.repository";
-import { postsRepository } from "../../posts/repositories/posts.repository";
-import { usersRepository } from "../../users/repositories/users.repository";
-import { commentsRepository } from "../../comments/repositories/comments.repository";
-import { authRepository } from "../../auth/repository/auth.repository";
-import { securityDevicesRepository } from "../../auth/repository/security-devices.repository";
+import {
+    authRepository,
+    blogsRepository,
+    commentsRepository,
+    postsRepository, securityDevicesRepository,
+    usersRepository
+} from "../../composition.root";
 
 export const testingRouter = Router();
 

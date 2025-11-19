@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersRepository = void 0;
+exports.UsersRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
 const date_fns_1 = require("date-fns");
-exports.usersRepository = {
+class UsersRepository {
     findMany(queryDto) {
         return __awaiter(this, void 0, void 0, function* () {
             const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
@@ -30,7 +30,7 @@ exports.usersRepository = {
             ]);
             return { items, totalCount };
         });
-    },
+    }
     findById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!mongodb_1.ObjectId.isValid(id)) {
@@ -38,30 +38,30 @@ exports.usersRepository = {
             }
             return (0, mongo_db_1.getUserCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
         });
-    },
+    }
     findByLoginOrEmail(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getUserCollection)().findOne({
                 $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
             });
         });
-    },
+    }
     findByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getUserCollection)().findOne({ email: email });
         });
-    },
+    }
     findByLogin(login) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getUserCollection)().findOne({ login: login });
         });
-    },
+    }
     create(user) {
         return __awaiter(this, void 0, void 0, function* () {
             const newUser = yield (0, mongo_db_1.getUserCollection)().insertOne(Object.assign({}, user));
             return newUser.insertedId.toString();
         });
-    },
+    }
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const deleteResult = yield (0, mongo_db_1.getUserCollection)().deleteOne({
@@ -69,19 +69,19 @@ exports.usersRepository = {
             });
             return deleteResult.deletedCount === 1;
         });
-    },
+    }
     deleteAllUsers() {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, mongo_db_1.getUserCollection)().deleteMany({});
         });
-    },
+    }
     findByConfirmationCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             return (0, mongo_db_1.getUserCollection)().findOne({
                 "emailConfirmation.confirmationCode": code,
             });
         });
-    },
+    }
     findBYEmailAndRefreshCode(email, code) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getUserCollection)().updateOne({ email }, {
@@ -94,7 +94,7 @@ exports.usersRepository = {
                 },
             });
         });
-    },
+    }
     findExpiredCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             return (0, mongo_db_1.getUserCollection)().findOne({
@@ -102,11 +102,12 @@ exports.usersRepository = {
                 "emailConfirmation.expirationDate": { $gt: new Date() },
             });
         });
-    },
+    }
     confirmCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getUserCollection)().updateOne({ "emailConfirmation.confirmationCode": code }, { $set: { "emailConfirmation.isConfirmed": true } });
         });
-    },
-};
+    }
+}
+exports.UsersRepository = UsersRepository;
 //# sourceMappingURL=users.repository.js.map

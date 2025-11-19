@@ -1,19 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postAccessLayer = void 0;
-const blogs_array_repository_1 = require("../../blogs/repositories/blogs.array.repository");
+exports.PostAccessLayer = void 0;
 let postsDB = [];
-exports.postAccessLayer = {
-    getAllPosts: () => {
+class PostAccessLayer {
+    constructor(blogsArrayRepository) {
+        this.blogsArrayRepository = blogsArrayRepository;
+    }
+    getAllPosts() {
         return postsDB;
-    },
-    getPostById: (id) => {
+    }
+    getPostById(id) {
         let postFounded;
         postFounded = postsDB.find((post) => post.id === id);
         return postFounded;
-    },
-    createPost: (post) => {
-        const blog = blogs_array_repository_1.blogsArrayRepository.getBlogById(post.blogId);
+    }
+    createPost(post) {
+        const blog = this.blogsArrayRepository.getBlogById(post.blogId);
         const postCreated = {
             id: Math.floor(Math.random() * 1000000).toString(),
             title: post.title,
@@ -24,8 +26,8 @@ exports.postAccessLayer = {
         };
         postsDB = [...postsDB, postCreated];
         return postCreated;
-    },
-    deletePost: (id) => {
+    }
+    deletePost(id) {
         const postID = postsDB.findIndex((p) => p.id === id);
         if (postID === -1) {
             return false;
@@ -34,14 +36,14 @@ exports.postAccessLayer = {
             postsDB.splice(postID, 1);
             return true;
         }
-    },
-    updatePost: (id, post) => {
+    }
+    updatePost(id, post) {
         const postID = postsDB.findIndex((p) => p.id === id);
         if (postID === -1) {
             return false;
         }
         else {
-            const blog = blogs_array_repository_1.blogsArrayRepository.getBlogById(post.blogId);
+            const blog = this.blogsArrayRepository.getBlogById(post.blogId);
             const postUpdated = Object.assign(Object.assign({}, postsDB[postID]), { title: post.title, shortDescription: post.shortDescription, content: post.content, blogId: post.blogId, blogName: blog ? blog.name : "Unknown" });
             postsDB = [
                 ...postsDB.slice(0, postID),
@@ -50,9 +52,10 @@ exports.postAccessLayer = {
             ];
             return true;
         }
-    },
-    deleteAllPosts: () => {
+    }
+    deleteAllPosts() {
         postsDB = [];
-    },
-};
+    }
+}
+exports.PostAccessLayer = PostAccessLayer;
 //# sourceMappingURL=posts.array.repository.js.map

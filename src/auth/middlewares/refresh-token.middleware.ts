@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import httpStatusCode from "../../core/types/http-status-code";
-import { jwtAdapter } from "../adapters/jwt.adapter";
+import {jwtAdapter} from "../../composition.root";
 
 export const checkRefreshTokenMiddleware: RequestHandler = async (
   req,

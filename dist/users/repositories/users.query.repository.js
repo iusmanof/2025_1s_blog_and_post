@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersQueryRepository = void 0;
+exports.UsersQueryRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
-exports.usersQueryRepository = {
+class UsersQueryRepository {
     findAllUsers(sortQueryDto) {
         return __awaiter(this, void 0, void 0, function* () {
             const { sortBy, sortDirection, pageSize, pageNumber, searchEmailTerm, searchLoginTerm, } = sortQueryDto;
@@ -33,7 +33,7 @@ exports.usersQueryRepository = {
                 items: users.map((u) => this._getInView(u)),
             };
         });
-    },
+    }
     findById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield (0, mongo_db_1.getUserCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
@@ -42,7 +42,7 @@ exports.usersQueryRepository = {
             }
             return this._getInView(user);
         });
-    },
+    }
     _getInView(user) {
         return {
             id: user._id.toString(),
@@ -50,7 +50,7 @@ exports.usersQueryRepository = {
             email: user.email,
             createdAt: user.createdAt ? user.createdAt.toISOString() : null,
         };
-    },
+    }
     _getFilter(loginQuery, emailQuery) {
         // let filter: { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } = {};
         const filters = [];
@@ -68,6 +68,7 @@ exports.usersQueryRepository = {
         }
         // @ts-ignore
         return { $or: filters };
-    },
-};
+    }
+}
+exports.UsersQueryRepository = UsersQueryRepository;
 //# sourceMappingURL=users.query.repository.js.map

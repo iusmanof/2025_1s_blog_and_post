@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export const emailAdapter = {
+export class EmailAdapter {
   async nodemailer(email: string, emailTemplate: string): Promise<any> {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -20,5 +20,5 @@ export const emailAdapter = {
         html: emailTemplate,
       });
     })();
-  },
-};
+  }
+}

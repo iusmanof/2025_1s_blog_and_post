@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authRepository = void 0;
+exports.AuthRepository = void 0;
 const mongo_db_1 = require("../../core/db/mongo.db");
-exports.authRepository = {
+class AuthRepository {
     addTokenInBlackList(rfToken) {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, mongo_db_1.getRefreshTokenCollection)().insertOne({
@@ -19,16 +19,17 @@ exports.authRepository = {
                 createdAt: new Date(),
             });
         });
-    },
+    }
     findRefreshTokenInBlackList(refresh_token) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getRefreshTokenCollection)().findOne({ token: refresh_token });
         });
-    },
+    }
     deleteRefreshTokenBlackList() {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, mongo_db_1.getRefreshTokenCollection)().deleteMany({});
         });
-    },
-};
+    }
+}
+exports.AuthRepository = AuthRepository;
 //# sourceMappingURL=auth.repository.js.map

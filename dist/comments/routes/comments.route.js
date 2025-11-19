@@ -15,15 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRouter = void 0;
 const express_1 = require("express");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
-const comments_service_1 = require("../services/comments.service");
 const access_token_guard_1 = require("../../auth/access-token.guard");
 const result_object_1 = require("../../core/types/result-object");
 const comments_validation_middleware_1 = require("../../core/milldlewares/validation/comments-validation.middleware");
 const input_validation_middleware_1 = require("../../core/milldlewares/validation/input-validation-middleware");
+const composition_root_1 = require("../../composition.root");
 exports.commentsRouter = (0, express_1.Router)();
 exports.commentsRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = req.params.id;
-    const result = yield comments_service_1.commentsService.getByCommentId(commentId);
+    const result = yield composition_root_1.commentsService.getByCommentId(commentId);
     if (result.status === result_object_1.resultStatus.NOT_FOUND) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Not Found");
         return;
@@ -33,7 +33,7 @@ exports.commentsRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 
 exports.commentsRouter.delete("/:id", access_token_guard_1.accessTokenGuard, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = req.params.id;
     const userId = req.user.id;
-    const comment = yield comments_service_1.commentsService.getCommentById(commentId, userId);
+    const comment = yield composition_root_1.commentsService.getCommentById(commentId, userId);
     if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
         return;
@@ -44,7 +44,7 @@ exports.commentsRouter.delete("/:id", access_token_guard_1.accessTokenGuard, (re
             .send("If try delete the comment that is not your own");
         return;
     }
-    const result = yield comments_service_1.commentsService.deleteById(commentId);
+    const result = yield composition_root_1.commentsService.deleteById(commentId);
     if (result.status === result_object_1.resultStatus.ERROR) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
         return;
@@ -58,7 +58,7 @@ exports.commentsRouter.put("/:id", access_token_guard_1.accessTokenGuard, [comme
     const commentId = req.params.id;
     const content = req.body.content;
     const userId = req.user.id;
-    const comment = yield comments_service_1.commentsService.getCommentById(commentId, userId);
+    const comment = yield composition_root_1.commentsService.getCommentById(commentId, userId);
     if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
         return;
@@ -69,7 +69,7 @@ exports.commentsRouter.put("/:id", access_token_guard_1.accessTokenGuard, [comme
             .send("If try delete the comment that is not your own");
         return;
     }
-    const result = yield comments_service_1.commentsService.updateById(commentId, content);
+    const result = yield composition_root_1.commentsService.updateById(commentId, content);
     if (result.status === result_object_1.resultStatus.ERROR) {
         res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not updated");
     }

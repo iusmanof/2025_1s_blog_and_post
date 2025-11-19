@@ -13,14 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userIdBelongsToAnotherMiddleware = void 0;
-const jwt_adapter_1 = require("../adapters/jwt.adapter");
-const security_devices_query_repository_1 = require("../repository/security-devices.query-repository");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
+const composition_root_1 = require("../../composition.root");
 const userIdBelongsToAnotherMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const rftoken = req.cookies.refreshToken;
     const targerDeviceId = req.params.deviceId;
-    const { id: decodedUserId } = yield jwt_adapter_1.jwtAdapter.decodeToken(rftoken);
-    const targetDevice = yield security_devices_query_repository_1.securityDevicesQueryRepository.geByDeviceId(targerDeviceId);
+    const { id: decodedUserId } = yield composition_root_1.jwtAdapter.decodeToken(rftoken);
+    const targetDevice = yield composition_root_1.securityDevicesQueryRepository.geByDeviceId(targerDeviceId);
     if (!targetDevice) {
         res.status(http_status_code_1.default.NOT_FOUND_404).json({ test: "not found" });
         return;

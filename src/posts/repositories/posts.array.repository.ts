@@ -1,19 +1,20 @@
 import { PostModelWithId } from "../../core/types/PostModel";
-import { blogsArrayRepository } from "../../blogs/repositories/blogs.array.repository";
+import {BlogsArrayRepository} from "../../blogs/repositories/blogs.array.repository";
 
 let postsDB: PostModelWithId[] = [];
 
-export const postAccessLayer = {
-  getAllPosts: () => {
+export class PostAccessLayer  {
+    constructor(private readonly blogsArrayRepository: BlogsArrayRepository) {}
+    getAllPosts () {
     return postsDB;
-  },
-  getPostById: (id: string) => {
+  }
+  getPostById (id: string)  {
     let postFounded: PostModelWithId | undefined;
     postFounded = postsDB.find((post) => post.id === id);
     return postFounded;
-  },
-  createPost: (post: PostModelWithId) => {
-    const blog = blogsArrayRepository.getBlogById(post.blogId);
+  }
+  createPost (post: PostModelWithId)  {
+    const blog = this.blogsArrayRepository.getBlogById(post.blogId);
     const postCreated: PostModelWithId = {
       id: Math.floor(Math.random() * 1000000).toString(),
       title: post.title,
@@ -24,8 +25,8 @@ export const postAccessLayer = {
     };
     postsDB = [...postsDB, postCreated];
     return postCreated;
-  },
-  deletePost: (id: string) => {
+  }
+  deletePost (id: string)  {
     const postID = postsDB.findIndex((p) => p.id === id);
 
     if (postID === -1) {
@@ -34,14 +35,14 @@ export const postAccessLayer = {
       postsDB.splice(postID, 1);
       return true;
     }
-  },
-  updatePost: (id: string, post: PostModelWithId) => {
+  }
+  updatePost(id: string, post: PostModelWithId)  {
     const postID = postsDB.findIndex((p) => p.id === id);
 
     if (postID === -1) {
       return false;
     } else {
-      const blog = blogsArrayRepository.getBlogById(post.blogId);
+      const blog = this.blogsArrayRepository.getBlogById(post.blogId);
       const postUpdated: PostModelWithId = {
         ...postsDB[postID],
         title: post.title,
@@ -58,8 +59,8 @@ export const postAccessLayer = {
 
       return true;
     }
-  },
-  deleteAllPosts: () => {
+  }
+  deleteAllPosts ()  {
     postsDB = [];
-  },
-};
+  }
+}

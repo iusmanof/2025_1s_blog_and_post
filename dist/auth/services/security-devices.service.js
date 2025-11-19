@@ -9,16 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.securityDevicesService = void 0;
-const security_devices_repository_1 = require("../repository/security-devices.repository");
-const security_devices_query_repository_1 = require("../repository/security-devices.query-repository");
+exports.SecurityDevicesService = void 0;
 const result_object_1 = require("../../core/types/result-object");
-const jwt_adapter_1 = require("../adapters/jwt.adapter");
-exports.securityDevicesService = {
+class SecurityDevicesService {
+    constructor(jwtAdapter, securityDevicesRepository, securityDevicesQueryRepository) {
+        this.jwtAdapter = jwtAdapter;
+        this.securityDevicesRepository = securityDevicesRepository;
+        this.securityDevicesQueryRepository = securityDevicesQueryRepository;
+    }
     getDevices(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(refreshToken);
-            const devices = yield security_devices_repository_1.securityDevicesRepository.findAllDevicesByUserId(decoded.id);
+            const decoded = yield this.jwtAdapter.decodeToken(refreshToken);
+            const devices = yield this.securityDevicesRepository.findAllDevicesByUserId(decoded.id);
             return devices.map((d) => {
                 return {
                     ip: d.ip,
@@ -28,15 +30,15 @@ exports.securityDevicesService = {
                 };
             });
         });
-    },
+    }
     setDevice(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield security_devices_repository_1.securityDevicesRepository.addDevice(dto);
+            yield this.securityDevicesRepository.addDevice(dto);
         });
-    },
+    }
     deleteById(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield security_devices_query_repository_1.securityDevicesQueryRepository.geByDeviceId(deviceId);
+            const result = yield this.securityDevicesQueryRepository.geByDeviceId(deviceId);
             if (!result) {
                 return {
                     status: result_object_1.resultStatus.NOT_FOUND,
@@ -45,19 +47,20 @@ exports.securityDevicesService = {
                     data: null,
                 };
             }
-            yield security_devices_repository_1.securityDevicesRepository.deleteDevice(deviceId);
+            yield this.securityDevicesRepository.deleteDevice(deviceId);
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
                 data: null,
             };
         });
-    },
+    }
     terminateAllSessionExcludeCurrent(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const decoded = yield jwt_adapter_1.jwtAdapter.decodeToken(refreshToken);
-            yield security_devices_repository_1.securityDevicesRepository.deleteAllDevicesExcludeCurrent(decoded.deviceId);
+            const decoded = yield this.jwtAdapter.decodeToken(refreshToken);
+            yield this.securityDevicesRepository.deleteAllDevicesExcludeCurrent(decoded.deviceId);
         });
-    },
-};
+    }
+}
+exports.SecurityDevicesService = SecurityDevicesService;
 //# sourceMappingURL=security-devices.service.js.map
