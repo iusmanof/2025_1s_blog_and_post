@@ -15,15 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogRouter = void 0;
 const express_1 = require("express");
 const super_admin_guard_middleware_1 = require("../../core/milldlewares/super-admin.guard-middleware");
-const nameValidation_1 = require("../../core/milldlewares/validation/nameValidation");
-const websiteValidation_1 = require("../../core/milldlewares/validation/websiteValidation");
-const input_validation_middleware_1 = require("../../core/milldlewares/validation/input-validation-middleware");
-const query_pagination_sorting_validation_middleware_1 = require("../../core/milldlewares/validation/query-pagination-sorting.validation-middleware");
-const titleValidation_1 = require("../../core/milldlewares/validation/titleValidation");
-const contentValidation_1 = require("../../core/milldlewares/validation/contentValidation");
-const shortDescriptionValidation_1 = require("../../core/milldlewares/validation/shortDescriptionValidation");
-const query_id_middleware_1 = require("../../core/milldlewares/validation/query-id.middleware");
-const param_id_middleware_1 = require("../../core/milldlewares/validation/param-id.middleware");
+const nameValidation_1 = require("../../core/milldlewares/nameValidation");
+const website_validation_1 = require("../../core/milldlewares/website-validation");
+const input_validation_middleware_1 = require("../../core/milldlewares/input-validation-middleware");
+const query_pagination_sorting_validation_middleware_1 = require("../../core/milldlewares/query-pagination-sorting.validation-middleware");
+const title_validation_1 = require("../../core/milldlewares/title-validation");
+const contentValidation_1 = require("../../core/milldlewares/contentValidation");
+const short_description_validation_1 = require("../../core/milldlewares/short-description-validation");
+const query_id_middleware_1 = require("../../core/milldlewares/query-id.middleware");
+const param_id_middleware_1 = require("../../core/milldlewares/param-id.middleware");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
 const express_validator_1 = require("express-validator");
 const http_status_code_2 = __importDefault(require("../../core/types/http-status-code"));
@@ -46,11 +46,11 @@ exports.blogRouter.get("/:id", query_id_middleware_1.queryIdMiddleware, (req, re
     }
     res.status(200).json(blog);
 }));
-exports.blogRouter.post("/", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRouter.post("/", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, website_validation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blogCreated = yield composition_root_1.blogService.create(req.body);
     return yield res.status(http_status_code_1.default.CREATED_201).json(blogCreated);
 }));
-exports.blogRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, websiteValidation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, website_validation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blogIsUpdated = yield composition_root_1.blogService.update(req.params.id, req.body);
     const apiErrorMsg = [];
     if (!blogIsUpdated) {
@@ -74,7 +74,7 @@ exports.blogRouter.delete("/:id", query_id_middleware_1.queryIdMiddleware, super
     }
     res.status(http_status_code_1.default.NO_CONTENT_204).send();
 }));
-exports.blogRouter.post("/:blogId/posts", super_admin_guard_middleware_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRouter.post("/:blogId/posts", super_admin_guard_middleware_1.basicAuth, [title_validation_1.titleValidation, contentValidation_1.contentValidation, short_description_validation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blog = yield composition_root_1.blogService.findById(req.params.blogId);
     if (!blog) {
         res.status(http_status_code_2.default.NOT_FOUND_404).send("Blog not found.");

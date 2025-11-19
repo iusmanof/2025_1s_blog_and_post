@@ -18,7 +18,7 @@ exports.getRefreshTokenCollection = getRefreshTokenCollection;
 exports.getSecurityDeviceCollection = getSecurityDeviceCollection;
 exports.stopDb = stopDb;
 const mongodb_1 = require("mongodb");
-const settings_1 = require("../settings/settings");
+const settings_1 = require("./settings");
 let client;
 let blogCollection;
 let postCollection;

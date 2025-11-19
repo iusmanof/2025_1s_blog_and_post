@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongo_db_1 = require("./core/db/mongo.db");
 const setup_app_1 = require("./setup-app");
-const settings_1 = require("./core/settings/settings");
+const settings_1 = require("./core/db/settings");
 const app = (0, express_1.default)();
 const port = process.env.port || 3000;
 (0, setup_app_1.SETUP_APP)(app);

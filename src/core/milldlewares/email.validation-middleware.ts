@@ -1,6 +1,5 @@
 import { body } from "express-validator";
-import {usersRepository} from "../../../composition.root";
-// import { usersRepository } from "../../../users/repositories/users.repository";
+import { usersRepository } from "../../composition.root";
 
 export const emailValidation = body("email")
   .trim()

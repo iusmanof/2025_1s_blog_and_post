@@ -1,7 +1,7 @@
 // import { Request, Response } from "express";
 // import { UserResponseCreateDto } from "../../types/user-response-create-dto";
 // import { sortQueryFieldsUtil } from "../../../core/utils/sort-query-default.util";
-// import { usersQueryRepository } from "../../repositories/users.query.repository";
+// import { usersQueryRepository } from "../../repositories/users.query.repositories";
 // import httpStatusCode from "../../../core/types/http-status-code";
 // import {
 //   IPagination,

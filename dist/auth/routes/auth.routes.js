@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
 const express_1 = require("express");
-const password_validation_middleware_1 = require("../../core/milldlewares/validation/password.validation-middleware");
-const input_validation_middleware_1 = require("../../core/milldlewares/validation/input-validation-middleware");
-const login_or_email_validation_1 = require("../../core/milldlewares/validation/login-or-email.validation");
+const password_validation_middleware_1 = require("../../core/milldlewares/password.validation-middleware");
+const input_validation_middleware_1 = require("../../core/milldlewares/input-validation-middleware");
+const login_or_email_validation_1 = require("../../core/milldlewares/login-or-email.validation");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
 const result_object_1 = require("../../core/types/result-object");
 const access_token_guard_1 = require("../access-token.guard");

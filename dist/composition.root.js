@@ -1,14 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postService = exports.postAccessLayer = exports.blogService = exports.blogsRepository = exports.postsRepository = exports.authService = exports.securityDevicesService = exports.usersService = exports.usersRepository = exports.usersQueryRepository = exports.commentsService = exports.commentsRepository = exports.blogsArrayRepository = exports.securityDevicesRepository = exports.securityDevicesQueryRepository = exports.authRepository = exports.jwtAdapter = exports.emailAdapter = exports.bcryptAdapter = void 0;
+require("reflect-metadata");
+// import {Container} from "inversify";
 const users_repository_1 = require("./users/repositories/users.repository");
 const bcrypt_adapter_1 = require("./auth/adapters/bcrypt.adapter");
 const users_service_1 = require("./users/services/users.service");
 const email_adapter_1 = require("./auth/adapters/email.adapter");
 const jwt_adapter_1 = require("./auth/adapters/jwt.adapter");
-const auth_repository_1 = require("./auth/repository/auth.repository");
-const security_devices_query_repository_1 = require("./auth/repository/security-devices.query-repository");
-const security_devices_repository_1 = require("./auth/repository/security-devices.repository");
+const auth_repository_1 = require("./auth/repositories/auth.repository");
+const security_devices_query_repository_1 = require("./auth/repositories/security-devices.query-repository");
+const security_devices_repository_1 = require("./auth/repositories/security-devices.repository");
 const auth_service_1 = require("./auth/services/auth.service");
 const security_devices_service_1 = require("./auth/services/security-devices.service");
 const blogs_array_repository_1 = require("./blogs/repositories/blogs.array.repository");
@@ -44,5 +46,23 @@ exports.blogsRepository = new blogs_repository_1.BlogsRepository();
 exports.blogService = new blog_service_1.BlogService(exports.blogsRepository);
 exports.postAccessLayer = new posts_array_repository_1.PostAccessLayer(exports.blogsArrayRepository);
 exports.postService = new post_service_1.PostService(exports.postsRepository);
+//
 // export const container = new Container();
+// container.bind(BcryptAdapter).to(BcryptAdapter)
+// container.bind(EmailAdapter).to(EmailAdapter)
+// container.bind(JwtAdapter).to(JwtAdapter)
+// container.bind(AuthRepository).to(AuthRepository)
+// container.bind(BlogsArrayRepository).to(BlogsArrayRepository)
+// container.bind(CommentsRepository).to(CommentsRepository)
+// container.bind(CommentsService).to(CommentsService)
+// container.bind(UsersQueryRepository).to(UsersQueryRepository)
+// container.bind(UsersRepository).to(UsersRepository)
+// container.bind(UsersService).to(UsersService)
+// container.bind(AuthService).to(AuthService)
+// container.bind(PostsRepository).to(PostsRepository)
+// container.bind(BlogsRepository).to(BlogsRepository)
+// container.bind(BlogService).to(BlogService)
+// container.bind(PostAccessLayer).to(PostAccessLayer)
+// container.bind(PostService).to(PostService)
+//
 //# sourceMappingURL=composition.root.js.map

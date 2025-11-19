@@ -1,7 +1,7 @@
 import * as jwt from "jsonwebtoken";
-import { SETTINGS } from "../../core/settings/settings";
+import { SETTINGS } from "../../core/db/settings";
 
-export class JwtAdapter{
+export class JwtAdapter {
   async signAccessToken(id: string) {
     return jwt.sign({ id }, SETTINGS.ACCESS_TOKEN_SECRET, {
       expiresIn: SETTINGS.ACCESS_TOKEN_SECRET_TIME,

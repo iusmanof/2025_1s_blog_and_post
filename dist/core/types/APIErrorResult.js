@@ -1,3 +1,7 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+// import { FieldError } from "./field-error";
+//
+// export type APIErrorResult = {
+//   errorsMessages: FieldError[] | null;
+// };
 //# sourceMappingURL=APIErrorResult.js.map

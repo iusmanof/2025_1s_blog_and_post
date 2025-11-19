@@ -1,4 +1,4 @@
-export type PostModel = {
+export type PostsDto = {
   title: string;
   shortDescription: string;
   content: string;
@@ -6,11 +6,11 @@ export type PostModel = {
   blogName: string;
 };
 
-export type PostModelWithId = PostModel & {
+export type PostModelWithId = PostsDto & {
   id: string;
 };
 
-export type PostMongoDb = PostModel & {
+export type PostMongoDb = PostsDto & {
   createdAt: string;
 };
 
@@ -26,5 +26,5 @@ export type PostPromise = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: PostModel[];
+  items: PostsDto[];
 };

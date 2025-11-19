@@ -1,15 +1,15 @@
 import {
-  PostModel,
+  PostsDto,
   PostModelWithId,
   PostPromise,
   PostQuery,
-} from "../../core/types/PostModel";
+} from "../types/posts.dto";
 import { getPostCollection } from "../../core/db/mongo.db";
 import { ObjectId } from "mongodb";
-import {blogsRepository} from "../../composition.root";
+import { blogsRepository } from "../../composition.root";
 
 export class PostsRepository {
-  async  getAllPosts (query: PostQuery) {
+  async getAllPosts(query: PostQuery) {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -50,9 +50,9 @@ export class PostsRepository {
       pageSize: +pageSize,
       totalCount: +totalCount,
       items: resultWithId,
-    }
+    };
   }
-  async getPostById (id: string) {
+  async getPostById(id: string) {
     const result = await getPostCollection().findOne({ _id: new ObjectId(id) });
     if (!result) {
       return null;
@@ -63,7 +63,7 @@ export class PostsRepository {
     }));
     return postWithId[0];
   }
-  async createPost (post: PostModel)  {
+  async createPost(post: PostsDto) {
     const blog = await blogsRepository.getBlogById(post.blogId);
 
     const postCreated = {
@@ -80,7 +80,7 @@ export class PostsRepository {
       id: result.insertedId.toString(),
     };
   }
-  async createPostByBlogId(post: PostModel, blogId: string) {
+  async createPostByBlogId(post: PostsDto, blogId: string) {
     const blog = await blogsRepository.getBlogById(post.blogId);
 
     const postCreated = {
@@ -97,13 +97,13 @@ export class PostsRepository {
       id: result.insertedId.toString(),
     };
   }
-  async  deletePost(id: string)  {
+  async deletePost(id: string) {
     const isDeleted = await getPostCollection().deleteOne({
       _id: new ObjectId(id),
     });
     return (await isDeleted.deletedCount) !== 0;
   }
-  async updatePost(id: string, post: PostModelWithId)  {
+  async updatePost(id: string, post: PostModelWithId) {
     const updateFields: Partial<PostModelWithId> = {
       title: post.title,
       shortDescription: post.shortDescription,
@@ -146,7 +146,7 @@ export class PostsRepository {
       .limit(+pageSize)
       .toArray();
 
-    const postWithId: PostModel[] = result.map(({ _id, ...rest }) => ({
+    const postWithId: PostsDto[] = result.map(({ _id, ...rest }) => ({
       ...rest,
       id: _id.toString(),
     }));

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { passwordValidation } from "../../core/milldlewares/validation/password.validation-middleware";
-import { inputValidationMiddleware } from "../../core/milldlewares/validation/input-validation-middleware";
-import { loginOrEmailValidation } from "../../core/milldlewares/validation/login-or-email.validation";
+import { passwordValidation } from "../../core/milldlewares/password.validation-middleware";
+import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
+import { loginOrEmailValidation } from "../../core/milldlewares/login-or-email.validation";
 import { LoginOrEmailDto } from "../types/login-or-email.dto";
 import httpStatusCode from "../../core/types/http-status-code";
 import { resultStatus } from "../../core/types/result-object";
@@ -14,7 +14,7 @@ import {
   verifyRefreshToken,
 } from "../middlewares/refresh-token.middleware";
 import { rateLimitMiddleware } from "../middlewares/rate-limit.middleware";
-import {authService} from "../../composition.root";
+import { authService } from "../../composition.root";
 
 const loginRequestLimit = rateLimitMiddleware(5, 10);
 const registrationRequestLimit = rateLimitMiddleware(5, 10);

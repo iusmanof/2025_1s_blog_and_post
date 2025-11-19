@@ -5,10 +5,10 @@ import { runDB, stopDb } from "../src/core/db/mongo.db";
 import { clearDb } from "./utils/clearDb";
 import request from "supertest";
 import httpStatusCode from "../src/core/types/http-status-code";
-import { SETTINGS } from "../src/core/settings/settings";
+import { SETTINGS } from "../src/core/db/settings";
 
 jest.mock("uuid", () => ({
-    v4: () => "123456789",
+  v4: () => "123456789",
 }));
 
 describe("/users", () => {

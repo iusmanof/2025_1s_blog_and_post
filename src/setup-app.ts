@@ -7,7 +7,7 @@ import {
   USERS_PATH,
   COMMENTS_PATH,
   SECURITY_DEVICES_PATH,
-} from "./core/paths/paths";
+} from "./core/db/paths";
 import { blogRouter } from "./blogs/routes/blog.route";
 import { postRouter } from "./posts/routes/post.route";
 import { testingRouter } from "./testing/routes/testing.route";

@@ -1,4 +1,4 @@
-import { BlogBase, BlogWithId } from "../../core/types/BlogModel";
+import { BlogBase, BlogWithId } from "../types/blog.dto";
 
 let blogsDB: BlogWithId[] = [];
 

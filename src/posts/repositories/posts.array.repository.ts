@@ -1,19 +1,19 @@
-import { PostModelWithId } from "../../core/types/PostModel";
-import {BlogsArrayRepository} from "../../blogs/repositories/blogs.array.repository";
+import { PostModelWithId } from "../types/posts.dto";
+import { BlogsArrayRepository } from "../../blogs/repositories/blogs.array.repository";
 
 let postsDB: PostModelWithId[] = [];
 
-export class PostAccessLayer  {
-    constructor(private readonly blogsArrayRepository: BlogsArrayRepository) {}
-    getAllPosts () {
+export class PostAccessLayer {
+  constructor(private readonly blogsArrayRepository: BlogsArrayRepository) {}
+  getAllPosts() {
     return postsDB;
   }
-  getPostById (id: string)  {
+  getPostById(id: string) {
     let postFounded: PostModelWithId | undefined;
     postFounded = postsDB.find((post) => post.id === id);
     return postFounded;
   }
-  createPost (post: PostModelWithId)  {
+  createPost(post: PostModelWithId) {
     const blog = this.blogsArrayRepository.getBlogById(post.blogId);
     const postCreated: PostModelWithId = {
       id: Math.floor(Math.random() * 1000000).toString(),
@@ -26,7 +26,7 @@ export class PostAccessLayer  {
     postsDB = [...postsDB, postCreated];
     return postCreated;
   }
-  deletePost (id: string)  {
+  deletePost(id: string) {
     const postID = postsDB.findIndex((p) => p.id === id);
 
     if (postID === -1) {
@@ -36,7 +36,7 @@ export class PostAccessLayer  {
       return true;
     }
   }
-  updatePost(id: string, post: PostModelWithId)  {
+  updatePost(id: string, post: PostModelWithId) {
     const postID = postsDB.findIndex((p) => p.id === id);
 
     if (postID === -1) {
@@ -60,7 +60,7 @@ export class PostAccessLayer  {
       return true;
     }
   }
-  deleteAllPosts ()  {
+  deleteAllPosts() {
     postsDB = [];
   }
 }

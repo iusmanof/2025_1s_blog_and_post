@@ -13,7 +13,7 @@ exports.AuthService = void 0;
 const result_object_1 = require("../../core/types/result-object");
 const crypto_1 = require("crypto");
 const date_fns_1 = require("date-fns");
-const email_example_template_1 = require("../../core/types/email-example.template");
+const email_example_template_1 = require("../adapters/email-example.template");
 const uuid_1 = require("uuid");
 class AuthService {
     constructor(jwtAdapter, emailAdapter, bcryptAdapter, securityDevicesService, securityDevicesQueryRepository, securityDevicesRepository, usersQueryRepository, usersRepository) {
@@ -78,7 +78,7 @@ class AuthService {
                     confirmationCode: (0, crypto_1.randomUUID)(),
                     expirationDate: (0, date_fns_1.add)(new Date(), { hours: 1, minutes: 30 }),
                     isConfirmed: false,
-                }
+                },
             };
             yield this.usersRepository.create(newUser);
             if (newUser.emailConfirmation) {

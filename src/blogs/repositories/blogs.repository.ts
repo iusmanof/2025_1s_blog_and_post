@@ -4,13 +4,13 @@ import {
   BlogMongoDb,
   BlogQuery,
   BlogWithId,
-} from "../../core/types/BlogModel";
+} from "../types/blog.dto";
 import { ObjectId } from "mongodb";
-import { PostModel } from "../../core/types/PostModel";
-import {postsRepository} from "../../composition.root";
+import { PostsDto } from "../../posts/types/posts.dto";
+import { postsRepository } from "../../composition.root";
 
 export class BlogsRepository {
-  async getAllBlogs (query: BlogQuery) {
+  async getAllBlogs(query: BlogQuery) {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -91,7 +91,7 @@ export class BlogsRepository {
 
     return isUpdated.matchedCount !== 0;
   }
-  async createPostByBlogId(body: PostModel, blogId: string) {
+  async createPostByBlogId(body: PostsDto, blogId: string) {
     return await postsRepository.createPostByBlogId(body, blogId);
   }
   async deleteBlog(id: string) {

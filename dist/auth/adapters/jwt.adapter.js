@@ -44,7 +44,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtAdapter = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
-const settings_1 = require("../../core/settings/settings");
+const settings_1 = require("../../core/db/settings");
 class JwtAdapter {
     signAccessToken(id) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -1,16 +1,16 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { SETTINGS } from "../src/core/settings/settings";
+import { SETTINGS } from "../src/core/db/settings";
 import { getUserCollection, runDB, stopDb } from "../src/core/db/mongo.db";
 import { add } from "date-fns";
 import { UserDbDto } from "../src/users/types/user-db-dto";
 import { afterEach } from "node:test";
 import { resultStatus } from "../src/core/types/result-object";
-import { emailExampleTemplate } from "../src/core/types/email-example.template";
-import {authService, emailAdapter} from "../src/composition.root";
+import { emailExampleTemplate } from "../src/auth/adapters/email-example.template";
+import { authService, emailAdapter } from "../src/composition.root";
 
 jest.mock("../src/auth/adapters/email.adapter");
 jest.mock("uuid", () => ({
-    v4: () => "123456789",
+  v4: () => "123456789",
 }));
 
 describe("Integration tests", () => {

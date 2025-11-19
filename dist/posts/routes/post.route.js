@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRouter = void 0;
 const express_1 = require("express");
 const super_admin_guard_middleware_1 = require("../../core/milldlewares/super-admin.guard-middleware");
-const titleValidation_1 = require("../../core/milldlewares/validation/titleValidation");
-const contentValidation_1 = require("../../core/milldlewares/validation/contentValidation");
-const shortDescriptionValidation_1 = require("../../core/milldlewares/validation/shortDescriptionValidation");
-const input_validation_middleware_1 = require("../../core/milldlewares/validation/input-validation-middleware");
-const query_pagination_sorting_validation_middleware_1 = require("../../core/milldlewares/validation/query-pagination-sorting.validation-middleware");
+const title_validation_1 = require("../../core/milldlewares/title-validation");
+const contentValidation_1 = require("../../core/milldlewares/contentValidation");
+const short_description_validation_1 = require("../../core/milldlewares/short-description-validation");
+const input_validation_middleware_1 = require("../../core/milldlewares/input-validation-middleware");
+const query_pagination_sorting_validation_middleware_1 = require("../../core/milldlewares/query-pagination-sorting.validation-middleware");
 const access_token_guard_1 = require("../../auth/access-token.guard");
-const comments_validation_middleware_1 = require("../../core/milldlewares/validation/comments-validation.middleware");
+const comments_validation_middleware_1 = require("../../core/milldlewares/comments-validation.middleware");
 const post_id_validation_middleware_1 = require("./middlewares/post-id-validation.middleware");
 const user_id_validation_middleware_1 = require("./middlewares/user-id-validation.middleware");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
@@ -46,25 +46,29 @@ exports.postRouter.get("/:id", function getPostByIdHandler(req, res) {
         res.status(200).json(postFounded);
     });
 });
-exports.postRouter.post("/", super_admin_guard_middleware_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, function createPostHandler(req, res) {
+exports.postRouter.post("/", super_admin_guard_middleware_1.basicAuth, [title_validation_1.titleValidation, contentValidation_1.contentValidation, short_description_validation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, function createPostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postCreated = yield composition_root_1.postService.create(req.body);
         const apiErrorMsg = [];
         if (!postCreated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            res.status(http_status_code_1.default.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
+            res
+                .status(http_status_code_1.default.NOT_FOUND_404)
+                .json({ errorsMessages: apiErrorMsg });
             return;
         }
         res.status(http_status_code_1.default.CREATED_201).json(postCreated);
     });
 });
-exports.postRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [titleValidation_1.titleValidation, contentValidation_1.contentValidation, shortDescriptionValidation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, function updatePostHandler(req, res) {
+exports.postRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [title_validation_1.titleValidation, contentValidation_1.contentValidation, short_description_validation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, function updatePostHandler(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const postIsUpdated = yield composition_root_1.postService.update(req.params.id, req.body);
         const apiErrorMsg = [];
         if (!postIsUpdated) {
             apiErrorMsg.push({ message: "ID Not found", field: "id" });
-            res.status(http_status_code_1.default.NOT_FOUND_404).json({ errorsMessages: apiErrorMsg });
+            res
+                .status(http_status_code_1.default.NOT_FOUND_404)
+                .json({ errorsMessages: apiErrorMsg });
             return;
         }
         res.status(http_status_code_1.default.NO_CONTENT_204).send();

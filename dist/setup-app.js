@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SETUP_APP = void 0;
 const express_1 = __importDefault(require("express"));
-const paths_1 = require("./core/paths/paths");
+const paths_1 = require("./core/db/paths");
 const blog_route_1 = require("./blogs/routes/blog.route");
 const post_route_1 = require("./posts/routes/post.route");
 const testing_route_1 = require("./testing/routes/testing.route");

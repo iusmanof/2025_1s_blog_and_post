@@ -4,7 +4,7 @@
 // // import { usersService } from "../../services/users.service";
 // import { UserCreateDto } from "../../types/user-create-dto";
 // import { UserResponseCreateDto } from "../../types/user-response-create-dto";
-// // import { usersQueryRepository } from "../../repositories/users.query.repository";
+// // import { usersQueryRepository } from "../../repositories/users.query.repositories";
 // import {usersQueryRepository, usersService} from "../../../composition.root";
 //
 // export async function createUserHandler(

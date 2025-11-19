@@ -1,7 +1,7 @@
 import express from "express";
 import { runDB } from "./core/db/mongo.db";
 import { SETUP_APP } from "./setup-app";
-import { SETTINGS } from "./core/settings/settings";
+import { SETTINGS } from "./core/db/settings";
 
 const app = express();
 const port = process.env.port || 3000;

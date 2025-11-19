@@ -1,7 +1,7 @@
 import { Collection, MongoClient } from "mongodb";
-import { PostMongoDb } from "../types/PostModel";
-import { BlogMongoDb } from "../types/BlogModel";
-import { SETTINGS } from "../settings/settings";
+import { PostMongoDb } from "../../posts/types/posts.dto";
+import { BlogMongoDb } from "../../blogs/types/blog.dto";
+import { SETTINGS } from "./settings";
 import { UserDbDto } from "../../users/types/user-db-dto";
 import { CommentDbDto } from "../../comments/types/comment-db-dto";
 import { ListRefreshToken } from "../../auth/types/list-refresh-token";
@@ -17,7 +17,6 @@ let securityDevicesCollection: Collection<SecurityDeviceDbDto>;
 
 export const runDB = async (url: string) => {
   client = new MongoClient(url);
-
 
   try {
     await client.connect();
@@ -36,7 +35,6 @@ export const runDB = async (url: string) => {
     );
 
     console.log("Connect successfully to server");
-
   } catch (e) {
     console.error("Don't connect to server");
     console.log(e);
