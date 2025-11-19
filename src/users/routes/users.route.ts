@@ -1,3 +1,6 @@
+import { container } from "../../composition.root";
+import { UsersService } from "../services/users.service";
+
 import { Request, Response, Router } from "express";
 import { basicAuth } from "../../core/milldlewares/super-admin.guard-middleware";
 import { paginationAndSortingValidationWithEmailAndLogin } from "../../core/milldlewares/query-pagination-sorting.validation-middleware";
@@ -8,7 +11,7 @@ import { inputValidationMiddleware } from "../../core/milldlewares/input-validat
 import { usersInputValidationMiddleware } from "../../core/milldlewares/users-input.validation-middleware";
 import { UserCreateDto } from "../types/user-create-dto";
 import { UserResponseCreateDto } from "../types/user-response-create-dto";
-import { usersQueryRepository, usersService } from "../../composition.root";
+import { usersQueryRepository } from "../../composition.root";
 import httpStatusCode from "../../core/types/http-status-code";
 import {
   IPagination,
@@ -17,7 +20,9 @@ import {
 import { sortQueryFieldsUtil } from "../../core/utils/sort-query-default.util";
 import HttpStatusCode from "../../core/types/http-status-code";
 
+
 export const userRouter = Router();
+const usersService = container.get(UsersService);
 
 userRouter.use(basicAuth);
 

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-// import {Container} from "inversify";
+import {Container} from "inversify";
 
 import { UsersRepository } from "./users/repositories/users.repository";
 import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
@@ -44,7 +44,7 @@ export const commentsService = new CommentsService();
 export const usersQueryRepository = new UsersQueryRepository();
 export const usersRepository = new UsersRepository();
 
-export const usersService = new UsersService(usersRepository, bcryptAdapter);
+// export const usersService = new UsersService(usersRepository, bcryptAdapter);
 export const securityDevicesService = new SecurityDevicesService(
   jwtAdapter,
   securityDevicesRepository,
@@ -67,8 +67,10 @@ export const postAccessLayer = new PostAccessLayer(blogsArrayRepository);
 export const postService = new PostService(postsRepository);
 
 //
-// export const container = new Container();
-// container.bind(BcryptAdapter).to(BcryptAdapter)
+export const container = new Container();
+container.bind(BcryptAdapter).to(BcryptAdapter)
+container.bind(UsersRepository).to(UsersRepository)
+container.bind(UsersService).to(UsersService)
 // container.bind(EmailAdapter).to(EmailAdapter)
 // container.bind(JwtAdapter).to(JwtAdapter)
 // container.bind(AuthRepository).to(AuthRepository)
@@ -76,12 +78,11 @@ export const postService = new PostService(postsRepository);
 // container.bind(CommentsRepository).to(CommentsRepository)
 // container.bind(CommentsService).to(CommentsService)
 // container.bind(UsersQueryRepository).to(UsersQueryRepository)
-// container.bind(UsersRepository).to(UsersRepository)
-// container.bind(UsersService).to(UsersService)
+
 // container.bind(AuthService).to(AuthService)
 // container.bind(PostsRepository).to(PostsRepository)
 // container.bind(BlogsRepository).to(BlogsRepository)
 // container.bind(BlogService).to(BlogService)
 // container.bind(PostAccessLayer).to(PostAccessLayer)
 // container.bind(PostService).to(PostService)
-//
+

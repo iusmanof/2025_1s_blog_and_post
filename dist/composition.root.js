@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postService = exports.postAccessLayer = exports.blogService = exports.blogsRepository = exports.postsRepository = exports.authService = exports.securityDevicesService = exports.usersService = exports.usersRepository = exports.usersQueryRepository = exports.commentsService = exports.commentsRepository = exports.blogsArrayRepository = exports.securityDevicesRepository = exports.securityDevicesQueryRepository = exports.authRepository = exports.jwtAdapter = exports.emailAdapter = exports.bcryptAdapter = void 0;
+exports.container = exports.postService = exports.postAccessLayer = exports.blogService = exports.blogsRepository = exports.postsRepository = exports.authService = exports.securityDevicesService = exports.usersRepository = exports.usersQueryRepository = exports.commentsService = exports.commentsRepository = exports.blogsArrayRepository = exports.securityDevicesRepository = exports.securityDevicesQueryRepository = exports.authRepository = exports.jwtAdapter = exports.emailAdapter = exports.bcryptAdapter = void 0;
 require("reflect-metadata");
-// import {Container} from "inversify";
+const inversify_1 = require("inversify");
 const users_repository_1 = require("./users/repositories/users.repository");
 const bcrypt_adapter_1 = require("./auth/adapters/bcrypt.adapter");
 const users_service_1 = require("./users/services/users.service");
@@ -38,7 +38,7 @@ exports.commentsService = new comments_service_1.CommentsService();
 // users
 exports.usersQueryRepository = new users_query_repository_1.UsersQueryRepository();
 exports.usersRepository = new users_repository_1.UsersRepository();
-exports.usersService = new users_service_1.UsersService(exports.usersRepository, exports.bcryptAdapter);
+// export const usersService = new UsersService(usersRepository, bcryptAdapter);
 exports.securityDevicesService = new security_devices_service_1.SecurityDevicesService(exports.jwtAdapter, exports.securityDevicesRepository, exports.securityDevicesQueryRepository);
 exports.authService = new auth_service_1.AuthService(exports.jwtAdapter, exports.emailAdapter, exports.bcryptAdapter, exports.securityDevicesService, exports.securityDevicesQueryRepository, exports.securityDevicesRepository, exports.usersQueryRepository, exports.usersRepository);
 exports.postsRepository = new posts_repository_1.PostsRepository();
@@ -47,8 +47,10 @@ exports.blogService = new blog_service_1.BlogService(exports.blogsRepository);
 exports.postAccessLayer = new posts_array_repository_1.PostAccessLayer(exports.blogsArrayRepository);
 exports.postService = new post_service_1.PostService(exports.postsRepository);
 //
-// export const container = new Container();
-// container.bind(BcryptAdapter).to(BcryptAdapter)
+exports.container = new inversify_1.Container();
+exports.container.bind(bcrypt_adapter_1.BcryptAdapter).to(bcrypt_adapter_1.BcryptAdapter);
+exports.container.bind(users_repository_1.UsersRepository).to(users_repository_1.UsersRepository);
+exports.container.bind(users_service_1.UsersService).to(users_service_1.UsersService);
 // container.bind(EmailAdapter).to(EmailAdapter)
 // container.bind(JwtAdapter).to(JwtAdapter)
 // container.bind(AuthRepository).to(AuthRepository)
@@ -56,13 +58,10 @@ exports.postService = new post_service_1.PostService(exports.postsRepository);
 // container.bind(CommentsRepository).to(CommentsRepository)
 // container.bind(CommentsService).to(CommentsService)
 // container.bind(UsersQueryRepository).to(UsersQueryRepository)
-// container.bind(UsersRepository).to(UsersRepository)
-// container.bind(UsersService).to(UsersService)
 // container.bind(AuthService).to(AuthService)
 // container.bind(PostsRepository).to(PostsRepository)
 // container.bind(BlogsRepository).to(BlogsRepository)
 // container.bind(BlogService).to(BlogService)
 // container.bind(PostAccessLayer).to(PostAccessLayer)
 // container.bind(PostService).to(PostService)
-//
 //# sourceMappingURL=composition.root.js.map

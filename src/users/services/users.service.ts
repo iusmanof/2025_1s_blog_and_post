@@ -1,13 +1,16 @@
+import {inject, injectable} from "inversify";
+
 import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
 import { UsersRepository } from "../repositories/users.repository";
 import { UserCreateDto } from "../types/user-create-dto";
 import { UserDbDto } from "../types/user-db-dto";
 import { BcryptAdapter } from "../../auth/adapters/bcrypt.adapter";
 
+@injectable()
 export class UsersService {
   constructor(
-    public readonly usersRepository: UsersRepository,
-    private readonly bcryptAdapter: BcryptAdapter,
+    @inject(UsersRepository)private readonly usersRepository: UsersRepository,
+    @inject(BcryptAdapter)private readonly bcryptAdapter: BcryptAdapter,
   ) {}
   async findMany(
     queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,

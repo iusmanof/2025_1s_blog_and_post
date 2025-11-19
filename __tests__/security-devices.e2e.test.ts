@@ -1,3 +1,4 @@
+
 import request from "supertest";
 import express from "express";
 import { SETUP_APP } from "../src/setup-app";
@@ -5,9 +6,12 @@ import { runDB, stopDb } from "../src/core/db/mongo.db";
 import { clearDb } from "./utils/clearDb";
 import cookieParser from "cookie-parser";
 import {
-  securityDevicesQueryRepository,
-  usersService,
+    container,
+    securityDevicesQueryRepository,
 } from "../src/composition.root";
+
+import {UsersService} from "../src/users/services/users.service";
+const usersService = container.get(UsersService);
 
 jest.mock("uuid", () => ({
   v4: () => "123456789",
