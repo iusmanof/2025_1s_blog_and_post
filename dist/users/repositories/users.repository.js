@@ -95,14 +95,6 @@ class UsersRepository {
             });
         });
     }
-    findExpiredCode(code) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().findOne({
-                "emailConfirmation.confirmationCode": code,
-                "emailConfirmation.expirationDate": { $gt: new Date() },
-            });
-        });
-    }
     confirmCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, mongo_db_1.getUserCollection)().updateOne({ "emailConfirmation.confirmationCode": code }, { $set: { "emailConfirmation.isConfirmed": true } });
