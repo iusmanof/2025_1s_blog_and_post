@@ -72,12 +72,6 @@ export class UsersRepository {
       },
     );
   }
-  async findExpiredCode(code: string) {
-    return getUserCollection().findOne({
-      "emailConfirmation.confirmationCode": code,
-      "emailConfirmation.expirationDate": { $gt: new Date() },
-    });
-  }
   async confirmCode(code: string) {
     return await getUserCollection().updateOne(
       { "emailConfirmation.confirmationCode": code },
