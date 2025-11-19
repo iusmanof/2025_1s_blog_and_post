@@ -9,7 +9,6 @@ interface RateLimitRecord {
 const rateLimits: Record<string, RateLimitRecord> = {};
 const startCount = 1;
 
-
 export const rateLimitMiddleware = (
   limitRequest: number,
   timeRequest: number,

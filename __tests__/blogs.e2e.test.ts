@@ -11,7 +11,7 @@ import HttpStatusCode from "../src/core/types/http-status-code";
 dotenv.config();
 
 jest.mock("uuid", () => ({
-    v4: () => "123456789",
+  v4: () => "123456789",
 }));
 
 describe("/blogs", () => {

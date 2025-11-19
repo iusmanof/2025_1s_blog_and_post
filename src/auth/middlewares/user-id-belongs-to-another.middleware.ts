@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import httpStatusCode from "../../core/types/http-status-code";
-import {jwtAdapter, securityDevicesQueryRepository} from "../../composition.root";
+import {
+  jwtAdapter,
+  securityDevicesQueryRepository,
+} from "../../composition.root";
 
 export const userIdBelongsToAnotherMiddleware: RequestHandler = async (
   req: Request,

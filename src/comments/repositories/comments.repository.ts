@@ -5,7 +5,7 @@ import {
 } from "../types/comments-data-result-object";
 import { ObjectId } from "mongodb";
 import { CommentsQuery } from "../types/comments-query";
-import {usersQueryRepository} from "../../composition.root";
+import { usersQueryRepository } from "../../composition.root";
 
 export class CommentsRepository {
   async create(

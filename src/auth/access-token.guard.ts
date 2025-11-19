@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatusCode from "../core/types/http-status-code";
-import {jwtAdapter} from "../composition.root";
+import { jwtAdapter } from "../composition.root";
 
 export const accessTokenGuard = async (
   req: Request,

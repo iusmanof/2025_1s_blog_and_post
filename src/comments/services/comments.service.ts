@@ -4,7 +4,7 @@ import {
   commentsDBResultObject,
 } from "../types/comments-data-result-object";
 import { CommentsQuery } from "../types/comments-query";
-import {commentsRepository} from "../../composition.root";
+import { commentsRepository } from "../../composition.root";
 
 export class CommentsService {
   async create(

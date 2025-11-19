@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-export class BcryptAdapter{
+export class BcryptAdapter {
   async generateHash(password: string) {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
@@ -9,7 +9,6 @@ export class BcryptAdapter{
     return bcrypt.compare(password, hash);
   }
 }
-
 
 // export const bcryptAdapter = {
 //     async generateHash(password: string) {

@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
 import {
-    authRepository,
-    blogsRepository,
-    commentsRepository,
-    postsRepository, securityDevicesRepository,
-    usersRepository
+  authRepository,
+  blogsRepository,
+  commentsRepository,
+  postsRepository,
+  securityDevicesRepository,
+  usersRepository,
 } from "../../composition.root";
 
 export const testingRouter = Router();

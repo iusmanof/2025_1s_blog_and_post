@@ -3,7 +3,7 @@ import httpStatusCode from "../../core/types/http-status-code";
 import { resultStatus } from "../../core/types/result-object";
 import { verifyRefreshToken } from "../middlewares/refresh-token.middleware";
 import { userIdBelongsToAnotherMiddleware } from "../middlewares/user-id-belongs-to-another.middleware";
-import {securityDevicesService} from "../../composition.root";
+import { securityDevicesService } from "../../composition.root";
 
 export const securityDevicesRouter = Router();
 

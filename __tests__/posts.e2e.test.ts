@@ -9,12 +9,12 @@ import { createBlog } from "./utils/create-blog";
 import { createPost, createPostWithBlogId } from "./utils/create-post";
 
 jest.mock("uuid", () => ({
-    v4: () => "123456789",
+  v4: () => "123456789",
 }));
 
 describe("/posts", () => {
   const app = express();
-    SETUP_APP(app);
+  SETUP_APP(app);
   const adminCredentials = generateAdminAuthToken();
 
   beforeAll(async () => {

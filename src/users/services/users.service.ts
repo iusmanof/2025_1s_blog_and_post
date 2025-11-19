@@ -1,12 +1,14 @@
 import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
-import {UsersRepository} from "../repositories/users.repository";
+import { UsersRepository } from "../repositories/users.repository";
 import { UserCreateDto } from "../types/user-create-dto";
 import { UserDbDto } from "../types/user-db-dto";
-import {BcryptAdapter} from "../../auth/adapters/bcrypt.adapter";
+import { BcryptAdapter } from "../../auth/adapters/bcrypt.adapter";
 
-export class UsersService{
-    constructor(public readonly usersRepository: UsersRepository, private readonly bcryptAdapter: BcryptAdapter) {
-    }
+export class UsersService {
+  constructor(
+    public readonly usersRepository: UsersRepository,
+    private readonly bcryptAdapter: BcryptAdapter,
+  ) {}
   async findMany(
     queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
   ): Promise<{ items: UserDbDto[]; totalCount: number }> {
@@ -34,9 +36,6 @@ export class UsersService{
     return await this.usersRepository.delete(id);
   }
 }
-
-
-
 
 // export const usersService = {
 //     async findMany(
