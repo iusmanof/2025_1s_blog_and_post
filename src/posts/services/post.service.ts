@@ -1,8 +1,13 @@
+import { inject, injectable } from "inversify";
+
 import { PostsDto, PostModelWithId, PostQuery } from "../types/posts.dto";
 import { PostsRepository } from "../repositories/posts.repository";
 
+@injectable()
 export class PostService {
-  constructor(public readonly postsRepository: PostsRepository) {}
+  constructor(
+    @inject(PostsRepository) private postsRepository: PostsRepository,
+  ) {}
   async findMany(query: PostQuery) {
     return await this.postsRepository.getAllPosts(query);
   }

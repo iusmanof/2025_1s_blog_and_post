@@ -1,4 +1,16 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,12 +22,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
-const result_object_1 = require("../../core/types/result-object");
+const inversify_1 = require("inversify");
+const uuid_1 = require("uuid");
 const crypto_1 = require("crypto");
 const date_fns_1 = require("date-fns");
+const result_object_1 = require("../../core/types/result-object");
 const email_example_template_1 = require("../adapters/email-example.template");
-const uuid_1 = require("uuid");
-class AuthService {
+const jwt_adapter_1 = require("../adapters/jwt.adapter");
+const security_devices_service_1 = require("./security-devices.service");
+const email_adapter_1 = require("../adapters/email.adapter");
+const bcrypt_adapter_1 = require("../adapters/bcrypt.adapter");
+const users_repository_1 = require("../../users/repositories/users.repository");
+const security_devices_query_repository_1 = require("../repositories/security-devices.query-repository");
+const security_devices_repository_1 = require("../repositories/security-devices.repository");
+const users_query_repository_1 = require("../../users/repositories/users.query.repository");
+let AuthService = class AuthService {
     constructor(jwtAdapter, emailAdapter, bcryptAdapter, securityDevicesService, securityDevicesQueryRepository, securityDevicesRepository, usersQueryRepository, usersRepository) {
         this.jwtAdapter = jwtAdapter;
         this.emailAdapter = emailAdapter;
@@ -244,6 +265,25 @@ class AuthService {
             };
         });
     }
-}
+};
 exports.AuthService = AuthService;
+exports.AuthService = AuthService = __decorate([
+    (0, inversify_1.injectable)(),
+    __param(0, (0, inversify_1.inject)(jwt_adapter_1.JwtAdapter)),
+    __param(1, (0, inversify_1.inject)(email_adapter_1.EmailAdapter)),
+    __param(2, (0, inversify_1.inject)(bcrypt_adapter_1.BcryptAdapter)),
+    __param(3, (0, inversify_1.inject)(security_devices_service_1.SecurityDevicesService)),
+    __param(4, (0, inversify_1.inject)(security_devices_query_repository_1.SecurityDevicesQueryRepository)),
+    __param(5, (0, inversify_1.inject)(security_devices_repository_1.SecurityDevicesRepository)),
+    __param(6, (0, inversify_1.inject)(users_query_repository_1.UsersQueryRepository)),
+    __param(7, (0, inversify_1.inject)(users_repository_1.UsersRepository)),
+    __metadata("design:paramtypes", [jwt_adapter_1.JwtAdapter,
+        email_adapter_1.EmailAdapter,
+        bcrypt_adapter_1.BcryptAdapter,
+        security_devices_service_1.SecurityDevicesService,
+        security_devices_query_repository_1.SecurityDevicesQueryRepository,
+        security_devices_repository_1.SecurityDevicesRepository,
+        users_query_repository_1.UsersQueryRepository,
+        users_repository_1.UsersRepository])
+], AuthService);
 //# sourceMappingURL=auth.service.js.map

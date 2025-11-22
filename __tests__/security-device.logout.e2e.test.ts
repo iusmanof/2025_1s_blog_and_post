@@ -4,8 +4,9 @@ import { SETUP_APP } from "../src/setup-app";
 import { runDB, stopDb } from "../src/core/db/mongo.db";
 import { clearDb } from "./utils/clearDb";
 import cookieParser from "cookie-parser";
-import {UsersService} from "../src/users/services/users.service";
-import {container} from "../src/composition.root";
+
+import { UsersService } from "../src/users/services/users.service";
+import { container } from "../src/composition.root";
 const usersService = container.get(UsersService);
 
 jest.mock("uuid", () => ({ v4: () => "123456789" }));

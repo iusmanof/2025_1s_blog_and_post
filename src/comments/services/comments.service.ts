@@ -1,18 +1,23 @@
+import { inject, injectable } from "inversify";
 import { ResultObject, resultStatus } from "../../core/types/result-object";
 import {
   commentsDataResultObject,
   commentsDBResultObject,
 } from "../types/comments-data-result-object";
 import { CommentsQuery } from "../types/comments-query";
-import { commentsRepository } from "../../composition.root";
+import { CommentsRepository } from "../repositories/comments.repository";
 
-export class CommentsService {
+@injectable()
+class CommentsService {
+  constructor(
+    @inject(CommentsRepository) private commentsRepository: CommentsRepository,
+  ) {}
   async create(
     userId: string,
     postId: string,
     content: string,
   ): Promise<ResultObject<commentsDataResultObject | null>> {
-    const commentsInfo = await commentsRepository.create(
+    const commentsInfo = await this.commentsRepository.create(
       userId,
       postId,
       content,
@@ -36,7 +41,7 @@ export class CommentsService {
     postId: string,
     query: CommentsQuery,
   ): Promise<ResultObject<commentsDBResultObject | null>> {
-    const comments = await commentsRepository.getCommentsByPostId(
+    const comments = await this.commentsRepository.getCommentsByPostId(
       postId,
       query,
     );
@@ -57,7 +62,7 @@ export class CommentsService {
   async getByCommentId(
     commentId: string,
   ): Promise<ResultObject<commentsDataResultObject | null>> {
-    const comment = await commentsRepository.getCommentById(commentId);
+    const comment = await this.commentsRepository.getCommentById(commentId);
     if (!comment) {
       return {
         status: resultStatus.NOT_FOUND,
@@ -77,7 +82,7 @@ export class CommentsService {
     commentId: string,
     userId?: string,
   ): Promise<ResultObject<commentsDataResultObject | null>> {
-    const comment = await commentsRepository.getCommentById(commentId);
+    const comment = await this.commentsRepository.getCommentById(commentId);
     if (!comment) {
       return {
         status: resultStatus.NOT_FOUND,
@@ -103,7 +108,7 @@ export class CommentsService {
     };
   }
   async deleteById(commentId: string): Promise<ResultObject<{} | null>> {
-    const result = await commentsRepository.deleteById(commentId);
+    const result = await this.commentsRepository.deleteById(commentId);
     if (!result) {
       return {
         status: resultStatus.ERROR,
@@ -123,7 +128,7 @@ export class CommentsService {
     commentId: string,
     content: string,
   ): Promise<ResultObject<{} | null>> {
-    const result = await commentsRepository.updateById(commentId, content);
+    const result = await this.commentsRepository.updateById(commentId, content);
 
     if (!result) {
       return {
@@ -140,3 +145,5 @@ export class CommentsService {
     };
   }
 }
+
+export default CommentsService;

@@ -29,8 +29,8 @@ const SETUP_APP = (app) => {
     app.use((0, cookie_parser_1.default)());
     app.use(paths_1.BLOGS_PATH, blog_route_1.blogRouter);
     app.use(paths_1.POSTS_PATH, post_route_1.postRouter);
-    app.use(paths_1.USERS_PATH, users_route_1.userRouter);
     app.use(paths_1.TESTING_PATH, testing_route_1.testingRouter);
+    app.use(paths_1.USERS_PATH, users_route_1.userRouter);
     app.use(paths_1.AUTH_PATH, auth_routes_1.authRouter);
     app.use(paths_1.COMMENTS_PATH, comments_route_1.commentsRouter);
     app.use(paths_1.SECURITY_DEVICES_PATH, security_devices_routes_1.securityDevicesRouter);

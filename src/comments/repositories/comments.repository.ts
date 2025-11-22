@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import { getCommentCollection } from "../../core/db/mongo.db";
 import {
   commentsDataResultObject,
@@ -5,15 +6,20 @@ import {
 } from "../types/comments-data-result-object";
 import { ObjectId } from "mongodb";
 import { CommentsQuery } from "../types/comments-query";
-import { usersQueryRepository } from "../../composition.root";
+import { UsersQueryRepository } from "../../users/repositories/users.query.repository";
 
+@injectable()
 export class CommentsRepository {
+  constructor(
+    @inject(UsersQueryRepository)
+    private usersQueryRepository: UsersQueryRepository,
+  ) {}
   async create(
     userId: string,
     postId: string,
     content: string,
   ): Promise<commentsDataResultObject | null> {
-    const userData = await usersQueryRepository.findById(userId);
+    const userData = await this.usersQueryRepository.findById(userId);
     if (!userData) {
       return null;
     }

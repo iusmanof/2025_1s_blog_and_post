@@ -12,7 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginRegistrationValidationMiddleware = void 0;
 const express_validator_1 = require("express-validator");
 const composition_root_1 = require("../../composition.root");
-// import { usersRepository } from "../../users/repositories/users.repositories";
+const users_repository_1 = require("../../users/repositories/users.repository");
+const usersRepository = composition_root_1.container.get(users_repository_1.UsersRepository);
 exports.loginRegistrationValidationMiddleware = (0, express_validator_1.body)("login")
     .isString()
     .trim()
@@ -20,7 +21,7 @@ exports.loginRegistrationValidationMiddleware = (0, express_validator_1.body)("l
     .matches(/^[a-zA-Z0-9_-]*$/)
     .withMessage("Login is not correct")
     .custom((login) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield composition_root_1.usersRepository.findByLogin(login);
+    const user = yield usersRepository.findByLogin(login);
     if (user) {
         throw new Error("Login already exists");
     }

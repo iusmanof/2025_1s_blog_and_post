@@ -1,4 +1,5 @@
-import { getBlogCollection } from "../../core/db/mongo.db";
+import { injectable } from "inversify";
+import { getBlogCollection, getPostCollection } from "../../core/db/mongo.db";
 import {
   BlogBase,
   BlogMongoDb,
@@ -7,8 +8,8 @@ import {
 } from "../types/blog.dto";
 import { ObjectId } from "mongodb";
 import { PostsDto } from "../../posts/types/posts.dto";
-import { postsRepository } from "../../composition.root";
 
+@injectable()
 export class BlogsRepository {
   async getAllBlogs(query: BlogQuery) {
     const {
@@ -92,7 +93,20 @@ export class BlogsRepository {
     return isUpdated.matchedCount !== 0;
   }
   async createPostByBlogId(body: PostsDto, blogId: string) {
-    return await postsRepository.createPostByBlogId(body, blogId);
+    const blog = await this.getBlogById(body.blogId);
+    const postCreated = {
+      title: body.title,
+      shortDescription: body.shortDescription,
+      content: body.content,
+      blogId: blogId,
+      blogName: blog ? blog.name : "Unknown",
+      createdAt: new Date().toISOString(),
+    };
+    const result = await getPostCollection().insertOne({ ...postCreated });
+    return {
+      ...postCreated,
+      id: result.insertedId.toString(),
+    };
   }
   async deleteBlog(id: string) {
     const isDeleted = await getBlogCollection().deleteOne({

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import httpStatusCode from "../../../core/types/http-status-code";
+import httpStatusCode from "../../core/types/http-status-code";
 
 export function postIdValidationMiddleware(
   req: Request<{ postId: string }>,

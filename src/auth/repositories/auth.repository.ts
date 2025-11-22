@@ -1,5 +1,7 @@
+import { injectable } from "inversify";
 import { getRefreshTokenCollection } from "../../core/db/mongo.db";
 
+@injectable()
 export class AuthRepository {
   async addTokenInBlackList(rfToken: string) {
     await getRefreshTokenCollection().insertOne({

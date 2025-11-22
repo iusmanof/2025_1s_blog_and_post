@@ -1,54 +1,60 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BlogsArrayRepository = void 0;
-let blogsDB = [];
-class BlogsArrayRepository {
-    getAllBlogs() {
-        return blogsDB;
-    }
-    createBlog(blog) {
-        const blogCreated = {
-            id: Math.floor(Math.random() * 1000000).toString(),
-            name: blog.name,
-            description: blog.description,
-            websiteUrl: blog.websiteUrl,
-        };
-        blogsDB = [...blogsDB, blogCreated];
-        return blogCreated;
-    }
-    getBlogById(id) {
-        let blogFounded;
-        blogFounded = blogsDB.find((v) => v.id === id);
-        return blogFounded;
-    }
-    updateBlog(id, blog) {
-        const blogID = blogsDB.findIndex((b) => b.id === id);
-        if (blogID === -1) {
-            return false;
-        }
-        else {
-            const blogUpdated = Object.assign(Object.assign({}, blogsDB[blogID]), { name: blog.name, description: blog.description, websiteUrl: blog.websiteUrl });
-            blogsDB = [
-                ...blogsDB.slice(0, blogID),
-                blogUpdated,
-                ...blogsDB.slice(blogID + 1),
-            ];
-            return true;
-        }
-    }
-    deleteBlog(id) {
-        const blogID = blogsDB.findIndex((v) => v.id === id);
-        if (blogID == -1) {
-            return false;
-        }
-        else {
-            blogsDB = blogsDB.filter((v) => v.id !== id);
-            return true;
-        }
-    }
-    deleteAllBlogs() {
-        blogsDB = [];
-    }
-}
-exports.BlogsArrayRepository = BlogsArrayRepository;
+// import { BlogBase, BlogWithId } from "../types/blog.dto";
+// import {injectable} from "inversify";
+// let blogsDB: BlogWithId[] = [];
+//
+// @injectable()
+// export class BlogsArrayRepository {
+//   getAllBlogs() {
+//     return blogsDB;
+//   }
+//   createBlog(blog: BlogBase) {
+//     const blogCreated: BlogWithId = {
+//       id: Math.floor(Math.random() * 1000000).toString(),
+//       name: blog.name!,
+//       description: blog.description!,
+//       websiteUrl: blog.websiteUrl,
+//     };
+//     blogsDB = [...blogsDB, blogCreated];
+//     return blogCreated;
+//   }
+//   getBlogById(id: string): BlogWithId | undefined {
+//     let blogFounded: BlogWithId | undefined;
+//     blogFounded = blogsDB.find((v) => v.id === id);
+//     return blogFounded;
+//   }
+//   updateBlog(id: string, blog: BlogBase) {
+//     const blogID = blogsDB.findIndex((b) => b.id === id);
+//
+//     if (blogID === -1) {
+//       return false;
+//     } else {
+//       const blogUpdated: BlogWithId = {
+//         ...blogsDB[blogID],
+//         name: blog.name,
+//         description: blog.description,
+//         websiteUrl: blog.websiteUrl,
+//       };
+//       blogsDB = [
+//         ...blogsDB.slice(0, blogID),
+//         blogUpdated,
+//         ...blogsDB.slice(blogID + 1),
+//       ];
+//       return true;
+//     }
+//   }
+//   deleteBlog(id: string): boolean {
+//     const blogID = blogsDB.findIndex((v) => v.id === id);
+//
+//     if (blogID == -1) {
+//       return false;
+//     } else {
+//       blogsDB = blogsDB.filter((v) => v.id !== id);
+//       return true;
+//     }
+//   }
+//   deleteAllBlogs() {
+//     blogsDB = [];
+//   }
+// }
 //# sourceMappingURL=blogs.array.repository.js.map

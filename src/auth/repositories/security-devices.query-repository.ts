@@ -1,6 +1,8 @@
+import { injectable } from "inversify";
 import { getSecurityDeviceCollection } from "../../core/db/mongo.db";
 import { SecurityDeviceDbDto } from "../types/security-device-db.dto";
 
+@injectable()
 export class SecurityDevicesQueryRepository {
   async findAll(): Promise<SecurityDeviceDbDto[]> {
     return await getSecurityDeviceCollection().find({}).toArray();

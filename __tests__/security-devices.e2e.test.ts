@@ -1,17 +1,17 @@
-
 import request from "supertest";
 import express from "express";
 import { SETUP_APP } from "../src/setup-app";
 import { runDB, stopDb } from "../src/core/db/mongo.db";
 import { clearDb } from "./utils/clearDb";
 import cookieParser from "cookie-parser";
-import {
-    container,
-    securityDevicesQueryRepository,
-} from "../src/composition.root";
+import { container } from "../src/composition.root";
 
-import {UsersService} from "../src/users/services/users.service";
+import { UsersService } from "../src/users/services/users.service";
+import { SecurityDevicesQueryRepository } from "../src/auth/repositories/security-devices.query-repository";
 const usersService = container.get(UsersService);
+const securityDevicesQueryRepository = container.get(
+  SecurityDevicesQueryRepository,
+);
 
 jest.mock("uuid", () => ({
   v4: () => "123456789",

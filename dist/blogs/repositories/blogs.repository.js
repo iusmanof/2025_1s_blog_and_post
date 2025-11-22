@@ -1,4 +1,10 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -21,10 +27,10 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogsRepository = void 0;
+const inversify_1 = require("inversify");
 const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
-const composition_root_1 = require("../../composition.root");
-class BlogsRepository {
+let BlogsRepository = class BlogsRepository {
     getAllBlogs(query) {
         return __awaiter(this, void 0, void 0, function* () {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", searchNameTerm, } = query;
@@ -94,7 +100,17 @@ class BlogsRepository {
     }
     createPostByBlogId(body, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield composition_root_1.postsRepository.createPostByBlogId(body, blogId);
+            const blog = yield this.getBlogById(body.blogId);
+            const postCreated = {
+                title: body.title,
+                shortDescription: body.shortDescription,
+                content: body.content,
+                blogId: blogId,
+                blogName: blog ? blog.name : "Unknown",
+                createdAt: new Date().toISOString(),
+            };
+            const result = yield (0, mongo_db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
+            return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
         });
     }
     deleteBlog(id) {
@@ -110,6 +126,9 @@ class BlogsRepository {
             return yield (0, mongo_db_1.getBlogCollection)().deleteMany({});
         });
     }
-}
+};
 exports.BlogsRepository = BlogsRepository;
+exports.BlogsRepository = BlogsRepository = __decorate([
+    (0, inversify_1.injectable)()
+], BlogsRepository);
 //# sourceMappingURL=blogs.repository.js.map

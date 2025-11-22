@@ -1,10 +1,13 @@
 import { body } from "express-validator";
-import { usersRepository } from "../../composition.root";
+import { UsersRepository } from "../../users/repositories/users.repository";
+import { container } from "../../composition.root";
+
+const usersRepository = container.get(UsersRepository);
 
 export const emailValidation = body("email")
   .trim()
   .isEmail()
-  .matches(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  .matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
   .withMessage("Email is not correct")
   .custom(async (email: string) => {
     const user = await usersRepository.findByLoginOrEmail(email);

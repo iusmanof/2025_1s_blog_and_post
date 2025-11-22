@@ -1,6 +1,7 @@
 import { body } from "express-validator";
-import { usersRepository } from "../../composition.root";
-// import { usersRepository } from "../../users/repositories/users.repositories";
+import { container } from "../../composition.root";
+import { UsersRepository } from "../../users/repositories/users.repository";
+const usersRepository = container.get(UsersRepository);
 
 export const loginRegistrationValidationMiddleware = body("login")
   .isString()

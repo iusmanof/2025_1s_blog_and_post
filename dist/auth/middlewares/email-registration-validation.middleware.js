@@ -12,14 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.emailRegistrationValidationMiddleware = void 0;
 const express_validator_1 = require("express-validator");
 const composition_root_1 = require("../../composition.root");
-// import { usersRepository } from "../../users/repositories/users.repositories";
+const users_repository_1 = require("../../users/repositories/users.repository");
+const usersRepository = composition_root_1.container.get(users_repository_1.UsersRepository);
 exports.emailRegistrationValidationMiddleware = (0, express_validator_1.body)("email")
     .trim()
     .isEmail()
     .matches(/^[\w.+-]+@([\w-]+\.)+[\w-]{2,}$/)
     .withMessage("Email is not correct")
     .custom((email) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield composition_root_1.usersRepository.findByEmail(email);
+    const user = yield usersRepository.findByEmail(email);
     if (user) {
         throw new Error("Email already exists");
     }

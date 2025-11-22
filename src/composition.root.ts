@@ -1,6 +1,5 @@
 import "reflect-metadata";
-import {Container} from "inversify";
-
+import { Container } from "inversify";
 import { UsersRepository } from "./users/repositories/users.repository";
 import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
 import { UsersService } from "./users/services/users.service";
@@ -11,78 +10,49 @@ import { SecurityDevicesQueryRepository } from "./auth/repositories/security-dev
 import { SecurityDevicesRepository } from "./auth/repositories/security-devices.repository";
 import { AuthService } from "./auth/services/auth.service";
 import { SecurityDevicesService } from "./auth/services/security-devices.service";
-import { BlogsArrayRepository } from "./blogs/repositories/blogs.array.repository";
 import { BlogsRepository } from "./blogs/repositories/blogs.repository";
 import { BlogService } from "./blogs/services/blog.service";
-import { CommentsService } from "./comments/services/comments.service";
+import CommentsService from "./comments/services/comments.service";
 import { CommentsRepository } from "./comments/repositories/comments.repository";
-import { PostAccessLayer } from "./posts/repositories/posts.array.repository";
 import { PostsRepository } from "./posts/repositories/posts.repository";
 import { PostService } from "./posts/services/post.service";
 import { UsersQueryRepository } from "./users/repositories/users.query.repository";
+import { BlogController } from "./blogs/controllers/blog.controller";
+import { CommentController } from "./comments/controllers/comment.controller";
+import { PostController } from "./posts/controllers/post.controller";
+import { UserController } from "./users/controllers/user.controller";
 
-// auth & security-devices
-export const bcryptAdapter = new BcryptAdapter();
-export const emailAdapter = new EmailAdapter();
-export const jwtAdapter = new JwtAdapter();
-
-export const authRepository = new AuthRepository();
-export const securityDevicesQueryRepository =
-  new SecurityDevicesQueryRepository();
-export const securityDevicesRepository = new SecurityDevicesRepository();
-
-// blogs
-export const blogsArrayRepository = new BlogsArrayRepository();
-
-// comments
-export const commentsRepository = new CommentsRepository();
-export const commentsService = new CommentsService();
-
-// posts
-
-// users
-export const usersQueryRepository = new UsersQueryRepository();
-export const usersRepository = new UsersRepository();
-
-// export const usersService = new UsersService(usersRepository, bcryptAdapter);
-export const securityDevicesService = new SecurityDevicesService(
-  jwtAdapter,
-  securityDevicesRepository,
-  securityDevicesQueryRepository,
-);
-export const authService = new AuthService(
-  jwtAdapter,
-  emailAdapter,
-  bcryptAdapter,
-  securityDevicesService,
-  securityDevicesQueryRepository,
-  securityDevicesRepository,
-  usersQueryRepository,
-  usersRepository,
-);
-export const postsRepository = new PostsRepository();
-export const blogsRepository = new BlogsRepository();
-export const blogService = new BlogService(blogsRepository);
-export const postAccessLayer = new PostAccessLayer(blogsArrayRepository);
-export const postService = new PostService(postsRepository);
-
-//
 export const container = new Container();
-container.bind(BcryptAdapter).to(BcryptAdapter)
-container.bind(UsersRepository).to(UsersRepository)
-container.bind(UsersService).to(UsersService)
-// container.bind(EmailAdapter).to(EmailAdapter)
-// container.bind(JwtAdapter).to(JwtAdapter)
-// container.bind(AuthRepository).to(AuthRepository)
-// container.bind(BlogsArrayRepository).to(BlogsArrayRepository)
-// container.bind(CommentsRepository).to(CommentsRepository)
-// container.bind(CommentsService).to(CommentsService)
-// container.bind(UsersQueryRepository).to(UsersQueryRepository)
 
-// container.bind(AuthService).to(AuthService)
-// container.bind(PostsRepository).to(PostsRepository)
-// container.bind(BlogsRepository).to(BlogsRepository)
-// container.bind(BlogService).to(BlogService)
-// container.bind(PostAccessLayer).to(PostAccessLayer)
-// container.bind(PostService).to(PostService)
+// Adapters
+container.bind(BcryptAdapter).to(BcryptAdapter);
+container.bind(JwtAdapter).to(JwtAdapter);
+container.bind(EmailAdapter).to(EmailAdapter);
 
+// Controllers
+container.bind(BlogController).to(BlogController);
+container.bind(CommentController).to(CommentController);
+container.bind(PostController).to(PostController);
+container.bind(UserController).to(UserController);
+
+// Services
+container.bind(UsersService).to(UsersService);
+container.bind(PostService).to(PostService);
+container.bind(BlogService).to(BlogService);
+container.bind(SecurityDevicesService).to(SecurityDevicesService);
+container.bind(AuthService).to(AuthService);
+container.bind(CommentsService).to(CommentsService);
+
+// Repositories
+container.bind(UsersRepository).to(UsersRepository);
+container.bind(PostsRepository).to(PostsRepository);
+container.bind(BlogsRepository).to(BlogsRepository);
+container.bind(SecurityDevicesRepository).to(SecurityDevicesRepository);
+container.bind(AuthRepository).to(AuthRepository);
+container.bind(CommentsRepository).to(CommentsRepository);
+
+// QueryRepositories
+container
+  .bind(SecurityDevicesQueryRepository)
+  .to(SecurityDevicesQueryRepository);
+container.bind(UsersQueryRepository).to(UsersQueryRepository);

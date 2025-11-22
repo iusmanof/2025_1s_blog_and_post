@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyRefreshToken = exports.checkRefreshTokenMiddleware = void 0;
-const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
 const composition_root_1 = require("../../composition.root");
+const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
+const jwt_adapter_1 = require("../adapters/jwt.adapter");
+const jwtAdapter = composition_root_1.container.get(jwt_adapter_1.JwtAdapter);
 const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const rftoken = req.cookies.refreshToken;
     if (!rftoken) {
@@ -36,7 +38,7 @@ const verifyRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0,
             .send({ errorsMessages: "No refresh token provided" });
         return;
     }
-    const verifyToken = yield composition_root_1.jwtAdapter.verifyRefreshToken(rftoken);
+    const verifyToken = yield jwtAdapter.verifyRefreshToken(rftoken);
     if (!verifyToken) {
         res
             .status(http_status_code_1.default.UNAUTHORIZED_401)

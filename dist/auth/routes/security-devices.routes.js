@@ -18,11 +18,13 @@ const http_status_code_1 = __importDefault(require("../../core/types/http-status
 const result_object_1 = require("../../core/types/result-object");
 const refresh_token_middleware_1 = require("../middlewares/refresh-token.middleware");
 const user_id_belongs_to_another_middleware_1 = require("../middlewares/user-id-belongs-to-another.middleware");
+const security_devices_service_1 = require("../services/security-devices.service");
 const composition_root_1 = require("../../composition.root");
+const securityDevicesService = composition_root_1.container.get(security_devices_service_1.SecurityDevicesService);
 exports.securityDevicesRouter = (0, express_1.Router)();
 exports.securityDevicesRouter.get("/", refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.refreshToken;
-    const devices = yield composition_root_1.securityDevicesService.getDevices(refreshToken);
+    const devices = yield securityDevicesService.getDevices(refreshToken);
     if (!devices) {
         res
             .sendStatus(http_status_code_1.default.UNAUTHORIZED_401)
@@ -32,14 +34,14 @@ exports.securityDevicesRouter.get("/", refresh_token_middleware_1.verifyRefreshT
 }));
 exports.securityDevicesRouter.delete("/", refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.refreshToken;
-    yield composition_root_1.securityDevicesService.terminateAllSessionExcludeCurrent(refreshToken);
+    yield securityDevicesService.terminateAllSessionExcludeCurrent(refreshToken);
     res
         .status(http_status_code_1.default.NO_CONTENT_204)
         .json({ message: "Delete all devices" });
 }));
 exports.securityDevicesRouter.delete("/:deviceId", refresh_token_middleware_1.verifyRefreshToken, user_id_belongs_to_another_middleware_1.userIdBelongsToAnotherMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const deviceId = req.params.deviceId;
-    const result = yield composition_root_1.securityDevicesService.deleteById(deviceId);
+    const result = yield securityDevicesService.deleteById(deviceId);
     if (result.status === result_object_1.resultStatus.NOT_FOUND) {
         res
             .status(http_status_code_1.default.NOT_FOUND_404)

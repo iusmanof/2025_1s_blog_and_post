@@ -1,3 +1,5 @@
+import { inject, injectable } from "inversify";
+
 import {
   PostsDto,
   PostModelWithId,
@@ -6,9 +8,13 @@ import {
 } from "../types/posts.dto";
 import { getPostCollection } from "../../core/db/mongo.db";
 import { ObjectId } from "mongodb";
-import { blogsRepository } from "../../composition.root";
+import { BlogsRepository } from "../../blogs/repositories/blogs.repository";
 
+@injectable()
 export class PostsRepository {
+  constructor(
+    @inject(BlogsRepository) private blogsRepository: BlogsRepository,
+  ) {}
   async getAllPosts(query: PostQuery) {
     const {
       pageNumber = 1,
@@ -40,7 +46,6 @@ export class PostsRepository {
       ...rest,
       id: _id.toString(),
     }));
-    // return resultWithId;
 
     const totalCount = await getPostCollection().countDocuments({});
 
@@ -64,7 +69,7 @@ export class PostsRepository {
     return postWithId[0];
   }
   async createPost(post: PostsDto) {
-    const blog = await blogsRepository.getBlogById(post.blogId);
+    const blog = await this.blogsRepository.getBlogById(post.blogId);
 
     const postCreated = {
       title: post.title,
@@ -81,7 +86,7 @@ export class PostsRepository {
     };
   }
   async createPostByBlogId(post: PostsDto, blogId: string) {
-    const blog = await blogsRepository.getBlogById(post.blogId);
+    const blog = await this.blogsRepository.getBlogById(post.blogId);
 
     const postCreated = {
       title: post.title,

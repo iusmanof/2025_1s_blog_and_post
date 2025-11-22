@@ -1,3 +1,5 @@
+import { injectable } from "inversify";
+
 import { UserResponseCreateDto } from "../types/user-response-create-dto";
 import { getUserCollection } from "../../core/db/mongo.db";
 import { ObjectId, WithId } from "mongodb";
@@ -7,6 +9,7 @@ import {
   PaginationAndSortingUser,
 } from "../../core/types/pagination-and-sorting";
 
+@injectable()
 export class UsersQueryRepository {
   async findAllUsers(
     sortQueryDto: PaginationAndSortingUser,

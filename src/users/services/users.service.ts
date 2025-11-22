@@ -1,4 +1,4 @@
-import {inject, injectable} from "inversify";
+import { inject, injectable } from "inversify";
 
 import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
 import { UsersRepository } from "../repositories/users.repository";
@@ -9,8 +9,8 @@ import { BcryptAdapter } from "../../auth/adapters/bcrypt.adapter";
 @injectable()
 export class UsersService {
   constructor(
-    @inject(UsersRepository)private readonly usersRepository: UsersRepository,
-    @inject(BcryptAdapter)private readonly bcryptAdapter: BcryptAdapter,
+    @inject(UsersRepository) private usersRepository: UsersRepository,
+    @inject(BcryptAdapter) private bcryptAdapter: BcryptAdapter,
   ) {}
   async findMany(
     queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,

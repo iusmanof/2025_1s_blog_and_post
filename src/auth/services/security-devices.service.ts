@@ -1,14 +1,18 @@
+import { inject, injectable } from "inversify";
 import { SecurityDeviceDbDto } from "../types/security-device-db.dto";
 import { ResultObject, resultStatus } from "../../core/types/result-object";
 import { JwtAdapter } from "../adapters/jwt.adapter";
 import { SecurityDevicesRepository } from "../repositories/security-devices.repository";
 import { SecurityDevicesQueryRepository } from "../repositories/security-devices.query-repository";
 
+@injectable()
 export class SecurityDevicesService {
   constructor(
-    public readonly jwtAdapter: JwtAdapter,
-    public readonly securityDevicesRepository: SecurityDevicesRepository,
-    public readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+    @inject(JwtAdapter) private jwtAdapter: JwtAdapter,
+    @inject(SecurityDevicesRepository)
+    private securityDevicesRepository: SecurityDevicesRepository,
+    @inject(SecurityDevicesQueryRepository)
+    private securityDevicesQueryRepository: SecurityDevicesQueryRepository,
   ) {}
   async getDevices(refreshToken: string): Promise<any[]> {
     const decoded = await this.jwtAdapter.decodeToken(refreshToken);

@@ -1,6 +1,8 @@
+import { container } from "../../composition.root";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import httpStatusCode from "../../core/types/http-status-code";
-import { jwtAdapter } from "../../composition.root";
+import { JwtAdapter } from "../adapters/jwt.adapter";
+const jwtAdapter = container.get(JwtAdapter);
 
 export const checkRefreshTokenMiddleware: RequestHandler = async (
   req,

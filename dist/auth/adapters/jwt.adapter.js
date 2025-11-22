@@ -15,6 +15,12 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __importStar = (this && this.__importStar) || (function () {
     var ownKeys = function(o) {
         ownKeys = Object.getOwnPropertyNames || function (o) {
@@ -43,9 +49,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtAdapter = void 0;
+const inversify_1 = require("inversify");
 const jwt = __importStar(require("jsonwebtoken"));
 const settings_1 = require("../../core/db/settings");
-class JwtAdapter {
+let JwtAdapter = class JwtAdapter {
     signAccessToken(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.sign({ id }, settings_1.SETTINGS.ACCESS_TOKEN_SECRET, {
@@ -80,6 +87,9 @@ class JwtAdapter {
             });
         });
     }
-}
+};
 exports.JwtAdapter = JwtAdapter;
+exports.JwtAdapter = JwtAdapter = __decorate([
+    (0, inversify_1.injectable)()
+], JwtAdapter);
 //# sourceMappingURL=jwt.adapter.js.map

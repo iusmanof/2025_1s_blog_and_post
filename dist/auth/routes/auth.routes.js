@@ -25,11 +25,13 @@ const login_registration_validation_middleware_1 = require("../middlewares/login
 const email_registration_validation_middleware_1 = require("../middlewares/email-registration-validation.middleware");
 const refresh_token_middleware_1 = require("../middlewares/refresh-token.middleware");
 const rate_limit_middleware_1 = require("../middlewares/rate-limit.middleware");
-const composition_root_1 = require("../../composition.root");
 const loginRequestLimit = (0, rate_limit_middleware_1.rateLimitMiddleware)(5, 10);
 const registrationRequestLimit = (0, rate_limit_middleware_1.rateLimitMiddleware)(5, 10);
 const registrationEmailResendingRequestLimit = (0, rate_limit_middleware_1.rateLimitMiddleware)(5, 10);
 const registrationConfirmationRequestLimit = (0, rate_limit_middleware_1.rateLimitMiddleware)(5, 10);
+const composition_root_1 = require("../../composition.root");
+const auth_service_1 = require("../services/auth.service");
+const authService = composition_root_1.container.get(auth_service_1.AuthService);
 exports.authRouter = (0, express_1.Router)();
 exports.authRouter.post("/login", password_validation_middleware_1.passwordValidation, login_or_email_validation_1.loginOrEmailValidation, input_validation_middleware_1.inputValidationMiddleware, loginRequestLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -40,7 +42,7 @@ exports.authRouter.post("/login", password_validation_middleware_1.passwordValid
             req.socket.remoteAddress ||
             "unknown ip";
     const userAgent = (_a = req.headers["user-agent"]) !== null && _a !== void 0 ? _a : "userAgent undefined";
-    const result = yield composition_root_1.authService.login(loginOrEmail, password, ipAddr, userAgent);
+    const result = yield authService.login(loginOrEmail, password, ipAddr, userAgent);
     if (result.status === result_object_1.resultStatus.ERROR || result.data === null) {
         res.status(http_status_code_1.default.UNAUTHORIZED_401).json(result);
         return;
@@ -60,7 +62,7 @@ exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) 
         res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
         return;
     }
-    const me = yield composition_root_1.authService.getMe(userId);
+    const me = yield authService.getMe(userId);
     if (!me) {
         res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
         return;
@@ -69,7 +71,7 @@ exports.authRouter.get("/me", access_token_guard_1.accessTokenGuard, (req, res) 
 }));
 exports.authRouter.post("/registration-confirmation", registrationConfirmationRequestLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const code = req.body.code;
-    const result = yield composition_root_1.authService.confirmUser(code);
+    const result = yield authService.confirmUser(code);
     if (result.status === result_object_1.resultStatus.BAD_REQUEST ||
         result.status === result_object_1.resultStatus.CODE_EXPIRED) {
         res
@@ -81,7 +83,7 @@ exports.authRouter.post("/registration-confirmation", registrationConfirmationRe
 }));
 exports.authRouter.post("/registration", registrationRequestLimit, email_registration_validation_middleware_1.emailRegistrationValidationMiddleware, login_registration_validation_middleware_1.loginRegistrationValidationMiddleware, password_validation_middleware_1.passwordValidation, input_registration_validation_middleware_1.inputRegistrationValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { login, email, password } = req.body;
-    const result = yield composition_root_1.authService.registerUser(login, email, password);
+    const result = yield authService.registerUser(login, email, password);
     if (result.status === result_object_1.resultStatus.EXISTS) {
         res
             .status(http_status_code_1.default.BAD_REQUEST_400)
@@ -92,7 +94,7 @@ exports.authRouter.post("/registration", registrationRequestLimit, email_registr
 }));
 exports.authRouter.post("/registration-email-resending", registrationEmailResendingRequestLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
-    const result = yield composition_root_1.authService.resendCode(email);
+    const result = yield authService.resendCode(email);
     if (result.status === result_object_1.resultStatus.BAD_REQUEST ||
         result.status === result_object_1.resultStatus.NOT_FOUND) {
         res
@@ -117,7 +119,7 @@ exports.authRouter.post("/refresh-token", refresh_token_middleware_1.verifyRefre
             .json({ message: "Refresh token missing" });
         return;
     }
-    const result = yield composition_root_1.authService.updateToken(rf, ipAddr, userAgent);
+    const result = yield authService.updateToken(rf, ipAddr, userAgent);
     if (result.status === result_object_1.resultStatus.UNAUTORIZED) {
         res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
         return;
@@ -128,7 +130,7 @@ exports.authRouter.post("/refresh-token", refresh_token_middleware_1.verifyRefre
 }));
 exports.authRouter.post("/logout", refresh_token_middleware_1.checkRefreshTokenMiddleware, refresh_token_middleware_1.verifyRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.refreshToken;
-    const result = yield composition_root_1.authService.expireToken(token);
+    const result = yield authService.expireToken(token);
     if (result.status === result_object_1.resultStatus.UNAUTORIZED) {
         res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
         return;

@@ -1,9 +1,13 @@
+import { inject, injectable } from "inversify";
 import { BlogBase, BlogQuery } from "../types/blog.dto";
 import { PostsDto } from "../../posts/types/posts.dto";
 import { BlogsRepository } from "../repositories/blogs.repository";
 
+@injectable()
 export class BlogService {
-  constructor(public readonly blogsRepository: BlogsRepository) {}
+  constructor(
+    @inject(BlogsRepository) private blogsRepository: BlogsRepository,
+  ) {}
   async findMany(query: BlogQuery) {
     return await this.blogsRepository.getAllBlogs(query);
   }

@@ -1,9 +1,10 @@
-import { ResultObject, resultStatus } from "../../core/types/result-object";
+import { inject, injectable } from "inversify";
+import { v4 as uuidv4 } from "uuid";
 import { randomUUID } from "crypto";
 import { add } from "date-fns";
+import { ResultObject, resultStatus } from "../../core/types/result-object";
 import { UserDbDto } from "../../users/types/user-db-dto";
 import { emailExampleTemplate } from "../adapters/email-example.template";
-import { v4 as uuidv4 } from "uuid";
 import { JwtAdapter } from "../adapters/jwt.adapter";
 import { SecurityDevicesService } from "./security-devices.service";
 import { EmailAdapter } from "../adapters/email.adapter";
@@ -13,16 +14,21 @@ import { SecurityDevicesQueryRepository } from "../repositories/security-devices
 import { SecurityDevicesRepository } from "../repositories/security-devices.repository";
 import { UsersQueryRepository } from "../../users/repositories/users.query.repository";
 
+@injectable()
 export class AuthService {
   constructor(
-    public readonly jwtAdapter: JwtAdapter,
-    public readonly emailAdapter: EmailAdapter,
-    public readonly bcryptAdapter: BcryptAdapter,
-    public readonly securityDevicesService: SecurityDevicesService,
-    public readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
-    public readonly securityDevicesRepository: SecurityDevicesRepository,
-    public readonly usersQueryRepository: UsersQueryRepository,
-    public readonly usersRepository: UsersRepository,
+    @inject(JwtAdapter) private jwtAdapter: JwtAdapter,
+    @inject(EmailAdapter) private emailAdapter: EmailAdapter,
+    @inject(BcryptAdapter) private bcryptAdapter: BcryptAdapter,
+    @inject(SecurityDevicesService)
+    private securityDevicesService: SecurityDevicesService,
+    @inject(SecurityDevicesQueryRepository)
+    private securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+    @inject(SecurityDevicesRepository)
+    private securityDevicesRepository: SecurityDevicesRepository,
+    @inject(UsersQueryRepository)
+    private usersQueryRepository: UsersQueryRepository,
+    @inject(UsersRepository) private usersRepository: UsersRepository,
   ) {}
 
   async login(

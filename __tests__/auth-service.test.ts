@@ -6,7 +6,10 @@ import { UserDbDto } from "../src/users/types/user-db-dto";
 import { afterEach } from "node:test";
 import { resultStatus } from "../src/core/types/result-object";
 import { emailExampleTemplate } from "../src/auth/adapters/email-example.template";
-import { authService, emailAdapter } from "../src/composition.root";
+
+import { container } from "../src/composition.root";
+import { AuthService } from "../src/auth/services/auth.service";
+import { EmailAdapter } from "../src/auth/adapters/email.adapter";
 
 jest.mock("../src/auth/adapters/email.adapter");
 jest.mock("uuid", () => ({
@@ -59,9 +62,13 @@ describe("Integration tests", () => {
     const userLogin = "login1";
     const userPassword = "pass1234";
 
-    const mockSend = jest
-      .spyOn(emailAdapter, "nodemailer")
-      .mockResolvedValueOnce(true);
+    const mockEmailAdapter = {
+      nodemailer: jest.fn().mockResolvedValue(true),
+    };
+
+    (await container.rebind(EmailAdapter)).toConstantValue(mockEmailAdapter);
+
+    const authService = container.get(AuthService);
 
     const result = await authService.registerUser(
       userLogin,
@@ -69,7 +76,8 @@ describe("Integration tests", () => {
       userPassword,
     );
 
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockEmailAdapter.nodemailer).toHaveBeenCalledTimes(1);
+
     expect(result).toEqual({
       status: resultStatus.SUCCESS,
       extensions: [],
@@ -80,14 +88,13 @@ describe("Integration tests", () => {
     const user = await userCollection.findOne({ login: "login1" });
     expect(user).toBeTruthy();
 
-    if (!user || !user.emailConfirmation) {
-      throw new Error("User or emailConfirmation not found in DB");
-    }
-
     const expectedTemplate = emailExampleTemplate.registrationEmail(
-      user.emailConfirmation.confirmationCode,
+      user!.emailConfirmation!.confirmationCode,
     );
 
-    expect(mockSend).toHaveBeenCalledWith(userEmail, expectedTemplate);
+    expect(mockEmailAdapter.nodemailer).toHaveBeenCalledWith(
+      userEmail,
+      expectedTemplate,
+    );
   });
 });

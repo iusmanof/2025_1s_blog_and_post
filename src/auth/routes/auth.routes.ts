@@ -14,12 +14,13 @@ import {
   verifyRefreshToken,
 } from "../middlewares/refresh-token.middleware";
 import { rateLimitMiddleware } from "../middlewares/rate-limit.middleware";
-import { authService } from "../../composition.root";
-
 const loginRequestLimit = rateLimitMiddleware(5, 10);
 const registrationRequestLimit = rateLimitMiddleware(5, 10);
 const registrationEmailResendingRequestLimit = rateLimitMiddleware(5, 10);
 const registrationConfirmationRequestLimit = rateLimitMiddleware(5, 10);
+import { container } from "../../composition.root";
+import { AuthService } from "../services/auth.service";
+const authService = container.get(AuthService);
 
 export const authRouter = Router();
 
