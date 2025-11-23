@@ -17,8 +17,8 @@ import HttpStatusCode from "../../core/types/http-status-code";
 @injectable()
 export class PostController {
   constructor(
-    @inject(PostService) private postService: PostService,
-    @inject(CommentsService) private commentsService: CommentsService,
+    @inject(PostService) private readonly postService: PostService,
+    @inject(CommentsService) private readonly commentsService: CommentsService,
   ) {}
 
   findMany = async (req: RequestWithQuery<PostQuery>, res: Response) => {

@@ -27,7 +27,7 @@ const uuid_1 = require("uuid");
 const crypto_1 = require("crypto");
 const date_fns_1 = require("date-fns");
 const result_object_1 = require("../../core/types/result-object");
-const email_example_template_1 = require("../adapters/email-example.template");
+const email_template_1 = require("../adapters/email.template");
 const jwt_adapter_1 = require("../adapters/jwt.adapter");
 const security_devices_service_1 = require("./security-devices.service");
 const email_adapter_1 = require("../adapters/email.adapter");
@@ -104,7 +104,7 @@ let AuthService = class AuthService {
             yield this.usersRepository.create(newUser);
             if (newUser.emailConfirmation) {
                 try {
-                    yield this.emailAdapter.nodemailer(email, email_example_template_1.emailExampleTemplate.registrationEmail(newUser.emailConfirmation.confirmationCode));
+                    yield this.emailAdapter.nodemailer(email, email_template_1.emailTemplate.registrationEmail(newUser.emailConfirmation.confirmationCode));
                 }
                 catch (err) {
                     console.log("send email error");
@@ -176,7 +176,7 @@ let AuthService = class AuthService {
             const codeRefreshed = (0, crypto_1.randomUUID)();
             yield this.usersRepository.findBYEmailAndRefreshCode(email, codeRefreshed);
             try {
-                yield this.emailAdapter.nodemailer(email, email_example_template_1.emailExampleTemplate.registrationEmail(codeRefreshed));
+                yield this.emailAdapter.nodemailer(email, email_template_1.emailTemplate.registrationEmail(codeRefreshed));
             }
             catch (err) {
                 console.log("send email error");

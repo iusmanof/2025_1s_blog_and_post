@@ -11,10 +11,31 @@ const email_validation_middleware_1 = require("../../core/milldlewares/email.val
 const input_validation_middleware_1 = require("../../core/milldlewares/input-validation-middleware");
 const users_input_validation_middleware_1 = require("../../core/milldlewares/users-input.validation-middleware");
 const user_controller_1 = require("../controllers/user.controller");
-const userController = composition_root_1.container.get(user_controller_1.UserController);
+const userController = composition_root_1.container.get(
+  user_controller_1.UserController,
+);
 exports.userRouter = (0, express_1.Router)();
 exports.userRouter.use(super_admin_guard_middleware_1.basicAuth);
-exports.userRouter.get("/", super_admin_guard_middleware_1.basicAuth, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithEmailAndLogin)(), input_validation_middleware_1.inputValidationMiddleware, userController.findAllUsers);
-exports.userRouter.post("/", super_admin_guard_middleware_1.basicAuth, login_validation_middleware_1.loginValidation, password_validation_middleware_1.passwordValidation, email_validation_middleware_1.emailValidation, users_input_validation_middleware_1.usersInputValidationMiddleware, userController.createUser);
-exports.userRouter.delete("/:id", super_admin_guard_middleware_1.basicAuth, userController.delete);
+exports.userRouter.get(
+  "/",
+  super_admin_guard_middleware_1.basicAuth,
+  (0,
+  query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithEmailAndLogin)(),
+  input_validation_middleware_1.inputValidationMiddleware,
+  userController.findAllUsers,
+);
+exports.userRouter.post(
+  "/",
+  super_admin_guard_middleware_1.basicAuth,
+  login_validation_middleware_1.loginValidation,
+  password_validation_middleware_1.passwordValidation,
+  email_validation_middleware_1.emailValidation,
+  users_input_validation_middleware_1.usersInputValidationMiddleware,
+  userController.createUser,
+);
+exports.userRouter.delete(
+  "/:id",
+  super_admin_guard_middleware_1.basicAuth,
+  userController.delete,
+);
 //# sourceMappingURL=users.route.js.map

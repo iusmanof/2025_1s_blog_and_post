@@ -15,7 +15,7 @@ import HttpStatusCode from "../../core/types/http-status-code";
 @injectable()
 export class UserController {
   constructor(
-    @inject(UsersService) private usersService: UsersService,
+    @inject(UsersService) private readonly usersService: UsersService,
     @inject(UsersQueryRepository)
     private usersQueryRepository: UsersQueryRepository,
   ) {}

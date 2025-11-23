@@ -12,7 +12,7 @@ import { UsersQueryRepository } from "../../users/repositories/users.query.repos
 export class CommentsRepository {
   constructor(
     @inject(UsersQueryRepository)
-    private usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
   async create(
     userId: string,

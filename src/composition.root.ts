@@ -21,6 +21,8 @@ import { BlogController } from "./blogs/controllers/blog.controller";
 import { CommentController } from "./comments/controllers/comment.controller";
 import { PostController } from "./posts/controllers/post.controller";
 import { UserController } from "./users/controllers/user.controller";
+import { AuthController } from "./auth/controllers/auth.controller";
+import { SecurityDeviceController } from "./auth/controllers/security-devices.controller";
 
 export const container = new Container();
 
@@ -34,6 +36,8 @@ container.bind(BlogController).to(BlogController);
 container.bind(CommentController).to(CommentController);
 container.bind(PostController).to(PostController);
 container.bind(UserController).to(UserController);
+container.bind(AuthController).to(AuthController);
+container.bind(SecurityDeviceController).to(SecurityDeviceController);
 
 // Services
 container.bind(UsersService).to(UsersService);

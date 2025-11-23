@@ -10,7 +10,8 @@ import { CommentsRepository } from "../repositories/comments.repository";
 @injectable()
 class CommentsService {
   constructor(
-    @inject(CommentsRepository) private commentsRepository: CommentsRepository,
+    @inject(CommentsRepository)
+    private readonly commentsRepository: CommentsRepository,
   ) {}
   async create(
     userId: string,

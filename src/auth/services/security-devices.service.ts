@@ -8,11 +8,11 @@ import { SecurityDevicesQueryRepository } from "../repositories/security-devices
 @injectable()
 export class SecurityDevicesService {
   constructor(
-    @inject(JwtAdapter) private jwtAdapter: JwtAdapter,
+    @inject(JwtAdapter) private readonly jwtAdapter: JwtAdapter,
     @inject(SecurityDevicesRepository)
-    private securityDevicesRepository: SecurityDevicesRepository,
+    private readonly securityDevicesRepository: SecurityDevicesRepository,
     @inject(SecurityDevicesQueryRepository)
-    private securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+    private readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
   ) {}
   async getDevices(refreshToken: string): Promise<any[]> {
     const decoded = await this.jwtAdapter.decodeToken(refreshToken);

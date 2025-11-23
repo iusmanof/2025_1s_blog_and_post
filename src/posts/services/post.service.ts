@@ -6,7 +6,7 @@ import { PostsRepository } from "../repositories/posts.repository";
 @injectable()
 export class PostService {
   constructor(
-    @inject(PostsRepository) private postsRepository: PostsRepository,
+    @inject(PostsRepository) private readonly postsRepository: PostsRepository,
   ) {}
   async findMany(query: PostQuery) {
     return await this.postsRepository.getAllPosts(query);

@@ -7,7 +7,7 @@ import httpStatusCode from "../../core/types/http-status-code";
 @injectable()
 export class CommentController {
   constructor(
-    @inject(CommentsService) private commentsService: CommentsService,
+    @inject(CommentsService) private readonly commentsService: CommentsService,
   ) {}
 
   getByCommentId = async (req: Request<{ id: string }>, res: Response) => {

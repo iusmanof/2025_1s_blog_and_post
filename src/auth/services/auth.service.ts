@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { add } from "date-fns";
 import { ResultObject, resultStatus } from "../../core/types/result-object";
 import { UserDbDto } from "../../users/types/user-db-dto";
-import { emailExampleTemplate } from "../adapters/email-example.template";
+import { emailTemplate } from "../adapters/email.template";
 import { JwtAdapter } from "../adapters/jwt.adapter";
 import { SecurityDevicesService } from "./security-devices.service";
 import { EmailAdapter } from "../adapters/email.adapter";
@@ -17,18 +17,18 @@ import { UsersQueryRepository } from "../../users/repositories/users.query.repos
 @injectable()
 export class AuthService {
   constructor(
-    @inject(JwtAdapter) private jwtAdapter: JwtAdapter,
-    @inject(EmailAdapter) private emailAdapter: EmailAdapter,
-    @inject(BcryptAdapter) private bcryptAdapter: BcryptAdapter,
+    @inject(JwtAdapter) private readonly jwtAdapter: JwtAdapter,
+    @inject(EmailAdapter) private readonly emailAdapter: EmailAdapter,
+    @inject(BcryptAdapter) private readonly bcryptAdapter: BcryptAdapter,
     @inject(SecurityDevicesService)
-    private securityDevicesService: SecurityDevicesService,
+    private readonly securityDevicesService: SecurityDevicesService,
     @inject(SecurityDevicesQueryRepository)
-    private securityDevicesQueryRepository: SecurityDevicesQueryRepository,
+    private readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
     @inject(SecurityDevicesRepository)
-    private securityDevicesRepository: SecurityDevicesRepository,
+    private readonly securityDevicesRepository: SecurityDevicesRepository,
     @inject(UsersQueryRepository)
-    private usersQueryRepository: UsersQueryRepository,
-    @inject(UsersRepository) private usersRepository: UsersRepository,
+    private readonly usersQueryRepository: UsersQueryRepository,
+    @inject(UsersRepository) private readonly usersRepository: UsersRepository,
   ) {}
 
   async login(
@@ -122,7 +122,7 @@ export class AuthService {
       try {
         await this.emailAdapter.nodemailer(
           email,
-          emailExampleTemplate.registrationEmail(
+          emailTemplate.registrationEmail(
             newUser.emailConfirmation.confirmationCode,
           ),
         );
@@ -204,7 +204,7 @@ export class AuthService {
     try {
       await this.emailAdapter.nodemailer(
         email,
-        emailExampleTemplate.registrationEmail(codeRefreshed),
+        emailTemplate.registrationEmail(codeRefreshed),
       );
     } catch (err) {
       console.log("send email error");

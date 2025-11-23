@@ -5,7 +5,7 @@ import { add } from "date-fns";
 import { UserDbDto } from "../src/users/types/user-db-dto";
 import { afterEach } from "node:test";
 import { resultStatus } from "../src/core/types/result-object";
-import { emailExampleTemplate } from "../src/auth/adapters/email-example.template";
+import { emailTemplate } from "../src/auth/adapters/email.template";
 
 import { container } from "../src/composition.root";
 import { AuthService } from "../src/auth/services/auth.service";
@@ -88,7 +88,7 @@ describe("Integration tests", () => {
     const user = await userCollection.findOne({ login: "login1" });
     expect(user).toBeTruthy();
 
-    const expectedTemplate = emailExampleTemplate.registrationEmail(
+    const expectedTemplate = emailTemplate.registrationEmail(
       user!.emailConfirmation!.confirmationCode,
     );
 

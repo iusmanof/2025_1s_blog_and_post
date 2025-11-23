@@ -13,7 +13,7 @@ import { BlogsRepository } from "../../blogs/repositories/blogs.repository";
 @injectable()
 export class PostsRepository {
   constructor(
-    @inject(BlogsRepository) private blogsRepository: BlogsRepository,
+    @inject(BlogsRepository) private readonly blogsRepository: BlogsRepository,
   ) {}
   async getAllPosts(query: PostQuery) {
     const {

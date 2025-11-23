@@ -17,8 +17,8 @@ import { PostService } from "../../posts/services/post.service";
 @injectable()
 export class BlogController {
   constructor(
-    @inject(BlogService) private blogService: BlogService,
-    @inject(PostService) private postService: PostService,
+    @inject(BlogService) private readonly blogService: BlogService,
+    @inject(PostService) private readonly postService: PostService,
   ) {}
 
   findMany = async (req: RequestWithQuery<BlogQuery>, res: Response) => {
