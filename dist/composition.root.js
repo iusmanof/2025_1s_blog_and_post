@@ -34,6 +34,8 @@ exports.container = new inversify_1.Container();
 exports.container.bind(bcrypt_adapter_1.BcryptAdapter).to(bcrypt_adapter_1.BcryptAdapter);
 exports.container.bind(jwt_adapter_1.JwtAdapter).to(jwt_adapter_1.JwtAdapter);
 exports.container.bind(email_adapter_1.EmailAdapter).to(email_adapter_1.EmailAdapter);
+exports.container.bind(email_adapter_1.EmailAdapterRecoveryPassword).to(email_adapter_1.EmailAdapterRecoveryPassword);
+exports.container.bind(email_adapter_1.EmailAdapterYandex).to(email_adapter_1.EmailAdapterYandex);
 // Controllers
 exports.container.bind(blog_controller_1.BlogController).to(blog_controller_1.BlogController);
 exports.container.bind(comment_controller_1.CommentController).to(comment_controller_1.CommentController);

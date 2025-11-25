@@ -3,7 +3,7 @@ import { Container } from "inversify";
 import { UsersRepository } from "./users/repositories/users.repository";
 import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
 import { UsersService } from "./users/services/users.service";
-import { EmailAdapter } from "./auth/adapters/email.adapter";
+import {EmailAdapter, EmailAdapterRecoveryPassword, EmailAdapterYandex} from "./auth/adapters/email.adapter";
 import { JwtAdapter } from "./auth/adapters/jwt.adapter";
 import { AuthRepository } from "./auth/repositories/auth.repository";
 import { SecurityDevicesQueryRepository } from "./auth/repositories/security-devices.query-repository";
@@ -30,6 +30,8 @@ export const container = new Container();
 container.bind(BcryptAdapter).to(BcryptAdapter);
 container.bind(JwtAdapter).to(JwtAdapter);
 container.bind(EmailAdapter).to(EmailAdapter);
+container.bind(EmailAdapterRecoveryPassword).to(EmailAdapterRecoveryPassword);
+container.bind(EmailAdapterYandex).to(EmailAdapterYandex);
 
 // Controllers
 container.bind(BlogController).to(BlogController);

@@ -2,10 +2,11 @@ export enum resultStatus {
   SUCCESS = "success",
   ERROR = "error",
   NOT_FOUND = "not-found",
+  NO_CONTENT = "no-content",
   EXISTS = "exists",
   BAD_REQUEST = "bag-request",
   CODE_EXPIRED = "code-expired",
-  UNAUTORIZED = "unauthorized",
+  UNAUTHORIZED = "unauthorized",
 }
 
 type ExtensionType = {

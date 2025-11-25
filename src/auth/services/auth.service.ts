@@ -7,7 +7,7 @@ import { UserDbDto } from "../../users/types/user-db-dto";
 import { emailTemplate } from "../adapters/email.template";
 import { JwtAdapter } from "../adapters/jwt.adapter";
 import { SecurityDevicesService } from "./security-devices.service";
-import { EmailAdapter } from "../adapters/email.adapter";
+import {EmailAdapter, EmailAdapterRecoveryPassword, EmailAdapterYandex} from "../adapters/email.adapter";
 import { BcryptAdapter } from "../adapters/bcrypt.adapter";
 import { UsersRepository } from "../../users/repositories/users.repository";
 import { SecurityDevicesQueryRepository } from "../repositories/security-devices.query-repository";
@@ -19,6 +19,8 @@ export class AuthService {
   constructor(
     @inject(JwtAdapter) private readonly jwtAdapter: JwtAdapter,
     @inject(EmailAdapter) private readonly emailAdapter: EmailAdapter,
+    @inject(EmailAdapterRecoveryPassword) private readonly emailAdapterRecoveryPassword: EmailAdapterRecoveryPassword,
+    @inject(EmailAdapterYandex) private readonly emailAdapterYandex: EmailAdapterYandex,
     @inject(BcryptAdapter) private readonly bcryptAdapter: BcryptAdapter,
     @inject(SecurityDevicesService)
     private readonly securityDevicesService: SecurityDevicesService,
@@ -230,7 +232,7 @@ export class AuthService {
     );
     if (!oldDevice) {
       return {
-        status: resultStatus.UNAUTORIZED,
+        status: resultStatus.UNAUTHORIZED,
         data: null,
         errorMessages: "Refresh Token",
         extensions: [
@@ -277,7 +279,7 @@ export class AuthService {
     );
     if (!oldDevice) {
       return {
-        status: resultStatus.UNAUTORIZED,
+        status: resultStatus.UNAUTHORIZED,
         data: null,
         errorMessages: "Refresh Token",
         extensions: [
@@ -294,7 +296,7 @@ export class AuthService {
     );
     if (count === 0) {
       return {
-        status: resultStatus.UNAUTORIZED,
+        status: resultStatus.UNAUTHORIZED,
         data: null,
         extensions: [],
       };
@@ -320,4 +322,44 @@ export class AuthService {
       userId: result?.id,
     };
   }
+
+  async passwordRecovery(email: string) {
+      const checkEmail = await this.usersRepository.findByEmail(email);
+      const recovery_code = randomUUID();
+
+      if (checkEmail) {
+          try {
+              console.log(email)
+              // отправляем email с кодом
+              await this.emailAdapterYandex.nodemailer(
+                  email,
+                  emailTemplate.recoveryPasswordEmail(recovery_code)
+              );
+          } catch (err) {
+              console.log("send email error", err);
+          }
+
+          await this.usersRepository.setRecoveryCode(email, recovery_code);
+
+          return recovery_code;
+      }
+
+      return null;
+  }
+
+   async confirmPasswordRecovery(newPassword: string, recoveryCode: string) {
+       const user = await this.usersRepository.findByRecoveryCode( recoveryCode );
+       if (!user || !user.passwordRecovery) return false;
+
+       if (user.passwordRecovery.expirationDate < new Date()) {
+           return false;
+       }
+
+       const hashedPassword = await this.bcryptAdapter.generateHash(newPassword);
+
+       await this.usersRepository.updatePasswordByRecoveryCode(recoveryCode, hashedPassword);
+
+       return true;
+   }
 }
+

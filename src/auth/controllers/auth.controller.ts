@@ -1,167 +1,183 @@
-import { injectable, inject } from "inversify";
-import { Request, Response } from "express";
-import { AuthService } from "../services/auth.service";
-import { LoginOrEmailDto } from "../types/login-or-email.dto";
-import { resultStatus } from "../../core/types/result-object";
+import {inject, injectable} from "inversify";
+import {Request, Response} from "express";
+import {AuthService} from "../services/auth.service";
+import {LoginOrEmailDto} from "../types/login-or-email.dto";
+import {resultStatus} from "../../core/types/result-object";
 import httpStatusCode from "../../core/types/http-status-code";
 
 interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 @injectable()
 export class AuthController {
-  constructor(@inject(AuthService) private readonly authService: AuthService) {}
-
-  login = async (req: Request<{}, {}, LoginOrEmailDto>, res: Response) => {
-    const { loginOrEmail, password } = req.body;
-
-    const ipAddr = req.headers["x-forwarded-for"]
-      ? req.headers["x-forwarded-for"][0]
-      : req.headers["x-forwarded-for"] ||
-        req.socket.remoteAddress ||
-        "unknown ip";
-
-    const userAgent = req.headers["user-agent"] ?? "userAgent undefined";
-
-    const result = await this.authService.login(
-      loginOrEmail,
-      password,
-      ipAddr,
-      userAgent,
-    );
-
-    if (result.status === resultStatus.ERROR || result.data === null) {
-      return res.status(httpStatusCode.UNAUTHORIZED_401).json(result);
+    constructor(@inject(AuthService) private readonly authService: AuthService) {
     }
 
-    res.cookie("refreshToken", result.data.refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
+    login = async (req: Request<{}, {}, LoginOrEmailDto>, res: Response) => {
+        const {loginOrEmail, password} = req.body;
 
-    return res.status(httpStatusCode.OK_200).json({
-      accessToken: result.data.accessToken,
-    });
-  };
+        const ipAddr = req.headers["x-forwarded-for"]
+            ? req.headers["x-forwarded-for"][0]
+            : req.headers["x-forwarded-for"] ||
+            req.socket.remoteAddress ||
+            "unknown ip";
 
-  me = async (req: Request, res: Response) => {
-    const userId = req.user?.id;
+        const userAgent = req.headers["user-agent"] ?? "userAgent undefined";
 
-    if (!userId) {
-      res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
-      return;
-    }
+        const result = await this.authService.login(
+            loginOrEmail,
+            password,
+            ipAddr,
+            userAgent,
+        );
 
-    const me = await this.authService.getMe(userId);
-    if (!me) {
-      res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
-      return;
-    }
+        if (result.status === resultStatus.ERROR || result.data === null) {
+            return res.status(httpStatusCode.UNAUTHORIZED_401).json(result);
+        }
 
-    res.status(httpStatusCode.OK_200).send(me);
-  };
+        res.cookie("refreshToken", result.data.refreshToken, {
+            httpOnly: true,
+            secure: true,
+        });
 
-  registrationConfirmation = async (
-    req: Request<{}, {}, { code: string }>,
-    res: Response,
-  ) => {
-    const code = req.body.code;
+        return res.status(httpStatusCode.OK_200).json({
+            accessToken: result.data.accessToken,
+        });
+    };
 
-    const result = await this.authService.confirmUser(code);
+    me = async (req: Request, res: Response) => {
+        const userId = req.user?.id;
 
-    if (
-      result.status === resultStatus.BAD_REQUEST ||
-      result.status === resultStatus.CODE_EXPIRED
-    ) {
-      res
-        .status(httpStatusCode.BAD_REQUEST_400)
-        .json({ errorsMessages: result.extensions });
-      return;
-    }
+        if (!userId) {
+            res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+            return;
+        }
 
-    res.sendStatus(httpStatusCode.NO_CONTENT_204);
-  };
+        const me = await this.authService.getMe(userId);
+        if (!me) {
+            res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+            return;
+        }
 
-  registration = async (req: Request, res: Response) => {
-    const { login, email, password } = req.body;
+        res.status(httpStatusCode.OK_200).send(me);
+    };
 
-    const result = await this.authService.registerUser(login, email, password);
-    if (result.status === resultStatus.EXISTS) {
-      res
-        .status(httpStatusCode.BAD_REQUEST_400)
-        .json({ errorsMessages: result.extensions });
-      return;
-    }
+    registrationConfirmation = async (
+        req: Request<{}, {}, { code: string }>,
+        res: Response,
+    ) => {
+        const code = req.body.code;
 
-    res.sendStatus(httpStatusCode.NO_CONTENT_204);
-  };
+        const result = await this.authService.confirmUser(code);
 
-  registrationEmailResending = async (req: Request, res: Response) => {
-    const { email } = req.body;
+        if (
+            result.status === resultStatus.BAD_REQUEST ||
+            result.status === resultStatus.CODE_EXPIRED
+        ) {
+            res
+                .status(httpStatusCode.BAD_REQUEST_400)
+                .json({errorsMessages: result.extensions});
+            return;
+        }
 
-    const result = await this.authService.resendCode(email);
-    if (
-      result.status === resultStatus.BAD_REQUEST ||
-      result.status === resultStatus.NOT_FOUND
-    ) {
-      res
-        .status(httpStatusCode.BAD_REQUEST_400)
-        .json({ errorsMessages: result.extensions });
-      return;
-    }
-    res.status(httpStatusCode.NO_CONTENT_204).send("resend");
-  };
+        res.sendStatus(httpStatusCode.NO_CONTENT_204);
+    };
 
-  refreshToken = async (req: Request, res: Response) => {
-    const rf = req.cookies.refreshToken;
-    const ipAddr = req.headers["x-forwarded-for"]
-      ? req.headers["x-forwarded-for"][0]
-      : req.headers["x-forwarded-for"] ||
-        req.socket.remoteAddress ||
-        "unknown ip";
-    const userAgent: string =
-      req.headers["user-agent"] ?? "userAgent undefined";
+    registration = async (req: Request, res: Response) => {
+        const {login, email, password} = req.body;
 
-    if (!rf) {
-      res
-        .status(httpStatusCode.UNAUTHORIZED_401)
-        .json({ message: "Refresh token missing" });
-      return;
-    }
+        const result = await this.authService.registerUser(login, email, password);
+        if (result.status === resultStatus.EXISTS) {
+            res
+                .status(httpStatusCode.BAD_REQUEST_400)
+                .json({errorsMessages: result.extensions});
+            return;
+        }
 
-    const result = await this.authService.updateToken(rf, ipAddr, userAgent);
+        res.sendStatus(httpStatusCode.NO_CONTENT_204);
+    };
 
-    if (result.status === resultStatus.UNAUTORIZED) {
-      res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
-      return;
-    }
+    registrationEmailResending = async (req: Request, res: Response) => {
+        const {email} = req.body;
 
-    const { accessToken, refreshToken } = result.data as TokenPair;
+        const result = await this.authService.resendCode(email);
+        if (
+            result.status === resultStatus.BAD_REQUEST ||
+            result.status === resultStatus.NOT_FOUND
+        ) {
+            res
+                .status(httpStatusCode.BAD_REQUEST_400)
+                .json({errorsMessages: result.extensions});
+            return;
+        }
+        res.status(httpStatusCode.NO_CONTENT_204).send("resend");
+    };
 
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
-    res.status(httpStatusCode.OK_200).json({ accessToken: accessToken });
-  };
+    refreshToken = async (req: Request, res: Response) => {
+        const rf = req.cookies.refreshToken;
+        const ipAddr = req.headers["x-forwarded-for"]
+            ? req.headers["x-forwarded-for"][0]
+            : req.headers["x-forwarded-for"] ||
+            req.socket.remoteAddress ||
+            "unknown ip";
+        const userAgent: string =
+            req.headers["user-agent"] ?? "userAgent undefined";
 
-  passwordRecovery = async (req: Request, res: Response) => {
-    res.status(httpStatusCode.NO_CONTENT_204);
-  };
+        if (!rf) {
+            res
+                .status(httpStatusCode.UNAUTHORIZED_401)
+                .json({message: "Refresh token missing"});
+            return;
+        }
 
-  newPassword = async (req: Request, res: Response) => {
-    res.status(httpStatusCode.NO_CONTENT_204);
-  };
+        const result = await this.authService.updateToken(rf, ipAddr, userAgent);
 
-  logout = async (req: Request, res: Response) => {
-    const token = req.cookies.refreshToken;
+        if (result.status === resultStatus.UNAUTHORIZED) {
+            res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+            return;
+        }
 
-    const result = await this.authService.expireToken(token);
-    if (result.status === resultStatus.UNAUTORIZED) {
-      res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
-      return;
-    }
-    if (result.status === resultStatus.SUCCESS) {
-      res.sendStatus(httpStatusCode.NO_CONTENT_204);
-    }
-  };
+        const {accessToken, refreshToken} = result.data as TokenPair;
+
+        res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: true});
+        res.status(httpStatusCode.OK_200).json({accessToken: accessToken});
+    };
+
+
+    passwordRecovery = async (req: Request<{}, {}, { email: string }>, res: Response) => {
+        await this.authService.passwordRecovery(req.body.email);
+
+        res.status(httpStatusCode.NO_CONTENT_204).send("recovery password");
+    };
+
+
+    newPassword = async (req: Request, res: Response) => {
+        const success = await this.authService.confirmPasswordRecovery(req.body.newPassword, req.body.recoveryCode);
+
+        if (!success) {
+             res.status(httpStatusCode.BAD_REQUEST_400).json({
+                errorsMessages: [
+                    { message: "Invalid recovery code", field: "recoveryCode" }
+                ]
+            });
+            return
+        }
+
+        res.status(httpStatusCode.NO_CONTENT_204).send("new password");
+    };
+
+    logout = async (req: Request, res: Response) => {
+        const token = req.cookies.refreshToken;
+
+        const result = await this.authService.expireToken(token);
+        if (result.status === resultStatus.UNAUTHORIZED) {
+            res.sendStatus(httpStatusCode.UNAUTHORIZED_401);
+            return;
+        }
+        if (result.status === resultStatus.SUCCESS) {
+            res.sendStatus(httpStatusCode.NO_CONTENT_204);
+        }
+    };
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { passwordValidation } from "../../core/milldlewares/password.validation-middleware";
+import { passwordValidation } from "../middlewares/password.validation-middleware";
 import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
 import { loginOrEmailValidation } from "../../core/milldlewares/login-or-email.validation";
 import { accessTokenGuard } from "../access-token.guard";
@@ -14,9 +14,13 @@ import { rateLimitMiddleware } from "../middlewares/rate-limit.middleware";
 const loginRequestLimit = rateLimitMiddleware(5, 10);
 const registrationRequestLimit = rateLimitMiddleware(5, 10);
 const registrationEmailResendingRequestLimit = rateLimitMiddleware(5, 10);
+const registrationNewPasswordRequestLimit = rateLimitMiddleware(5, 10);
 const registrationConfirmationRequestLimit = rateLimitMiddleware(5, 10);
+const recoveryPasswordRequestLimit = rateLimitMiddleware(5, 10);
 import { container } from "../../composition.root";
 import { AuthController } from "../controllers/auth.controller";
+import {newPasswordValidation} from "../middlewares/new-password-validation.middleware";
+import {emailPasswordRecoveryValidation} from "../middlewares/email-password-recovery.validation";
 
 const authController = container.get(AuthController);
 
@@ -61,9 +65,19 @@ authRouter.post(
   authController.refreshToken,
 );
 
-authRouter.post("/password-recovery", authController.passwordRecovery);
+authRouter.post("/password-recovery",
+    emailPasswordRecoveryValidation,
+    inputRegistrationValidationMiddleware,
+    recoveryPasswordRequestLimit,
+    authController.passwordRecovery
+);
 
-authRouter.post("/new-password", authController.newPassword);
+authRouter.post("/new-password",
+    newPasswordValidation,
+    inputRegistrationValidationMiddleware,
+    registrationNewPasswordRequestLimit,
+    authController.newPassword
+);
 
 authRouter.post(
   "/logout",

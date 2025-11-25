@@ -118,7 +118,7 @@ let AuthController = class AuthController {
                 return;
             }
             const result = yield this.authService.updateToken(rf, ipAddr, userAgent);
-            if (result.status === result_object_1.resultStatus.UNAUTORIZED) {
+            if (result.status === result_object_1.resultStatus.UNAUTHORIZED) {
                 res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
                 return;
             }
@@ -127,15 +127,25 @@ let AuthController = class AuthController {
             res.status(http_status_code_1.default.OK_200).json({ accessToken: accessToken });
         });
         this.passwordRecovery = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            res.status(http_status_code_1.default.NO_CONTENT_204);
+            yield this.authService.passwordRecovery(req.body.email);
+            res.status(http_status_code_1.default.NO_CONTENT_204).send("recovery password");
         });
         this.newPassword = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            res.status(http_status_code_1.default.NO_CONTENT_204);
+            const success = yield this.authService.confirmPasswordRecovery(req.body.newPassword, req.body.recoveryCode);
+            if (!success) {
+                res.status(http_status_code_1.default.BAD_REQUEST_400).json({
+                    errorsMessages: [
+                        { message: "Invalid recovery code", field: "recoveryCode" }
+                    ]
+                });
+                return;
+            }
+            res.status(http_status_code_1.default.NO_CONTENT_204).send("new password");
         });
         this.logout = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const token = req.cookies.refreshToken;
             const result = yield this.authService.expireToken(token);
-            if (result.status === result_object_1.resultStatus.UNAUTORIZED) {
+            if (result.status === result_object_1.resultStatus.UNAUTHORIZED) {
                 res.sendStatus(http_status_code_1.default.UNAUTHORIZED_401);
                 return;
             }

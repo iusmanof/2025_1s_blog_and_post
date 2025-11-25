@@ -42,3 +42,15 @@ test4
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjU1MzBjZGRjY2I2NjYwN2EwODVlYiIsImlhdCI6MTc2MDkwODUzOCwiZXhwIjoxNzYwOTA4OTM4fQ.MUAP_VLmRsKRbSsohhSYP2g1cpI8fofq7RPtgwQue-s
 
 68f55366ddccb66607a085ee
+
+
+docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+
+
+docker-compose.yml
+mailhog:
+  image: mailhog/mailhog
+  ports:
+    - "1025:1025"
+    - "8025:8025"
+docker-compose up -d mailhog

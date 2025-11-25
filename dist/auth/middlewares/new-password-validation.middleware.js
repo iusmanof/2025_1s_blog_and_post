@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.passwordValidation = void 0;
+exports.newPasswordValidation = void 0;
 const express_validator_1 = require("express-validator");
-exports.passwordValidation = (0, express_validator_1.body)("password")
+exports.newPasswordValidation = (0, express_validator_1.body)("newPassword")
     .isString()
     .trim()
     .isLength({ min: 6, max: 20 })
     .withMessage("Password is not correct");
-//# sourceMappingURL=password.validation-middleware.js.map
+//# sourceMappingURL=new-password-validation.middleware.js.map

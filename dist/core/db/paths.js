@@ -1,13 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SECURITY_DEVICES_PATH =
-  exports.COMMENTS_PATH =
-  exports.AUTH_PATH =
-  exports.TESTING_PATH =
-  exports.USERS_PATH =
-  exports.POSTS_PATH =
-  exports.BLOGS_PATH =
-    void 0;
+exports.SECURITY_DEVICES_PATH = exports.COMMENTS_PATH = exports.AUTH_PATH = exports.TESTING_PATH = exports.USERS_PATH = exports.POSTS_PATH = exports.BLOGS_PATH = void 0;
 exports.BLOGS_PATH = "/blogs";
 exports.POSTS_PATH = "/posts";
 exports.USERS_PATH = "/users";
