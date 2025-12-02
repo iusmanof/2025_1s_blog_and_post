@@ -34,6 +34,7 @@ const inversify_1 = require("inversify");
 const mongodb_1 = require("mongodb");
 const blog_entity_1 = require("../domain/blog.entity");
 const mongoose_1 = __importDefault(require("mongoose"));
+const post_entity_1 = require("../../posts/domain/post.entity");
 let BlogsRepository = class BlogsRepository {
     getAllBlogs(query) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -101,19 +102,18 @@ let BlogsRepository = class BlogsRepository {
     }
     createPostByBlogId(body, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield this.getBlogById(body.blogId);
-            const postCreated = {
+            const blog = yield this.getBlogById(blogId);
+            if (!blog)
+                return null;
+            const postCreated = yield post_entity_1.PostMongooseModel.create({
                 title: body.title,
                 shortDescription: body.shortDescription,
                 content: body.content,
-                blogId: blogId,
-                blogName: blog ? blog.name : "Unknown",
+                blogId: new mongoose_1.default.Types.ObjectId(blogId),
+                blogName: blog.name,
                 createdAt: new Date().toISOString(),
-            };
-            // const result = await PostMongooseModel.insertOne({ ...postCreated });
-            return Object.assign(Object.assign({}, postCreated), { 
-                // TODO Fix this problem
-                id: "12312312321" });
+            });
+            return Object.assign(Object.assign({}, postCreated.toObject()), { id: postCreated._id.toString() });
         });
     }
     deleteBlog(id) {

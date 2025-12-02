@@ -39,9 +39,7 @@ const postSchema = new mongoose_1.default.Schema({
     title: { type: String, required: true },
     shortDescription: { type: String, required: true },
     content: { type: String, required: true },
-    blogId: { type: String, required: true },
-    // TODO connect with blogid
-    // blogId: { type: mongoose.Schema.Types.ObjectId, ref: "blog", required: true }, // <- связь через ref
+    blogId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "blog", required: true },
 }, { timestamps: true });
 exports.PostMongooseModel = (0, mongoose_1.model)("post", postSchema);
 //# sourceMappingURL=post.entity.js.map
