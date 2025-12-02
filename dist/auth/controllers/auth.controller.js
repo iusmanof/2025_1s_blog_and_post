@@ -135,8 +135,8 @@ let AuthController = class AuthController {
             if (!success) {
                 res.status(http_status_code_1.default.BAD_REQUEST_400).json({
                     errorsMessages: [
-                        { message: "Invalid recovery code", field: "recoveryCode" }
-                    ]
+                        { message: "Invalid recovery code", field: "recoveryCode" },
+                    ],
                 });
                 return;
             }

@@ -25,6 +25,7 @@ exports.UsersService = void 0;
 const inversify_1 = require("inversify");
 const users_repository_1 = require("../repositories/users.repository");
 const bcrypt_adapter_1 = require("../../auth/adapters/bcrypt.adapter");
+const user_entity_1 = require("../domain/user.entity");
 let UsersService = class UsersService {
     constructor(usersRepository, bcryptAdapter) {
         this.usersRepository = usersRepository;
@@ -37,14 +38,13 @@ let UsersService = class UsersService {
     }
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { login, password, email } = dto;
-            const passwordhash = yield this.bcryptAdapter.generateHash(password);
-            const newUser = {
+            const { login, password, email } = new user_entity_1.UserMongooseModel(dto);
+            const passwordHash = yield this.bcryptAdapter.generateHash(password);
+            const newUser = yield user_entity_1.UserMongooseModel.create({
                 login,
                 email,
-                password: passwordhash,
-                createdAt: new Date(),
-            };
+                password: passwordHash,
+            });
             return yield this.usersRepository.create(newUser);
         });
     }
@@ -66,32 +66,4 @@ exports.UsersService = UsersService = __decorate([
     __metadata("design:paramtypes", [users_repository_1.UsersRepository,
         bcrypt_adapter_1.BcryptAdapter])
 ], UsersService);
-// export const usersService = {
-//     async findMany(
-//         queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
-//     ): Promise<{ items: UserDbDto[]; totalCount: number }> {
-//         return usersRepository.findMany(queryDto);
-//     },
-//     async create(dto: UserCreateDto): Promise<string> {
-//         const { login, password, email } = dto;
-//
-//         const passwordhash = await bcryptAdapter.generateHash(password);
-//
-//         const newUser: UserDbDto = {
-//             login,
-//             email,
-//             password: passwordhash,
-//             createdAt: new Date(),
-//         };
-//
-//         return await usersRepository.create(newUser);
-//     },
-//     async delete(id: string): Promise<boolean> {
-//         const user = await usersRepository.findById(id);
-//         if (!user) {
-//             return false;
-//         }
-//         return await usersRepository.delete(id);
-//     },
-// };
 //# sourceMappingURL=users.service.js.map

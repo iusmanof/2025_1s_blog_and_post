@@ -102,6 +102,7 @@ let AuthService = class AuthService {
                     expirationDate: (0, date_fns_1.add)(new Date(), { hours: 1, minutes: 30 }),
                     isConfirmed: false,
                 },
+                passwordRecovery: null,
             };
             yield this.usersRepository.create(newUser);
             if (newUser.emailConfirmation) {
@@ -121,7 +122,6 @@ let AuthService = class AuthService {
     }
     confirmUser(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             const user = yield this.usersRepository.findByConfirmationCode(code);
             if (!user) {
                 return {
@@ -139,7 +139,7 @@ let AuthService = class AuthService {
                     data: null,
                 };
             }
-            if (((_a = user.emailConfirmation) === null || _a === void 0 ? void 0 : _a.expirationDate) < new Date()) {
+            if (user.emailConfirmation.expirationDate < new Date()) {
                 return {
                     status: result_object_1.resultStatus.CODE_EXPIRED,
                     errorMessages: "Bad request",
@@ -157,7 +157,6 @@ let AuthService = class AuthService {
     }
     resendCode(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             const user = yield this.usersRepository.findByEmail(email);
             if (!user) {
                 return {
@@ -167,7 +166,7 @@ let AuthService = class AuthService {
                     data: null,
                 };
             }
-            if ((_a = user.emailConfirmation) === null || _a === void 0 ? void 0 : _a.isConfirmed) {
+            if (user.emailConfirmation.isConfirmed) {
                 return {
                     status: result_object_1.resultStatus.BAD_REQUEST,
                     errorMessages: "Bad request",
@@ -261,9 +260,9 @@ let AuthService = class AuthService {
             if (!result)
                 return null;
             return {
-                login: result === null || result === void 0 ? void 0 : result.login,
-                email: result === null || result === void 0 ? void 0 : result.email,
-                userId: result === null || result === void 0 ? void 0 : result.id,
+                login: result.login,
+                email: result.email,
+                userId: result.id,
             };
         });
     }

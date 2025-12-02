@@ -63,7 +63,7 @@ class EmailAdapterYandex {
                 },
                 tls: {
                     rejectUnauthorized: false,
-                }
+                },
             });
             yield (() => __awaiter(this, void 0, void 0, function* () {
                 yield transporter.sendMail({
@@ -84,7 +84,7 @@ let EmailAdapterRecoveryPassword = class EmailAdapterRecoveryPassword {
                 host: process.env.SMTP_HOST,
                 port: Number(process.env.SMTP_PORT),
                 secure: false,
-                auth: null
+                auth: null,
             });
             yield transporter.sendMail({
                 from: "Test <no-reply@test.com>",

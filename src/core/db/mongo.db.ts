@@ -1,89 +1,25 @@
-import { Collection, MongoClient } from "mongodb";
-import { PostMongoDb } from "../../posts/types/posts.dto";
-import { BlogMongoDb } from "../../blogs/types/blog.dto";
+import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 import { SETTINGS } from "./settings";
-import { UserDbDto } from "../../users/types/user-db-dto";
-import { CommentDbDto } from "../../comments/types/comment-db-dto";
-import { ListRefreshToken } from "../../auth/types/list-refresh-token";
-import { SecurityDeviceDbDto } from "../../auth/types/security-device-db.dto";
 
 let client: MongoClient;
-let blogCollection: Collection<BlogMongoDb>;
-let postCollection: Collection<PostMongoDb>;
-let userCollection: Collection<UserDbDto>;
-let commentCollection: Collection<CommentDbDto>;
-let listRefreshTokenCollection: Collection<ListRefreshToken>;
-let securityDevicesCollection: Collection<SecurityDeviceDbDto>;
 
 export const runDB = async (url: string) => {
   client = new MongoClient(url);
 
   try {
-    await client.connect();
-    const db = client.db(SETTINGS.DB_NAME);
-    blogCollection = db.collection<BlogMongoDb>(SETTINGS.DB_COLLECTION_BLOGS);
-    postCollection = db.collection<PostMongoDb>(SETTINGS.DB_COLLECTION_POSTS);
-    userCollection = db.collection<UserDbDto>(SETTINGS.DB_COLLECTION_USERS);
-    listRefreshTokenCollection = db.collection<ListRefreshToken>(
-      SETTINGS.DB_COLLECTION_LIST_REFRESH_TOKEN,
+    await mongoose.connect(
+      SETTINGS.MONGODB_URI + "/" + SETTINGS.DB_NAME_MONGOOSE,
     );
-    commentCollection = db.collection<CommentDbDto>(
-      SETTINGS.DB_COLLECTION_COMMENTS,
-    );
-    securityDevicesCollection = db.collection<SecurityDeviceDbDto>(
-      SETTINGS.DB_COLLECTION_SECURITY_DEVICES,
-    );
-
-    console.log("Connect successfully to server");
+    console.log("Connect successfully to DB_NAME_MONGOOSE");
   } catch (e) {
     console.error("Don't connect to server");
     console.log(e);
     await client.close();
+    await mongoose.disconnect();
     throw e;
   }
 };
-
-export function getBlogCollection() {
-  if (!blogCollection) {
-    throw new Error("Collection blog not initialized");
-  }
-  return blogCollection;
-}
-
-export function getPostCollection() {
-  if (!postCollection) {
-    throw new Error("Collection post not initialized");
-  }
-  return postCollection;
-}
-
-export function getUserCollection() {
-  if (!userCollection) {
-    throw new Error("Collection user not initialized");
-  }
-  return userCollection;
-}
-
-export function getCommentCollection() {
-  if (!commentCollection) {
-    throw new Error("Collection comment not initialized");
-  }
-  return commentCollection;
-}
-
-export function getRefreshTokenCollection() {
-  if (!listRefreshTokenCollection) {
-    throw new Error("Collection token not initialized");
-  }
-  return listRefreshTokenCollection;
-}
-
-export function getSecurityDeviceCollection() {
-  if (!securityDevicesCollection) {
-    throw new Error("Collection security-device not initialized");
-  }
-  return securityDevicesCollection;
-}
 
 export async function stopDb() {
   if (!client) {

@@ -20,7 +20,7 @@ const blogs_repository_1 = require("./blogs/repositories/blogs.repository");
 const blog_service_1 = require("./blogs/services/blog.service");
 const comments_service_1 = __importDefault(require("./comments/services/comments.service"));
 const comments_repository_1 = require("./comments/repositories/comments.repository");
-const posts_repository_1 = require("./posts/repositories/posts.repository");
+const posts_repository_1 = __importDefault(require("./posts/repositories/posts.repository"));
 const post_service_1 = require("./posts/services/post.service");
 const users_query_repository_1 = require("./users/repositories/users.query.repository");
 const blog_controller_1 = require("./blogs/controllers/blog.controller");
@@ -52,7 +52,7 @@ exports.container.bind(auth_service_1.AuthService).to(auth_service_1.AuthService
 exports.container.bind(comments_service_1.default).to(comments_service_1.default);
 // Repositories
 exports.container.bind(users_repository_1.UsersRepository).to(users_repository_1.UsersRepository);
-exports.container.bind(posts_repository_1.PostsRepository).to(posts_repository_1.PostsRepository);
+exports.container.bind(posts_repository_1.default).to(posts_repository_1.default);
 exports.container.bind(blogs_repository_1.BlogsRepository).to(blogs_repository_1.BlogsRepository);
 exports.container.bind(security_devices_repository_1.SecurityDevicesRepository).to(security_devices_repository_1.SecurityDevicesRepository);
 exports.container.bind(auth_repository_1.AuthRepository).to(auth_repository_1.AuthRepository);

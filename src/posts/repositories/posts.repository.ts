@@ -1,20 +1,20 @@
 import { inject, injectable } from "inversify";
 
 import {
-  PostsDto,
   PostModelWithId,
-  PostPromise,
   PostQuery,
+  PostsDto,
 } from "../types/posts.dto";
-import { getPostCollection } from "../../core/db/mongo.db";
 import { ObjectId } from "mongodb";
 import { BlogsRepository } from "../../blogs/repositories/blogs.repository";
+import { PostMongooseModel } from "../domain/post.entity";
 
 @injectable()
-export class PostsRepository {
+class PostsRepository {
   constructor(
     @inject(BlogsRepository) private readonly blogsRepository: BlogsRepository,
   ) {}
+
   async getAllPosts(query: PostQuery) {
     const {
       pageNumber = 1,
@@ -26,48 +26,55 @@ export class PostsRepository {
     const skip = (pageNumber - 1) * pageSize;
     const sortDir = sortDirection === "asc" ? 1 : -1;
 
-    const result = await getPostCollection()
-      .find({})
+    const result = await PostMongooseModel.find({})
       .sort({ [sortBy]: sortDir })
       .skip(+skip)
       .limit(+pageSize)
-      .toArray();
+      .exec();
 
-    let resultWithId: {
-      title: string;
-      shortDescription: string;
-      content: string;
-      blogId: string;
-      blogName: string;
-      createdAt: string;
-      id: string;
-    }[];
-    resultWithId = result.map(({ _id, ...rest }) => ({
-      ...rest,
-      id: _id.toString(),
-    }));
+    // let resultWithId: {
+    //   title: string;
+    //   shortDescription: string;
+    //   content: string;
+    //   blogId: string;
+    //   blogName: string;
+    //   createdAt: string;
+    //   id: string;
+    // }[];
+    // TODO refactoring resultWithId
+    // resultWithId = result.map(({ _id, ...rest }) => ({
+    //   ...rest,
+    //   id: _id.toString(),
+    // }));
 
-    const totalCount = await getPostCollection().countDocuments({});
+    const totalCount = await PostMongooseModel.countDocuments({});
 
     return {
       pagesCount: +Math.ceil(totalCount / pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +totalCount,
-      items: resultWithId,
+      // TODO refactoring resultWithId
+      // items: resultWithId,
+      items: result,
     };
   }
+
   async getPostById(id: string) {
-    const result = await getPostCollection().findOne({ _id: new ObjectId(id) });
+    if (!ObjectId.isValid(id)) {
+      return null;
+    }
+
+    const result = await PostMongooseModel.findOne({ _id: new ObjectId(id) });
     if (!result) {
       return null;
     }
-    const postWithId = [{ ...result }].map(({ _id, ...rest }) => ({
-      ...rest,
-      id: _id.toString(),
-    }));
-    return postWithId[0];
+    return {
+      ...result.toObject(),
+      id: result._id.toString(),
+    };
   }
+
   async createPost(post: PostsDto) {
     const blog = await this.blogsRepository.getBlogById(post.blogId);
 
@@ -79,35 +86,40 @@ export class PostsRepository {
       blogName: blog ? blog.name : "Unknown",
       createdAt: new Date().toISOString(),
     };
-    const result = await getPostCollection().insertOne({ ...postCreated });
-    return {
-      ...postCreated,
-      id: result.insertedId.toString(),
-    };
+    // TODO fix _id
+    return await PostMongooseModel.insertOne({ ...postCreated });
+    // const result = await PostMongooseModel.insertOne({ ...postCreated });
+    // return {
+    //   ...postCreated,
+    //   id: result.insertedId.toString(),
+    // };
   }
-  async createPostByBlogId(post: PostsDto, blogId: string) {
-    const blog = await this.blogsRepository.getBlogById(post.blogId);
 
-    const postCreated = {
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: blogId,
-      blogName: blog ? blog.name : "Unknown",
-      createdAt: new Date().toISOString(),
-    };
-    const result = await getPostCollection().insertOne({ ...postCreated });
-    return {
-      ...postCreated,
-      id: result.insertedId.toString(),
-    };
-  }
+  // TODO if dont use it delete it
+  // async createPostByBlogId(post: PostsDto, blogId: string) {
+  //   const blog = await this.blogsRepository.getBlogById(post.blogId);
+  //
+  //   const postCreated = {
+  //     title: post.title,
+  //     shortDescription: post.shortDescription,
+  //     content: post.content,
+  //     blogId: blogId,
+  //     blogName: blog ? blog.name : "Unknown",
+  //     createdAt: new Date().toISOString(),
+  //   };
+  //   const result = await getPostCollection().insertOne({ ...postCreated });
+  //   return {
+  //     ...postCreated,
+  //     id: result.insertedId.toString(),
+  //   };
+  // }
   async deletePost(id: string) {
-    const isDeleted = await getPostCollection().deleteOne({
+    const isDeleted = await PostMongooseModel.deleteOne({
       _id: new ObjectId(id),
     });
-    return (await isDeleted.deletedCount) !== 0;
+    return isDeleted.deletedCount !== 0;
   }
+
   async updatePost(id: string, post: PostModelWithId) {
     const updateFields: Partial<PostModelWithId> = {
       title: post.title,
@@ -119,7 +131,7 @@ export class PostsRepository {
     if (post.blogName) {
       updateFields.blogName = post.blogName;
     }
-    const isUpdated = await getPostCollection().updateOne(
+    const isUpdated = await PostMongooseModel.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: updateFields,
@@ -127,13 +139,12 @@ export class PostsRepository {
     );
     return (await isUpdated.matchedCount) !== 0;
   }
+
   async deleteAllPosts() {
-    await getPostCollection().deleteMany({});
+    await PostMongooseModel.deleteMany({});
   }
-  async getPostByBlogId(
-    blogId: string,
-    query: PostQuery,
-  ): Promise<PostPromise> {
+
+  async getPostByBlogId(blogId: string, query: PostQuery) {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -144,28 +155,29 @@ export class PostsRepository {
     const skip = (pageNumber - 1) * pageSize;
     const sortDir = sortDirection === "asc" ? 1 : -1;
 
-    const result = await getPostCollection()
-      .find({ blogId })
+    const result = await PostMongooseModel.find({ blogId })
       .sort({ [sortBy]: sortDir })
       .skip(+skip)
       .limit(+pageSize)
-      .toArray();
+      .exec();
 
-    const postWithId: PostsDto[] = result.map(({ _id, ...rest }) => ({
-      ...rest,
-      id: _id.toString(),
-    }));
+    // const postWithId: PostsDto[] = result.map(({ _id, ...rest }) => ({
+    //   ...rest,
+    //   id: _id.toString(),
+    // }));
 
-    const totalCount = await getPostCollection().countDocuments({ blogId });
+    const totalCount = await PostMongooseModel.countDocuments({ blogId });
 
-    const resultWithMeta = {
+    return {
       pagesCount: +Math.ceil(totalCount / pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +totalCount,
-      items: postWithId,
+      // TODO postWithId refactoring
+      // items: postWithId,
+      items: result,
     };
-
-    return await resultWithMeta;
   }
 }
+
+export default PostsRepository;

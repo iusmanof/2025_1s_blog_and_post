@@ -3,7 +3,11 @@ import { Container } from "inversify";
 import { UsersRepository } from "./users/repositories/users.repository";
 import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
 import { UsersService } from "./users/services/users.service";
-import {EmailAdapter, EmailAdapterRecoveryPassword, EmailAdapterYandex} from "./auth/adapters/email.adapter";
+import {
+  EmailAdapter,
+  EmailAdapterRecoveryPassword,
+  EmailAdapterYandex,
+} from "./auth/adapters/email.adapter";
 import { JwtAdapter } from "./auth/adapters/jwt.adapter";
 import { AuthRepository } from "./auth/repositories/auth.repository";
 import { SecurityDevicesQueryRepository } from "./auth/repositories/security-devices.query-repository";
@@ -14,7 +18,7 @@ import { BlogsRepository } from "./blogs/repositories/blogs.repository";
 import { BlogService } from "./blogs/services/blog.service";
 import CommentsService from "./comments/services/comments.service";
 import { CommentsRepository } from "./comments/repositories/comments.repository";
-import { PostsRepository } from "./posts/repositories/posts.repository";
+import PostsRepository from "./posts/repositories/posts.repository";
 import { PostService } from "./posts/services/post.service";
 import { UsersQueryRepository } from "./users/repositories/users.query.repository";
 import { BlogController } from "./blogs/controllers/blog.controller";

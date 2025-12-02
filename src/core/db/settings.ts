@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 
 export const SETTINGS = {
@@ -6,6 +7,7 @@ export const SETTINGS = {
   MONGODB_URI:
     (process.env.MONGODB_URI as string) || "mongodb://localhost:27017",
   DB_NAME: (process.env.DB_NAME as string) || "testDB",
+  DB_NAME_MONGOOSE: (process.env.DB_NAME_MONGOOSE as string) || "mongooseDB",
   MONGODB_URI_TEST_DBNAME:
     (process.env.MONGODB_URI_TEST_DBNAME as string) ||
     "mongodb://localhost:27017/test-DB",

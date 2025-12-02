@@ -6,6 +6,7 @@ import {
 } from "../types/comments-data-result-object";
 import { CommentsQuery } from "../types/comments-query";
 import { CommentsRepository } from "../repositories/comments.repository";
+import { CommentHydrateDocument } from "../domain/comments.entiry";
 
 @injectable()
 class CommentsService {
@@ -17,7 +18,7 @@ class CommentsService {
     userId: string,
     postId: string,
     content: string,
-  ): Promise<ResultObject<commentsDataResultObject | null>> {
+  ): Promise<ResultObject<CommentHydrateDocument | null>> {
     const commentsInfo = await this.commentsRepository.create(
       userId,
       postId,

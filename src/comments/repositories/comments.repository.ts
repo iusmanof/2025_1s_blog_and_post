@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify";
-import { getCommentCollection } from "../../core/db/mongo.db";
 import {
   commentsDataResultObject,
   commentsDBResultObject,
@@ -7,6 +6,11 @@ import {
 import { ObjectId } from "mongodb";
 import { CommentsQuery } from "../types/comments-query";
 import { UsersQueryRepository } from "../../users/repositories/users.query.repository";
+import { UserMongooseModel } from "../../users/domain/user.entity";
+import {
+  CommentHydrateDocument,
+  CommentMongooseModel,
+} from "../domain/comments.entiry";
 
 @injectable()
 export class CommentsRepository {
@@ -14,12 +18,13 @@ export class CommentsRepository {
     @inject(UsersQueryRepository)
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
+
   async create(
     userId: string,
     postId: string,
     content: string,
-  ): Promise<commentsDataResultObject | null> {
-    const userData = await this.usersQueryRepository.findById(userId);
+  ): Promise<CommentHydrateDocument | null> {
+    const userData = await UserMongooseModel.findById(userId);
     if (!userData) {
       return null;
     }
@@ -31,18 +36,17 @@ export class CommentsRepository {
         userId: userData.id,
         userLogin: userData.login,
       },
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: "None",
+      },
       createdAt: new Date().toISOString(),
     };
 
-    const result = await getCommentCollection().insertOne(comment);
-
-    return {
-      commentatorInfo: comment.commentatorInfo,
-      content: comment.content,
-      createdAt: comment.createdAt,
-      id: result.insertedId.toString(),
-    };
+    return await CommentMongooseModel.create(comment);
   }
+
   async getCommentsByPostId(
     postId: string,
     query: CommentsQuery,
@@ -58,19 +62,17 @@ export class CommentsRepository {
     const sortDir = sortDirection === "asc" ? 1 : -1;
     const search = { postId: postId };
 
-    const result = await getCommentCollection()
-      .find(search)
+    const result = await CommentMongooseModel.find(search)
       .sort({ [sortBy]: sortDir })
       .skip(+skip)
       .limit(+pageSize)
-      .toArray();
+      .exec();
 
     if (!result) {
       return null;
     }
 
-    const totalCount = (await getCommentCollection().find(search).toArray())
-      .length;
+    const totalCount = (await CommentMongooseModel.find(search).exec()).length;
 
     return {
       pagesCount: +Math.ceil(totalCount / pageSize),
@@ -85,10 +87,11 @@ export class CommentsRepository {
       })),
     };
   }
+
   async getCommentById(
     commentId: string,
   ): Promise<commentsDataResultObject | null> {
-    const result = await getCommentCollection().findOne({
+    const result = await CommentMongooseModel.findOne({
       _id: new ObjectId(commentId),
     });
 
@@ -103,8 +106,9 @@ export class CommentsRepository {
       createdAt: result.createdAt,
     };
   }
+
   async deleteById(commentId: string) {
-    const result = await getCommentCollection().deleteOne({
+    const result = await CommentMongooseModel.deleteOne({
       _id: new ObjectId(commentId),
     });
     if (result.deletedCount === 0) {
@@ -112,11 +116,13 @@ export class CommentsRepository {
     }
     return result;
   }
+
   async deleteAllComments() {
-    await getCommentCollection().deleteMany({});
+    await CommentMongooseModel.deleteMany({});
   }
+
   async updateById(commentId: string, content: string): Promise<{} | null> {
-    const result = await getCommentCollection().updateOne(
+    const result = await CommentMongooseModel.updateOne(
       { _id: new ObjectId(commentId) },
       { $set: { content: content } },
     );

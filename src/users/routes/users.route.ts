@@ -17,7 +17,6 @@ userRouter.use(basicAuth);
 
 userRouter.get(
   "/",
-  basicAuth,
   paginationAndSortingValidationWithEmailAndLogin(),
   inputValidationMiddleware,
   userController.findAllUsers,
@@ -25,7 +24,6 @@ userRouter.get(
 
 userRouter.post(
   "/",
-  basicAuth,
   loginValidation,
   passwordValidation,
   emailValidation,

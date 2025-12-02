@@ -1,8 +1,7 @@
-import {body} from "express-validator";
-
+import { body } from "express-validator";
 
 export const emailPasswordRecoveryValidation = body("email")
-    .trim()
-    .isEmail()
-    .matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
-    .withMessage("Email is not correct")
+  .trim()
+  .isEmail()
+  .matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+  .withMessage("Email is not correct");

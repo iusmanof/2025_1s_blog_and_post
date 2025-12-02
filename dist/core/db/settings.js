@@ -10,6 +10,7 @@ exports.SETTINGS = {
     PORT: process.env.PORT || 3000,
     MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017",
     DB_NAME: process.env.DB_NAME || "testDB",
+    DB_NAME_MONGOOSE: process.env.DB_NAME_MONGOOSE || "mongooseDB",
     MONGODB_URI_TEST_DBNAME: process.env.MONGODB_URI_TEST_DBNAME ||
         "mongodb://localhost:27017/test-DB",
     DB_COLLECTION_BLOGS: process.env.DB_COLLECTION_BLOGS || "blogs",

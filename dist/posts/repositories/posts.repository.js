@@ -20,23 +20,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsRepository = void 0;
 const inversify_1 = require("inversify");
-const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
 const blogs_repository_1 = require("../../blogs/repositories/blogs.repository");
+const post_entity_1 = require("../domain/post.entity");
 let PostsRepository = class PostsRepository {
     constructor(blogsRepository) {
         this.blogsRepository = blogsRepository;
@@ -46,38 +34,47 @@ let PostsRepository = class PostsRepository {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === "asc" ? 1 : -1;
-            const result = yield (0, mongo_db_1.getPostCollection)()
-                .find({})
+            const result = yield post_entity_1.PostMongooseModel.find({})
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
-                .toArray();
-            let resultWithId;
-            resultWithId = result.map((_a) => {
-                var { _id } = _a, rest = __rest(_a, ["_id"]);
-                return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
-            });
-            const totalCount = yield (0, mongo_db_1.getPostCollection)().countDocuments({});
+                .exec();
+            // let resultWithId: {
+            //   title: string;
+            //   shortDescription: string;
+            //   content: string;
+            //   blogId: string;
+            //   blogName: string;
+            //   createdAt: string;
+            //   id: string;
+            // }[];
+            // TODO refactoring resultWithId
+            // resultWithId = result.map(({ _id, ...rest }) => ({
+            //   ...rest,
+            //   id: _id.toString(),
+            // }));
+            const totalCount = yield post_entity_1.PostMongooseModel.countDocuments({});
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
                 pageSize: +pageSize,
                 totalCount: +totalCount,
-                items: resultWithId,
+                // TODO refactoring resultWithId
+                // items: resultWithId,
+                items: result,
             };
         });
     }
     getPostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield (0, mongo_db_1.getPostCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (!mongodb_1.ObjectId.isValid(id)) {
+                return null;
+            }
+            const result = yield post_entity_1.PostMongooseModel.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (!result) {
                 return null;
             }
-            const postWithId = [Object.assign({}, result)].map((_a) => {
-                var { _id } = _a, rest = __rest(_a, ["_id"]);
-                return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
-            });
-            return postWithId[0];
+            return Object.assign(Object.assign({}, result.toObject()), { id: result._id.toString() });
         });
     }
     createPost(post) {
@@ -91,31 +88,39 @@ let PostsRepository = class PostsRepository {
                 blogName: blog ? blog.name : "Unknown",
                 createdAt: new Date().toISOString(),
             };
-            const result = yield (0, mongo_db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
-            return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
+            // TODO fix _id
+            return yield post_entity_1.PostMongooseModel.insertOne(Object.assign({}, postCreated));
+            // const result = await PostMongooseModel.insertOne({ ...postCreated });
+            // return {
+            //   ...postCreated,
+            //   id: result.insertedId.toString(),
+            // };
         });
     }
-    createPostByBlogId(post, blogId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield this.blogsRepository.getBlogById(post.blogId);
-            const postCreated = {
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: blogId,
-                blogName: blog ? blog.name : "Unknown",
-                createdAt: new Date().toISOString(),
-            };
-            const result = yield (0, mongo_db_1.getPostCollection)().insertOne(Object.assign({}, postCreated));
-            return Object.assign(Object.assign({}, postCreated), { id: result.insertedId.toString() });
-        });
-    }
+    // TODO if dont use it delete it
+    // async createPostByBlogId(post: PostsDto, blogId: string) {
+    //   const blog = await this.blogsRepository.getBlogById(post.blogId);
+    //
+    //   const postCreated = {
+    //     title: post.title,
+    //     shortDescription: post.shortDescription,
+    //     content: post.content,
+    //     blogId: blogId,
+    //     blogName: blog ? blog.name : "Unknown",
+    //     createdAt: new Date().toISOString(),
+    //   };
+    //   const result = await getPostCollection().insertOne({ ...postCreated });
+    //   return {
+    //     ...postCreated,
+    //     id: result.insertedId.toString(),
+    //   };
+    // }
     deletePost(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const isDeleted = yield (0, mongo_db_1.getPostCollection)().deleteOne({
+            const isDeleted = yield post_entity_1.PostMongooseModel.deleteOne({
                 _id: new mongodb_1.ObjectId(id),
             });
-            return (yield isDeleted.deletedCount) !== 0;
+            return isDeleted.deletedCount !== 0;
         });
     }
     updatePost(id, post) {
@@ -129,7 +134,7 @@ let PostsRepository = class PostsRepository {
             if (post.blogName) {
                 updateFields.blogName = post.blogName;
             }
-            const isUpdated = yield (0, mongo_db_1.getPostCollection)().updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+            const isUpdated = yield post_entity_1.PostMongooseModel.updateOne({ _id: new mongodb_1.ObjectId(id) }, {
                 $set: updateFields,
             });
             return (yield isUpdated.matchedCount) !== 0;
@@ -137,7 +142,7 @@ let PostsRepository = class PostsRepository {
     }
     deleteAllPosts() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getPostCollection)().deleteMany({});
+            yield post_entity_1.PostMongooseModel.deleteMany({});
         });
     }
     getPostByBlogId(blogId, query) {
@@ -145,32 +150,32 @@ let PostsRepository = class PostsRepository {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === "asc" ? 1 : -1;
-            const result = yield (0, mongo_db_1.getPostCollection)()
-                .find({ blogId })
+            const result = yield post_entity_1.PostMongooseModel.find({ blogId })
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
-                .toArray();
-            const postWithId = result.map((_a) => {
-                var { _id } = _a, rest = __rest(_a, ["_id"]);
-                return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
-            });
-            const totalCount = yield (0, mongo_db_1.getPostCollection)().countDocuments({ blogId });
-            const resultWithMeta = {
+                .exec();
+            // const postWithId: PostsDto[] = result.map(({ _id, ...rest }) => ({
+            //   ...rest,
+            //   id: _id.toString(),
+            // }));
+            const totalCount = yield post_entity_1.PostMongooseModel.countDocuments({ blogId });
+            return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
                 pageSize: +pageSize,
                 totalCount: +totalCount,
-                items: postWithId,
+                // TODO postWithId refactoring
+                // items: postWithId,
+                items: result,
             };
-            return yield resultWithMeta;
         });
     }
 };
-exports.PostsRepository = PostsRepository;
-exports.PostsRepository = PostsRepository = __decorate([
+PostsRepository = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(blogs_repository_1.BlogsRepository)),
     __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository])
 ], PostsRepository);
+exports.default = PostsRepository;
 //# sourceMappingURL=posts.repository.js.map

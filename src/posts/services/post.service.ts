@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 
 import { PostsDto, PostModelWithId, PostQuery } from "../types/posts.dto";
-import { PostsRepository } from "../repositories/posts.repository";
+import PostsRepository from "../repositories/posts.repository";
 
 @injectable()
 export class PostService {

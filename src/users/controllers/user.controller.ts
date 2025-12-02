@@ -56,7 +56,12 @@ export class UserController {
     const userId = await this.usersService.create({ login, password, email });
     const newUser = await this.usersQueryRepository.findById(userId);
 
-    return res.status(httpStatusCode.CREATED_201).send(newUser!);
+    if (!newUser) {
+      res.status(httpStatusCode.NOT_FOUND_404).send();
+      return;
+    }
+
+    res.status(httpStatusCode.CREATED_201).json(newUser);
   };
 
   delete = async (req: Request<{ id: string }>, res: Response<string>) => {

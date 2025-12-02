@@ -1,125 +1,126 @@
-import {injectable} from "inversify";
+import { injectable } from "inversify";
 
-import {PaginationAndSorting} from "../../core/types/pagination-and-sorting";
-import {getUserCollection} from "../../core/db/mongo.db";
-import {UserDbDto} from "../types/user-db-dto";
-import {ObjectId, WithId} from "mongodb";
-import {add} from "date-fns";
+import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
+import { User } from "../types/user";
+import { ObjectId, WithId } from "mongodb";
+import { add } from "date-fns";
+import { UserMongooseModel } from "../domain/user.entity";
+import { UserCreateDto } from "../types/user-create-dto";
 
 @injectable()
 export class UsersRepository {
-    async findMany(
-        queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
-    ): Promise<{ items: UserDbDto[]; totalCount: number }> {
-        const {pageNumber, pageSize, sortBy, sortDirection} = queryDto;
+  async findMany(
+    queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
+  ): Promise<{ items: User[]; totalCount: number }> {
+    const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
+    const skip = (pageNumber - 1) * pageSize;
+    const [items, totalCount] = await Promise.all([
+      UserMongooseModel.find()
+        .sort({ [sortBy]: sortDirection })
+        .skip(skip)
+        .limit(+pageSize)
+        .lean(),
 
-        const filter = {};
-        const skip = (pageNumber - 1) * pageSize;
-        const [items, totalCount] = await Promise.all([
-            getUserCollection()
-                .find(filter)
-                .sort({[sortBy]: sortDirection})
-                .skip(skip)
-                .limit(+pageSize)
-                .toArray(),
-            getUserCollection().countDocuments(filter),
-        ]);
-        return {items, totalCount};
+      UserMongooseModel.countDocuments({}),
+    ]);
+    return { items, totalCount };
+  }
+
+  async findById(id: string): Promise<WithId<User> | null> {
+    if (!ObjectId.isValid(id)) {
+      return null;
     }
+    return UserMongooseModel.findOne({ _id: new ObjectId(id) });
+  }
 
-    async findById(id: string): Promise<WithId<UserDbDto> | null> {
-        if (!ObjectId.isValid(id)) {
-            return null;
-        }
-        return getUserCollection().findOne({_id: new ObjectId(id)});
-    }
+  async findByLoginOrEmail(loginOrEmail: string) {
+    return UserMongooseModel.findOne({
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+    });
+  }
 
-    async findByLoginOrEmail(loginOrEmail: string) {
-        return await getUserCollection().findOne({
-            $or: [{email: loginOrEmail}, {login: loginOrEmail}],
-        });
-    }
+  async findByEmail(email: string) {
+    return UserMongooseModel.findOne({ email: email });
+  }
 
-    async findByEmail(email: string) {
-        return await getUserCollection().findOne({email: email});
-    }
+  async findByLogin(login: string) {
+    return UserMongooseModel.findOne({ login: login });
+  }
 
-    async findByLogin(login: string) {
-        return await getUserCollection().findOne({login: login});
-    }
+  async create(user: UserCreateDto) {
+    const newUser = await UserMongooseModel.create(user);
+    return newUser._id.toString();
+  }
 
-    async create(user: UserDbDto): Promise<string> {
-        const newUser = await getUserCollection().insertOne({...user});
-        return newUser.insertedId.toString();
-    }
+  async delete(id: string): Promise<boolean> {
+    const deleteResult = await UserMongooseModel.deleteOne({
+      _id: new ObjectId(id),
+    });
+    return deleteResult.deletedCount === 1;
+  }
 
-    async delete(id: string): Promise<boolean> {
-        const deleteResult = await getUserCollection().deleteOne({
-            _id: new ObjectId(id),
-        });
-        return deleteResult.deletedCount === 1;
-    }
+  async deleteAllUsers() {
+    await UserMongooseModel.deleteMany({});
+  }
 
-    async deleteAllUsers() {
-        await getUserCollection().deleteMany({});
-    }
+  async findByConfirmationCode(code: string) {
+    return UserMongooseModel.findOne({
+      "emailConfirmation.confirmationCode": code,
+    });
+  }
 
-    async findByConfirmationCode(code: string) {
-        return getUserCollection().findOne({
-            "emailConfirmation.confirmationCode": code,
-        });
-    }
+  async findBYEmailAndRefreshCode(email: string, code: string) {
+    return UserMongooseModel.updateOne(
+      { email },
+      {
+        $set: {
+          "emailConfirmation.confirmationCode": code,
+          "emailConfirmation.expirationDate": add(new Date(), {
+            hours: 1,
+            minutes: 30,
+          }),
+        },
+      },
+    );
+  }
 
-    async findBYEmailAndRefreshCode(email: string, code: string) {
-        return await getUserCollection().updateOne(
-            {email},
-            {
-                $set: {
-                    "emailConfirmation.confirmationCode": code,
-                    "emailConfirmation.expirationDate": add(new Date(), {
-                        hours: 1,
-                        minutes: 30,
-                    }),
-                },
-            },
-        );
-    }
+  async confirmCode(code: string) {
+    return UserMongooseModel.updateOne(
+      { "emailConfirmation.confirmationCode": code },
+      { $set: { "emailConfirmation.isConfirmed": true } },
+    );
+  }
 
-    async confirmCode(code: string) {
-        return await getUserCollection().updateOne(
-            {"emailConfirmation.confirmationCode": code},
-            {$set: {"emailConfirmation.isConfirmed": true}},
-        );
-    }
+  async setRecoveryCode(email: string, recoveryCode: string) {
+    return UserMongooseModel.updateOne(
+      { email },
+      {
+        $set: {
+          passwordRecovery: {
+            recoveryCode,
+            expirationDate: add(new Date(), { hours: 1 }), // код действителен 1 час
+          },
+        },
+      },
+    );
+  }
 
-    async setRecoveryCode(email: string, recoveryCode: string) {
-        return getUserCollection().updateOne(
-            {email},
-            {
-                $set: {
-                    passwordRecovery: {
-                        recoveryCode,
-                        expirationDate: add(new Date(), {hours: 1}), // код действителен 1 час
-                    },
-                },
-            }
-        );
-    }
+  async findByRecoveryCode(recoveryCode: string) {
+    return UserMongooseModel.findOne({
+      "passwordRecovery.recoveryCode": recoveryCode,
+    });
+  }
 
-    async findByRecoveryCode(recoveryCode: string) {
-        return getUserCollection().findOne({
-            "passwordRecovery.recoveryCode": recoveryCode
-        });
-    }
-
-    async updatePasswordByRecoveryCode(recoveryCode: string, hashedPassword: string) {
-        return getUserCollection().updateOne(
-            { "passwordRecovery.recoveryCode": recoveryCode },
-            {
-                $set: { password: hashedPassword },
-                $unset: { passwordRecovery: "" } // удаляем код после смены пароля
-            }
-        );
-    }
-
+  async updatePasswordByRecoveryCode(
+    recoveryCode: string,
+    hashedPassword: string,
+  ) {
+    return UserMongooseModel.updateOne(
+      { "passwordRecovery.recoveryCode": recoveryCode },
+      {
+        $set: { password: hashedPassword },
+        $unset: { passwordRecovery: "" }, // удаляем код после смены пароля
+      },
+    );
+  }
 }

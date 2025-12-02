@@ -14,7 +14,7 @@ export class SecurityDevicesService {
     @inject(SecurityDevicesQueryRepository)
     private readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
   ) {}
-  async getDevices(refreshToken: string): Promise<any[]> {
+  async getDevices(refreshToken: string) {
     const decoded = await this.jwtAdapter.decodeToken(refreshToken);
     const devices = await this.securityDevicesRepository.findAllDevicesByUserId(
       decoded.id,

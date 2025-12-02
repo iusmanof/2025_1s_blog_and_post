@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testingRouter = void 0;
 require("reflect-metadata");
@@ -16,13 +19,13 @@ const express_1 = require("express");
 const auth_repository_1 = require("../../auth/repositories/auth.repository");
 const blogs_repository_1 = require("../../blogs/repositories/blogs.repository");
 const comments_repository_1 = require("../../comments/repositories/comments.repository");
-const posts_repository_1 = require("../../posts/repositories/posts.repository");
+const posts_repository_1 = __importDefault(require("../../posts/repositories/posts.repository"));
 const security_devices_repository_1 = require("../../auth/repositories/security-devices.repository");
 const users_repository_1 = require("../../users/repositories/users.repository");
 const authRepository = composition_root_1.container.get(auth_repository_1.AuthRepository);
 const blogsRepository = composition_root_1.container.get(blogs_repository_1.BlogsRepository);
 const commentsRepository = composition_root_1.container.get(comments_repository_1.CommentsRepository);
-const postsRepository = composition_root_1.container.get(posts_repository_1.PostsRepository);
+const postsRepository = composition_root_1.container.get(posts_repository_1.default);
 const securityDevicesRepository = composition_root_1.container.get(security_devices_repository_1.SecurityDevicesRepository);
 const usersRepository = composition_root_1.container.get(users_repository_1.UsersRepository);
 exports.testingRouter = (0, express_1.Router)();

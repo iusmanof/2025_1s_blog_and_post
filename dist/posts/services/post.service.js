@@ -20,10 +20,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostService = void 0;
 const inversify_1 = require("inversify");
-const posts_repository_1 = require("../repositories/posts.repository");
+const posts_repository_1 = __importDefault(require("../repositories/posts.repository"));
 let PostService = class PostService {
     constructor(postsRepository) {
         this.postsRepository = postsRepository;
@@ -62,7 +65,7 @@ let PostService = class PostService {
 exports.PostService = PostService;
 exports.PostService = PostService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(posts_repository_1.PostsRepository)),
-    __metadata("design:paramtypes", [posts_repository_1.PostsRepository])
+    __param(0, (0, inversify_1.inject)(posts_repository_1.default)),
+    __metadata("design:paramtypes", [posts_repository_1.default])
 ], PostService);
 //# sourceMappingURL=post.service.js.map

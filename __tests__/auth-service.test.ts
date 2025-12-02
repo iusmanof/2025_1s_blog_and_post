@@ -2,7 +2,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { SETTINGS } from "../src/core/db/settings";
 import { getUserCollection, runDB, stopDb } from "../src/core/db/mongo.db";
 import { add } from "date-fns";
-import { UserDbDto } from "../src/users/types/user-db-dto";
+import { User } from "../src/users/types/user";
 import { afterEach } from "node:test";
 import { resultStatus } from "../src/core/types/result-object";
 import { emailTemplate } from "../src/auth/adapters/email.template";
@@ -40,7 +40,7 @@ describe("Integration tests", () => {
   it("MongoMemoryServer userCollection", async () => {
     const userCollection = getUserCollection();
 
-    const newUser: UserDbDto = {
+    const newUser: User = {
       login: "login",
       email: "email@mail.com",
       password: "pass1234",

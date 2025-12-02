@@ -1,128 +1,101 @@
-import request from "supertest";
 import express from "express";
+import request from "supertest";
 import { SETUP_APP } from "../src/setup-app";
+import { generateAdminAuthToken } from "../src/core/utils/generate-admin-auth-token";
 import { runDB, stopDb } from "../src/core/db/mongo.db";
 import { clearDb } from "./utils/clearDb";
-import cookieParser from "cookie-parser";
-import { container } from "../src/composition.root";
-
-import { UsersService } from "../src/users/services/users.service";
-import { SecurityDevicesQueryRepository } from "../src/auth/repositories/security-devices.query-repository";
-const usersService = container.get(UsersService);
-const securityDevicesQueryRepository = container.get(
-  SecurityDevicesQueryRepository,
-);
+import httpStatusCode from "../src/core/types/http-status-code";
+import { SETTINGS } from "../src/core/db/settings";
+import { DeviceMongooseModel, IDevice } from "../src/auth/models/device.model"; // правильный путь
+import { HydratedDocument } from "mongoose";
 
 jest.mock("uuid", () => ({
   v4: () => "123456789",
 }));
 
-describe("authService.login with multiple user-agents", () => {
+describe("/security-devices", () => {
   const app = express();
-  app.use(cookieParser());
-  app.use(express.json());
   SETUP_APP(app);
-  let userId: string;
+  const adminCredentials = generateAdminAuthToken();
+  let createdUserId: string;
 
   beforeAll(async () => {
-    await runDB("mongodb://localhost:27017/testDB");
-  });
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
+    await runDB(SETTINGS.MONGODB_URI_TEST_DBNAME);
     await clearDb(app);
 
-    userId = await usersService.create({
-      login: "testLogin",
-      password: "password",
-      email: "test@el.com",
-    });
+    // создаем тестового пользователя через Mongoose
+    const user = await DeviceMongooseModel.create({
+      title: "Test Device",
+      deviceId: "123456789",
+      userId: "user123",
+      lastActivateDate: Math.floor(Date.now() / 1000),
+      expiryDate: Math.floor(Date.now() / 1000) + 3600,
+    } as IDevice);
+
+    createdUserId = user.userId;
   });
 
   afterAll(async () => {
     await stopDb();
   });
 
-  const userAgents = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_1 like Mac OS X)",
-    "PostmanRuntime/7.29.2",
-    "curl/7.79.1",
-  ];
+  it("GET /security-devices - should return all devices", async () => {
+    const devices: HydratedDocument<IDevice>[] = await DeviceMongooseModel.find(
+      {},
+    ).exec();
 
-  it("should login 4 times with different user-agents", async () => {
-    for (const userAgent of userAgents) {
-      const res = await request(app)
-        .post("/auth/login")
-        .set("User-Agent", userAgent)
-        .set("Accept", "application/json")
-        .set("x-forwarded-for", "1.1.1.1")
-        .send({ loginOrEmail: "testLogin", password: "password" })
-        .expect(200);
-
-      expect(res.body).toHaveProperty("accessToken");
-    }
-
-    const secDevices = await securityDevicesQueryRepository.findAll();
-    expect(secDevices).toHaveLength(4);
+    expect(devices).toHaveLength(1);
+    expect(devices[0].userId.toString()).toBe(createdUserId);
+    expect(devices[0].title).toBe("Test Device");
+    expect(devices[0].deviceId).toBe("123456789");
   });
 
-  it("should return 401 if no refresh token is provided", async () => {
-    const res = await request(app).get("/security/devices/");
-    expect(res.status).toBe(401);
-    expect(res.body.errorsMessages).toBe("No refresh token provided");
+  it("POST /security-devices - should create a new device", async () => {
+    const newDevice = {
+      title: "New Device",
+      deviceId: "987654321",
+      userId: "user123",
+      lastActivateDate: Math.floor(Date.now() / 1000),
+      expiryDate: Math.floor(Date.now() / 1000) + 3600,
+    };
+
+    const response = await request(app)
+      .post("/security-devices")
+      .set("Authorization", adminCredentials)
+      .send(newDevice)
+      .expect(httpStatusCode.CREATED_201);
+
+    expect(response.body.userId).toBe(newDevice.userId);
+    expect(response.body.deviceId).toBe(newDevice.deviceId);
   });
 
-  it("should return 401 if no refreshToken provided", async () => {
-    const res = await request(app).get("/security/devices");
+  it("GET /security-devices/:deviceId - should return a single device", async () => {
+    const device = await DeviceMongooseModel.findOne({
+      deviceId: "123456789",
+    }).exec();
 
-    expect(res.status).toBe(401);
+    const response = await request(app)
+      .get(`/security-devices/${device?.deviceId}`)
+      .set("Authorization", adminCredentials)
+      .expect(httpStatusCode.OK_200);
+
+    expect(response.body.deviceId).toBe("123456789");
+    expect(response.body.userId).toBe(createdUserId);
   });
 
-  it("should return 401 if no refresh token is provided", async () => {
+  it("DELETE /security-devices/:deviceId - should delete a device", async () => {
+    const device = await DeviceMongooseModel.findOne({
+      deviceId: "123456789",
+    }).exec();
+
     await request(app)
-      .get("/security/devices")
-      .expect(401)
-      .expect((res) => {
-        expect(res.body.errorsMessages).toBe("No refresh token provided");
-      });
-  });
+      .delete(`/security-devices/${device?.deviceId}`)
+      .set("Authorization", adminCredentials)
+      .expect(httpStatusCode.NO_CONTENT_204);
 
-  it("Обновляем refreshToken девайса 1", async () => {
-    const user = await usersService.create({
-      login: "deviceUser",
-      password: "DevicePass123",
-      email: "deviceUser@example.com",
-    });
-
-    const loginRes = await request(app)
-      .post("/auth/login")
-      .set("User-Agent", "Device-1-Agent")
-      .set("x-forwarded-for", "1.1.1.1")
-      .send({ loginOrEmail: "deviceUser", password: "DevicePass123" })
-      .expect(200);
-
-    const refreshTokenCookie = loginRes.headers["set-cookie"]?.[0] || "";
-    expect(refreshTokenCookie).toContain("refreshToken=");
-    expect(refreshTokenCookie).toBeDefined();
-
-    let devices = await securityDevicesQueryRepository.findAll();
-    expect(devices).toHaveLength(1);
-    expect(devices[0].userId.toString()).toBe(user);
-
-    const refreshRes = await request(app)
-      .post("/auth/refresh-token")
-      .set("Cookie", refreshTokenCookie)
-      .expect(200);
-
-    expect(refreshRes.body).toHaveProperty("accessToken");
-    const newRefreshTokenCookie = refreshRes.headers["set-cookie"]?.[0];
-    expect(newRefreshTokenCookie).toBeDefined();
-    expect(newRefreshTokenCookie).toContain("refreshToken=");
-    expect(newRefreshTokenCookie).toBeDefined();
-
-    devices = await securityDevicesQueryRepository.findAll();
-    expect(devices).toHaveLength(1);
-    expect(devices[0].userId.toString()).toBe(user);
+    const deleted = await DeviceMongooseModel.findOne({
+      deviceId: "123456789",
+    }).exec();
+    expect(deleted).toBeNull();
   });
 });

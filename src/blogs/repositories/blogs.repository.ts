@@ -1,5 +1,4 @@
 import { injectable } from "inversify";
-import { getBlogCollection, getPostCollection } from "../../core/db/mongo.db";
 import {
   BlogBase,
   BlogMongoDb,
@@ -8,6 +7,8 @@ import {
 } from "../types/blog.dto";
 import { ObjectId } from "mongodb";
 import { PostsDto } from "../../posts/types/posts.dto";
+import { BlogMongooseModel } from "../domain/blog.entity";
+import mongoose from "mongoose";
 
 @injectable()
 export class BlogsRepository {
@@ -26,20 +27,18 @@ export class BlogsRepository {
       ? { name: { $regex: searchNameTerm, $options: "i" } }
       : {};
 
-    const result = await getBlogCollection()
-      .find(search)
+    const result = await BlogMongooseModel.find(search)
       .sort({ [sortBy]: sortDir })
       .skip(+skip)
       .limit(+pageSize)
-      .toArray();
+      .exec();
 
     const blogWithId: BlogWithId[] = result.map(({ _id, ...rest }) => ({
       ...rest,
       id: _id.toString(),
     }));
 
-    const totalCount = (await getBlogCollection().find(search).toArray())
-      .length;
+    const totalCount = await BlogMongooseModel.find(search).countDocuments();
 
     return {
       pagesCount: +Math.ceil(totalCount / pageSize),
@@ -50,15 +49,15 @@ export class BlogsRepository {
     };
   }
   async getBlogById(id: string) {
-    const result = await getBlogCollection().findOne({ _id: new ObjectId(id) });
-    if (!result) {
+    if (!mongoose.isValidObjectId(id)) {
       return null;
     }
-    const blogWIthId = [{ ...result }].map(({ _id, ...rest }) => ({
-      ...rest,
-      id: _id.toString(),
-    }));
-    return blogWIthId[0];
+
+    const result = await BlogMongooseModel.findById(id).exec();
+    if (!result) return null;
+
+    const { _id, ...rest } = result.toObject();
+    return { ...rest, id: _id.toString() };
   }
   async createBlog(blog: BlogBase) {
     const blogCreatedWithDate: BlogMongoDb = {
@@ -69,18 +68,16 @@ export class BlogsRepository {
       isMembership: false,
     };
 
-    const result = await getBlogCollection().insertOne({
-      ...blogCreatedWithDate,
-    });
+    const result = await BlogMongooseModel.create(blogCreatedWithDate);
 
     return {
       ...blogCreatedWithDate,
-      id: result.insertedId.toString(),
+      id: result._id.toString(),
     };
   }
   async updateBlog(id: string, blog: BlogBase) {
-    const isUpdated = await getBlogCollection().updateOne(
-      { _id: new ObjectId(id) },
+    const isUpdated = await BlogMongooseModel.updateOne(
+      { _id: id },
       {
         $set: {
           name: blog.name,
@@ -90,7 +87,7 @@ export class BlogsRepository {
       },
     );
 
-    return isUpdated.matchedCount !== 0;
+    return isUpdated.matchedCount > 0;
   }
   async createPostByBlogId(body: PostsDto, blogId: string) {
     const blog = await this.getBlogById(body.blogId);
@@ -102,20 +99,22 @@ export class BlogsRepository {
       blogName: blog ? blog.name : "Unknown",
       createdAt: new Date().toISOString(),
     };
-    const result = await getPostCollection().insertOne({ ...postCreated });
+    // const result = await PostMongooseModel.insertOne({ ...postCreated });
     return {
       ...postCreated,
-      id: result.insertedId.toString(),
+      // TODO Fix this problem
+      id: "12312312321",
+      // id: result.insertedId.toString(),
     };
   }
   async deleteBlog(id: string) {
-    const isDeleted = await getBlogCollection().deleteOne({
+    const isDeleted = await BlogMongooseModel.deleteOne({
       _id: new ObjectId(id),
     });
 
     return isDeleted.deletedCount !== 0;
   }
   async deleteAllBlogs() {
-    return await getBlogCollection().deleteMany({});
+    return BlogMongooseModel.deleteMany({});
   }
 }

@@ -4,7 +4,7 @@ import { Request, Response, Router } from "express";
 import { AuthRepository } from "../../auth/repositories/auth.repository";
 import { BlogsRepository } from "../../blogs/repositories/blogs.repository";
 import { CommentsRepository } from "../../comments/repositories/comments.repository";
-import { PostsRepository } from "../../posts/repositories/posts.repository";
+import PostsRepository from "../../posts/repositories/posts.repository";
 import { SecurityDevicesRepository } from "../../auth/repositories/security-devices.repository";
 import { UsersRepository } from "../../users/repositories/users.repository";
 
