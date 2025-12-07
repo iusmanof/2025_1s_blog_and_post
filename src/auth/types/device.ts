@@ -1,10 +1,8 @@
 export interface IDevice {
   title: string;
-  // TODO date ?
-  lastActivateDate: number;
+  lastActivateDate: Date;
   deviceId: string;
   userId: string;
-  // TODO date ?
-  expiryDate: number;
+  expiryDate: Date;
   ip: string;
 }

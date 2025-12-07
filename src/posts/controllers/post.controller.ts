@@ -13,12 +13,14 @@ import { resultStatus } from "../../core/types/result-object";
 import CommentsService from "../../comments/services/comments.service";
 import { CommentsQuery } from "../../comments/types/comments-query";
 import HttpStatusCode from "../../core/types/http-status-code";
+import { JwtAdapter } from "../../auth/adapters/jwt.adapter";
 
 @injectable()
 export class PostController {
   constructor(
     @inject(PostService) private readonly postService: PostService,
     @inject(CommentsService) private readonly commentsService: CommentsService,
+    @inject(JwtAdapter) private readonly jwtAdapter: JwtAdapter,
   ) {}
 
   findMany = async (req: RequestWithQuery<PostQuery>, res: Response) => {
@@ -102,7 +104,6 @@ export class PostController {
     }
 
     const result = await this.commentsService.create(userId, postId, content);
-
     if (result.status === resultStatus.ERROR) {
       res.status(httpStatusCode.BAD_REQUEST_400).json(result);
       return;
@@ -124,9 +125,26 @@ export class PostController {
       return;
     }
 
-    const result = await this.commentsService.getCommentByPostId(postId, query);
+    let userId: string | null = null;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
+
+    if (token) {
+      try {
+        const payload: any = await this.jwtAdapter.verifyAccessToken(token);
+        userId = payload.id;
+      } catch {}
+    }
+    const result = await this.commentsService.getCommentByPostId(
+      postId,
+      query,
+      userId,
+    );
     if (!result) {
       res.status(httpStatusCode.NOT_FOUND_404).send("Not found");
+      return;
     }
     res.status(HttpStatusCode.OK_200).json(result.data);
   };

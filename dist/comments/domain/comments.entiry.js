@@ -33,22 +33,28 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommentMongooseModel = exports.likeInfoSchema = exports.commentatorInfoSchema = void 0;
+exports.CommentMongooseModel = exports.CommentReactionModel = exports.likeInfoSchema = exports.commentatorInfoSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 exports.commentatorInfoSchema = new mongoose_1.default.Schema({
     userId: { type: String, required: true },
     userLogin: { type: String, required: true },
-});
+}, { _id: false });
 exports.likeInfoSchema = new mongoose_1.default.Schema({
     likesCount: { type: Number, required: true },
     dislikesCount: { type: Number, required: true },
-    myStatus: { type: String, required: true },
-});
+}, { _id: false });
 const commentSchema = new mongoose_1.default.Schema({
+    postId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Post", required: true },
     content: { type: String, required: true },
     commentatorInfo: { type: exports.commentatorInfoSchema, required: true },
     likesInfo: { type: exports.likeInfoSchema, required: true },
-    createdAt: { type: String, required: true },
+}, { timestamps: { createdAt: true, updatedAt: false } });
+const commentReactionSchema = new mongoose_1.default.Schema({
+    userId: { type: String, required: true },
+    commentId: { type: mongoose_1.Schema.Types.ObjectId, ref: "comment", required: true },
+    status: { type: String, required: true },
 }, { timestamps: true });
+commentReactionSchema.index({ userId: 1, commentId: 1 }, { unique: true });
+exports.CommentReactionModel = (0, mongoose_1.model)("commentReaction", commentReactionSchema);
 exports.CommentMongooseModel = (0, mongoose_1.model)("comment", commentSchema);
 //# sourceMappingURL=comments.entiry.js.map

@@ -272,8 +272,6 @@ let AuthService = class AuthService {
             const recovery_code = (0, crypto_1.randomUUID)();
             if (checkEmail) {
                 try {
-                    console.log(email);
-                    // отправляем email с кодом
                     yield this.emailAdapterYandex.nodemailer(email, email_template_1.emailTemplate.recoveryPasswordEmail(recovery_code));
                 }
                 catch (err) {

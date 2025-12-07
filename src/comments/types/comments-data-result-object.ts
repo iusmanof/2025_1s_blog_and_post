@@ -1,19 +1,22 @@
-type ICommentsInfo = {
-  userId: string;
-  userLogin: string;
-};
-
-export type commentsDataResultObject = {
+type CommentDTO = {
   id: string;
   content: string;
-  commentatorInfo: ICommentsInfo;
+  commentatorInfo: {
+    userId: string;
+    userLogin: string;
+  };
   createdAt: string;
+  likesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: string;
+  };
 };
 
-export type commentsDBResultObject = {
-  pagesCount?: number;
-  page?: number;
-  pageSize?: number;
-  totalCount?: number;
-  items: commentsDataResultObject[];
+type CommentsResponseDTO = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: CommentDTO[];
 };

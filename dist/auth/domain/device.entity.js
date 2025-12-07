@@ -37,13 +37,11 @@ exports.DeviceMongooseModel = exports.deviceSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 exports.deviceSchema = new mongoose_1.default.Schema({
     title: { type: String, required: true },
-    // TODO date ?
-    lastActivateDate: { type: Number, required: true },
+    lastActivateDate: { type: Date, required: true },
     deviceId: { type: String, required: true },
     userId: { type: String, required: true },
-    // TODO date ?
-    expiryDate: { type: Number, required: true },
+    expiryDate: { type: Date, required: true },
     ip: { type: String, required: true },
 });
-exports.DeviceMongooseModel = (0, mongoose_1.model)("deivce", exports.deviceSchema);
+exports.DeviceMongooseModel = (0, mongoose_1.model)("device", exports.deviceSchema);
 //# sourceMappingURL=device.entity.js.map

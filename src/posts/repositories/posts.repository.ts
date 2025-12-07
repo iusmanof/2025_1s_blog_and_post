@@ -1,10 +1,6 @@
 import { inject, injectable } from "inversify";
 
-import {
-  PostModelWithId,
-  PostQuery,
-  PostsDto,
-} from "../types/posts.dto";
+import { PostModelWithId, PostQuery, PostsDto } from "../types/posts.dto";
 import { ObjectId } from "mongodb";
 import { BlogsRepository } from "../../blogs/repositories/blogs.repository";
 import { PostMongooseModel } from "../domain/post.entity";
@@ -78,41 +74,23 @@ class PostsRepository {
   async createPost(post: PostsDto) {
     const blog = await this.blogsRepository.getBlogById(post.blogId);
 
-    const postCreated = {
+    const postDocument = new PostMongooseModel({
       title: post.title,
       shortDescription: post.shortDescription,
       content: post.content,
       blogId: post.blogId,
       blogName: blog ? blog.name : "Unknown",
-      createdAt: new Date().toISOString(),
+    });
+
+    await postDocument.save();
+
+    const { _id, __v, ...rest } = postDocument.toObject();
+    return {
+      ...rest,
+      id: _id.toString(),
     };
-    // TODO fix _id
-    return await PostMongooseModel.insertOne({ ...postCreated });
-    // const result = await PostMongooseModel.insertOne({ ...postCreated });
-    // return {
-    //   ...postCreated,
-    //   id: result.insertedId.toString(),
-    // };
   }
 
-  // TODO if dont use it delete it
-  // async createPostByBlogId(post: PostsDto, blogId: string) {
-  //   const blog = await this.blogsRepository.getBlogById(post.blogId);
-  //
-  //   const postCreated = {
-  //     title: post.title,
-  //     shortDescription: post.shortDescription,
-  //     content: post.content,
-  //     blogId: blogId,
-  //     blogName: blog ? blog.name : "Unknown",
-  //     createdAt: new Date().toISOString(),
-  //   };
-  //   const result = await getPostCollection().insertOne({ ...postCreated });
-  //   return {
-  //     ...postCreated,
-  //     id: result.insertedId.toString(),
-  //   };
-  // }
   async deletePost(id: string) {
     const isDeleted = await PostMongooseModel.deleteOne({
       _id: new ObjectId(id),
@@ -160,11 +138,6 @@ class PostsRepository {
       .skip(+skip)
       .limit(+pageSize)
       .exec();
-
-    // const postWithId: PostsDto[] = result.map(({ _id, ...rest }) => ({
-    //   ...rest,
-    //   id: _id.toString(),
-    // }));
 
     const totalCount = await PostMongooseModel.countDocuments({ blogId });
 

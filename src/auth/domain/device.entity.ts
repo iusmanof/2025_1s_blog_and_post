@@ -7,16 +7,14 @@ type DeviceModel = Model<IDevice>;
 
 export const deviceSchema = new mongoose.Schema<IDevice>({
   title: { type: String, required: true },
-  // TODO date ?
-  lastActivateDate: { type: Number, required: true },
+  lastActivateDate: { type: Date, required: true },
   deviceId: { type: String, required: true },
   userId: { type: String, required: true },
-  // TODO date ?
-  expiryDate: { type: Number, required: true },
+  expiryDate: { type: Date, required: true },
   ip: { type: String, required: true },
 });
 
 export const DeviceMongooseModel = model<IDevice, DeviceModel>(
-  "deivce",
+  "device",
   deviceSchema,
 );

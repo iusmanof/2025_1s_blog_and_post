@@ -7,7 +7,7 @@ import { shortDescriptionValidation } from "../../core/milldlewares/short-descri
 import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
 import { paginationAndSortingValidation } from "../../core/milldlewares/query-pagination-sorting.validation-middleware";
 import { accessTokenGuard } from "../../auth/access-token.guard";
-import { commentValidationa } from "../../core/milldlewares/comments-validation.middleware";
+import { commentValidationa } from "../../comments/middlewares/comments-validation.middleware";
 import { postIdValidationMiddleware } from "../middlewares/post-id-validation.middleware";
 import { userIdValidationMiddleware } from "../middlewares/user-id-validation.middleware";
 import { PostController } from "../controllers/post.controller";

@@ -334,8 +334,6 @@ export class AuthService {
 
     if (checkEmail) {
       try {
-        console.log(email);
-        // отправляем email с кодом
         await this.emailAdapterYandex.nodemailer(
           email,
           emailTemplate.recoveryPasswordEmail(recovery_code),

@@ -32,10 +32,12 @@ const http_status_code_2 = __importDefault(require("../../core/types/http-status
 const result_object_1 = require("../../core/types/result-object");
 const comments_service_1 = __importDefault(require("../../comments/services/comments.service"));
 const http_status_code_3 = __importDefault(require("../../core/types/http-status-code"));
+const jwt_adapter_1 = require("../../auth/adapters/jwt.adapter");
 let PostController = class PostController {
-    constructor(postService, commentsService) {
+    constructor(postService, commentsService, jwtAdapter) {
         this.postService = postService;
         this.commentsService = commentsService;
+        this.jwtAdapter = jwtAdapter;
         this.findMany = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const result = yield this.postService.findMany(req.query);
             res.status(http_status_code_1.default.OK_200).send(result);
@@ -108,9 +110,22 @@ let PostController = class PostController {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Post not found");
                 return;
             }
-            const result = yield this.commentsService.getCommentByPostId(postId, query);
+            let userId = null;
+            const authHeader = req.headers.authorization;
+            const token = (authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith("Bearer "))
+                ? authHeader.split(" ")[1]
+                : null;
+            if (token) {
+                try {
+                    const payload = yield this.jwtAdapter.verifyAccessToken(token);
+                    userId = payload.id;
+                }
+                catch (_a) { }
+            }
+            const result = yield this.commentsService.getCommentByPostId(postId, query, userId);
             if (!result) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Not found");
+                return;
             }
             res.status(http_status_code_3.default.OK_200).json(result.data);
         });
@@ -121,7 +136,9 @@ exports.PostController = PostController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(post_service_1.PostService)),
     __param(1, (0, inversify_1.inject)(comments_service_1.default)),
+    __param(2, (0, inversify_1.inject)(jwt_adapter_1.JwtAdapter)),
     __metadata("design:paramtypes", [post_service_1.PostService,
-        comments_service_1.default])
+        comments_service_1.default,
+        jwt_adapter_1.JwtAdapter])
 ], PostController);
 //# sourceMappingURL=post.controller.js.map

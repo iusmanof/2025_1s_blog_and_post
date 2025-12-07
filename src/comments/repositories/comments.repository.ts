@@ -1,16 +1,10 @@
-import { inject, injectable } from "inversify";
-import {
-  commentsDataResultObject,
-  commentsDBResultObject,
-} from "../types/comments-data-result-object";
-import { ObjectId } from "mongodb";
-import { CommentsQuery } from "../types/comments-query";
-import { UsersQueryRepository } from "../../users/repositories/users.query.repository";
-import { UserMongooseModel } from "../../users/domain/user.entity";
-import {
-  CommentHydrateDocument,
-  CommentMongooseModel,
-} from "../domain/comments.entiry";
+import {inject, injectable} from "inversify";
+import {ObjectId} from "mongodb";
+import {CommentsQuery} from "../types/comments-query";
+import {UsersQueryRepository} from "../../users/repositories/users.query.repository";
+import {UserMongooseModel} from "../../users/domain/user.entity";
+import {CommentMongooseModel, CommentReactionModel,} from "../domain/comments.entiry";
+import mongoose from "mongoose";
 
 @injectable()
 export class CommentsRepository {
@@ -19,22 +13,16 @@ export class CommentsRepository {
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
-  async create(
-    userId: string,
-    postId: string,
-    content: string,
-  ): Promise<CommentHydrateDocument | null> {
-    const userData = await UserMongooseModel.findById(userId);
-    if (!userData) {
-      return null;
-    }
+  async create(userId: string, postId: string, content: string) {
+    const user = await UserMongooseModel.findById(userId);
+    if (!user) return null;
 
-    const comment = {
-      postId: postId,
-      content: content,
+    const newComment = await CommentMongooseModel.create({
+      postId,
+      content,
       commentatorInfo: {
-        userId: userData.id,
-        userLogin: userData.login,
+        userId: user.id,
+        userLogin: user.login,
       },
       likesInfo: {
         likesCount: 0,
@@ -42,15 +30,20 @@ export class CommentsRepository {
         myStatus: "None",
       },
       createdAt: new Date().toISOString(),
-    };
+    });
 
-    return await CommentMongooseModel.create(comment);
+    const json = newComment.toJSON();
+
+    return {
+      id: json._id.toString(),
+      content: json.content,
+      commentatorInfo: json.commentatorInfo,
+      likesInfo: json.likesInfo,
+      createdAt: json.createdAt,
+    };
   }
 
-  async getCommentsByPostId(
-    postId: string,
-    query: CommentsQuery,
-  ): Promise<commentsDBResultObject | null> {
+  async getCommentsByPostId(postId: string, query: CommentsQuery) {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -66,6 +59,7 @@ export class CommentsRepository {
       .sort({ [sortBy]: sortDir })
       .skip(+skip)
       .limit(+pageSize)
+      .lean()
       .exec();
 
     if (!result) {
@@ -83,17 +77,16 @@ export class CommentsRepository {
         id: comment._id.toString(),
         content: comment.content,
         commentatorInfo: comment.commentatorInfo,
+        likesInfo: comment.likesInfo,
         createdAt: comment.createdAt,
       })),
     };
   }
 
-  async getCommentById(
-    commentId: string,
-  ): Promise<commentsDataResultObject | null> {
+  async getCommentById(commentId: string) {
     const result = await CommentMongooseModel.findOne({
       _id: new ObjectId(commentId),
-    });
+    }).lean();
 
     if (!result) {
       return null;
@@ -103,6 +96,7 @@ export class CommentsRepository {
       id: result._id.toString(),
       content: result.content,
       commentatorInfo: result.commentatorInfo,
+      likesInfo: result.likesInfo,
       createdAt: result.createdAt,
     };
   }
@@ -130,5 +124,37 @@ export class CommentsRepository {
       return null;
     }
     return result;
+  }
+
+  async setCommentLikeStatus(
+    id: string,
+    likeCount: number,
+    dislikeCount: number,
+  ) {
+      return CommentMongooseModel.updateOne(
+          {_id: new mongoose.Types.ObjectId(id)},
+          {
+              $set: {
+                  "likesInfo.likesCount": likeCount,
+                  "likesInfo.dislikesCount": dislikeCount,
+              },
+          },
+      );
+  }
+
+  async getStatusByUserId(commentId: string, userId: string) {
+    return CommentReactionModel.findOne({ userId, commentId }).lean();
+  }
+
+  async updateStatusByUserId(
+    commentId: string,
+    userId: string,
+    finalStatus: string,
+  ) {
+    await CommentReactionModel.updateOne(
+      { userId, commentId },
+      { status: finalStatus },
+      { upsert: true },
+    );
   }
 }

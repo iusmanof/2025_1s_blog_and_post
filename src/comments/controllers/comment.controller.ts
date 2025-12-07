@@ -3,21 +3,39 @@ import CommentsService from "../services/comments.service";
 import { Request, Response } from "express";
 import { resultStatus } from "../../core/types/result-object";
 import httpStatusCode from "../../core/types/http-status-code";
+import { JwtAdapter } from "../../auth/adapters/jwt.adapter";
 
 @injectable()
 export class CommentController {
   constructor(
     @inject(CommentsService) private readonly commentsService: CommentsService,
+    @inject(JwtAdapter) private readonly jwtAdapter: JwtAdapter,
   ) {}
 
   getByCommentId = async (req: Request<{ id: string }>, res: Response) => {
     const commentId = req.params.id;
-    const result = await this.commentsService.getByCommentId(commentId);
+
+    // add userId
+    let userId: string | null = null;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
+
+    if (token) {
+      try {
+        const payload: any = await this.jwtAdapter.verifyAccessToken(token);
+        userId = payload.id;
+      } catch {}
+    }
+
+    const result = await this.commentsService.getByCommentId(commentId, userId);
 
     if (result.status === resultStatus.NOT_FOUND) {
       res.status(httpStatusCode.NOT_FOUND_404).send("Not Found");
       return;
     }
+
     res.status(httpStatusCode.OK_200).send(result.data);
   };
 
@@ -25,7 +43,8 @@ export class CommentController {
     const commentId = req.params.id;
     const userId = req.user.id;
 
-    const comment = await this.commentsService.getCommentById(
+    //getCommentById
+    const comment = await this.commentsService.getByCommentId(
       commentId,
       userId,
     );
@@ -61,7 +80,8 @@ export class CommentController {
     const content = req.body.content;
     const userId = req.user.id;
 
-    const comment = await this.commentsService.getCommentById(
+    //getCommentById
+    const comment = await this.commentsService.getByCommentId(
       commentId,
       userId,
     );
@@ -80,10 +100,41 @@ export class CommentController {
     const result = await this.commentsService.updateById(commentId, content);
     if (result.status === resultStatus.ERROR) {
       res.status(httpStatusCode.NOT_FOUND_404).send("Comment not updated");
+      return;
     }
 
     if (result.status === resultStatus.SUCCESS) {
       res.status(httpStatusCode.NO_CONTENT_204).send("Updated successfully");
+      return;
+    }
+  };
+
+  setLikeStatus = async (
+    req: Request<{ id: string }, {}, { likeStatus: string }>,
+    res: Response,
+  ) => {
+    const commentId = req.params.id;
+    const likeStatus = req.body.likeStatus;
+    const userId = req.user.id;
+    const result = await this.commentsService.setLikeStatus(
+      commentId,
+      likeStatus,
+      userId,
+    );
+
+    if (result.status === resultStatus.ERROR) {
+      res.status(httpStatusCode.BAD_REQUEST_400).send("Comment is invalid");
+      return;
+    }
+
+    if (result.status === resultStatus.NOT_FOUND) {
+      res.status(httpStatusCode.NOT_FOUND_404).send("Comment not founded");
+      return;
+    }
+
+    if (result.status === resultStatus.SUCCESS) {
+      res.status(httpStatusCode.NO_CONTENT_204).send("Update like status");
+      return;
     }
   };
 }

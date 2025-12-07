@@ -20,6 +20,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentsRepository = void 0;
 const inversify_1 = require("inversify");
@@ -27,22 +30,22 @@ const mongodb_1 = require("mongodb");
 const users_query_repository_1 = require("../../users/repositories/users.query.repository");
 const user_entity_1 = require("../../users/domain/user.entity");
 const comments_entiry_1 = require("../domain/comments.entiry");
+const mongoose_1 = __importDefault(require("mongoose"));
 let CommentsRepository = class CommentsRepository {
     constructor(usersQueryRepository) {
         this.usersQueryRepository = usersQueryRepository;
     }
     create(userId, postId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userData = yield user_entity_1.UserMongooseModel.findById(userId);
-            if (!userData) {
+            const user = yield user_entity_1.UserMongooseModel.findById(userId);
+            if (!user)
                 return null;
-            }
-            const comment = {
-                postId: postId,
-                content: content,
+            const newComment = yield comments_entiry_1.CommentMongooseModel.create({
+                postId,
+                content,
                 commentatorInfo: {
-                    userId: userData.id,
-                    userLogin: userData.login,
+                    userId: user.id,
+                    userLogin: user.login,
                 },
                 likesInfo: {
                     likesCount: 0,
@@ -50,8 +53,15 @@ let CommentsRepository = class CommentsRepository {
                     myStatus: "None",
                 },
                 createdAt: new Date().toISOString(),
+            });
+            const json = newComment.toJSON();
+            return {
+                id: json._id.toString(),
+                content: json.content,
+                commentatorInfo: json.commentatorInfo,
+                likesInfo: json.likesInfo,
+                createdAt: json.createdAt,
             };
-            return yield comments_entiry_1.CommentMongooseModel.create(comment);
         });
     }
     getCommentsByPostId(postId, query) {
@@ -64,6 +74,7 @@ let CommentsRepository = class CommentsRepository {
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
+                .lean()
                 .exec();
             if (!result) {
                 return null;
@@ -78,6 +89,7 @@ let CommentsRepository = class CommentsRepository {
                     id: comment._id.toString(),
                     content: comment.content,
                     commentatorInfo: comment.commentatorInfo,
+                    likesInfo: comment.likesInfo,
                     createdAt: comment.createdAt,
                 })),
             };
@@ -87,7 +99,7 @@ let CommentsRepository = class CommentsRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield comments_entiry_1.CommentMongooseModel.findOne({
                 _id: new mongodb_1.ObjectId(commentId),
-            });
+            }).lean();
             if (!result) {
                 return null;
             }
@@ -95,6 +107,7 @@ let CommentsRepository = class CommentsRepository {
                 id: result._id.toString(),
                 content: result.content,
                 commentatorInfo: result.commentatorInfo,
+                likesInfo: result.likesInfo,
                 createdAt: result.createdAt,
             };
         });
@@ -122,6 +135,26 @@ let CommentsRepository = class CommentsRepository {
                 return null;
             }
             return result;
+        });
+    }
+    setCommentLikeStatus(id, likeCount, dislikeCount) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return comments_entiry_1.CommentMongooseModel.updateOne({ _id: new mongoose_1.default.Types.ObjectId(id) }, {
+                $set: {
+                    "likesInfo.likesCount": likeCount,
+                    "likesInfo.dislikesCount": dislikeCount,
+                },
+            });
+        });
+    }
+    getStatusByUserId(commentId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return comments_entiry_1.CommentReactionModel.findOne({ userId, commentId }).lean();
+        });
+    }
+    updateStatusByUserId(commentId, userId, finalStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield comments_entiry_1.CommentReactionModel.updateOne({ userId, commentId }, { status: finalStatus }, { upsert: true });
         });
     }
 };

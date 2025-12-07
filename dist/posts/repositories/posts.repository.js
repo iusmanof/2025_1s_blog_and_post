@@ -20,6 +20,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const mongodb_1 = require("mongodb");
@@ -80,41 +91,18 @@ let PostsRepository = class PostsRepository {
     createPost(post) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield this.blogsRepository.getBlogById(post.blogId);
-            const postCreated = {
+            const postDocument = new post_entity_1.PostMongooseModel({
                 title: post.title,
                 shortDescription: post.shortDescription,
                 content: post.content,
                 blogId: post.blogId,
                 blogName: blog ? blog.name : "Unknown",
-                createdAt: new Date().toISOString(),
-            };
-            // TODO fix _id
-            return yield post_entity_1.PostMongooseModel.insertOne(Object.assign({}, postCreated));
-            // const result = await PostMongooseModel.insertOne({ ...postCreated });
-            // return {
-            //   ...postCreated,
-            //   id: result.insertedId.toString(),
-            // };
+            });
+            yield postDocument.save();
+            const _a = postDocument.toObject(), { _id, __v } = _a, rest = __rest(_a, ["_id", "__v"]);
+            return Object.assign(Object.assign({}, rest), { id: _id.toString() });
         });
     }
-    // TODO if dont use it delete it
-    // async createPostByBlogId(post: PostsDto, blogId: string) {
-    //   const blog = await this.blogsRepository.getBlogById(post.blogId);
-    //
-    //   const postCreated = {
-    //     title: post.title,
-    //     shortDescription: post.shortDescription,
-    //     content: post.content,
-    //     blogId: blogId,
-    //     blogName: blog ? blog.name : "Unknown",
-    //     createdAt: new Date().toISOString(),
-    //   };
-    //   const result = await getPostCollection().insertOne({ ...postCreated });
-    //   return {
-    //     ...postCreated,
-    //     id: result.insertedId.toString(),
-    //   };
-    // }
     deletePost(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const isDeleted = yield post_entity_1.PostMongooseModel.deleteOne({
@@ -155,10 +143,6 @@ let PostsRepository = class PostsRepository {
                 .skip(+skip)
                 .limit(+pageSize)
                 .exec();
-            // const postWithId: PostsDto[] = result.map(({ _id, ...rest }) => ({
-            //   ...rest,
-            //   id: _id.toString(),
-            // }));
             const totalCount = yield post_entity_1.PostMongooseModel.countDocuments({ blogId });
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),

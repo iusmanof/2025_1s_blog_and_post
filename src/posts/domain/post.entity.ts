@@ -9,7 +9,11 @@ const postSchema = new mongoose.Schema<Post>(
     title: { type: String, required: true },
     shortDescription: { type: String, required: true },
     content: { type: String, required: true },
-    blogId: { type: mongoose.Schema.Types.ObjectId, ref: "blog", required: true },
+    blogId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "blog",
+      required: true,
+    },
   },
   { timestamps: true },
 );

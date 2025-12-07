@@ -24,14 +24,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const result_object_1 = require("../../core/types/result-object");
 const comments_repository_1 = require("../repositories/comments.repository");
+const like_1 = require("../types/like");
 let CommentsService = class CommentsService {
     constructor(commentsRepository) {
         this.commentsRepository = commentsRepository;
     }
     create(userId, postId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const commentsInfo = yield this.commentsRepository.create(userId, postId, content);
-            if (!commentsInfo) {
+            const newComment = yield this.commentsRepository.create(userId, postId, content);
+            if (!newComment) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
                     errorMessages: "Failed to create a comment",
@@ -39,17 +40,20 @@ let CommentsService = class CommentsService {
                     extensions: [],
                 };
             }
+            const myStatus = like_1.LikeStatus.None;
+            const resultComment = Object.assign(Object.assign({}, newComment), { likesInfo: Object.assign(Object.assign({}, newComment.likesInfo), { myStatus: myStatus }) });
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: commentsInfo,
+                data: resultComment,
             };
         });
     }
-    getCommentByPostId(postId, query) {
+    getCommentByPostId(postId, query, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const comments = yield this.commentsRepository.getCommentsByPostId(postId, query);
-            if (!comments) {
+            // Получаем комментарии с пагинацией
+            const commentsPage = yield this.commentsRepository.getCommentsByPostId(postId, query);
+            if (!commentsPage) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
                     errorMessages: "Comments not found",
@@ -57,14 +61,33 @@ let CommentsService = class CommentsService {
                     extensions: [],
                 };
             }
+            // Добавляем myStatus для текущего пользователя
+            const itemsWithStatus = yield Promise.all(commentsPage.items.map((comment) => __awaiter(this, void 0, void 0, function* () {
+                let myStatus = like_1.LikeStatus.None;
+                if (userId) {
+                    const statusCurrentUser = yield this.commentsRepository.getStatusByUserId(comment.id, userId);
+                    if (statusCurrentUser && statusCurrentUser.status) {
+                        myStatus =
+                            like_1.LikeStatus[statusCurrentUser.status];
+                    }
+                }
+                return Object.assign(Object.assign({}, comment), { likesInfo: Object.assign(Object.assign({}, comment.likesInfo), { myStatus }) });
+            })));
+            // Возвращаем объект с пагинацией и items с myStatus
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: comments,
+                data: {
+                    pagesCount: commentsPage.pagesCount,
+                    page: commentsPage.page,
+                    pageSize: commentsPage.pageSize,
+                    totalCount: commentsPage.totalCount,
+                    items: itemsWithStatus,
+                },
             };
         });
     }
-    getByCommentId(commentId) {
+    getByCommentId(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const comment = yield this.commentsRepository.getCommentById(commentId);
             if (!comment) {
@@ -75,36 +98,33 @@ let CommentsService = class CommentsService {
                     extensions: [],
                 };
             }
+            if (userId === null) {
+                const commentForUnauthorized = {
+                    id: comment.id,
+                    content: comment.content,
+                    commentatorInfo: comment.commentatorInfo,
+                    likesInfo: Object.assign(Object.assign({}, comment.likesInfo), { myStatus: "None" }),
+                    createdAt: comment.createdAt,
+                };
+                return {
+                    status: result_object_1.resultStatus.SUCCESS,
+                    extensions: [],
+                    data: commentForUnauthorized,
+                };
+            }
+            const statusCurrentUser = userId
+                ? yield this.commentsRepository.getStatusByUserId(commentId, userId)
+                : null;
+            let myStatus = like_1.LikeStatus.None;
+            if (statusCurrentUser && statusCurrentUser.status) {
+                myStatus =
+                    like_1.LikeStatus[statusCurrentUser.status];
+            }
+            const commentWithStatus = Object.assign(Object.assign({}, comment), { likesInfo: Object.assign(Object.assign({}, comment.likesInfo), { myStatus }) });
             return {
                 status: result_object_1.resultStatus.SUCCESS,
                 extensions: [],
-                data: comment,
-            };
-        });
-    }
-    getCommentById(commentId, userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const comment = yield this.commentsRepository.getCommentById(commentId);
-            if (!comment) {
-                return {
-                    status: result_object_1.resultStatus.NOT_FOUND,
-                    errorMessages: "Failed to get a comment",
-                    data: null,
-                    extensions: [],
-                };
-            }
-            if (comment.commentatorInfo.userId !== userId) {
-                return {
-                    status: result_object_1.resultStatus.ERROR,
-                    errorMessages: "UserId not found",
-                    data: null,
-                    extensions: [],
-                };
-            }
-            return {
-                status: result_object_1.resultStatus.SUCCESS,
-                extensions: [],
-                data: comment,
+                data: commentWithStatus,
             };
         });
     }
@@ -143,6 +163,58 @@ let CommentsService = class CommentsService {
                 data: result,
             };
         });
+    }
+    setLikeStatus(commentId, newLikeStatusString, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!(newLikeStatusString in like_1.LikeStatus)) {
+                return {
+                    status: result_object_1.resultStatus.ERROR,
+                    errorMessages: "Is invalid",
+                    data: null,
+                    extensions: [],
+                };
+            }
+            const comment = yield this.commentsRepository.getCommentById(commentId);
+            if (!comment) {
+                return {
+                    status: result_object_1.resultStatus.NOT_FOUND,
+                    errorMessages: "id not found",
+                    data: null,
+                    extensions: [],
+                };
+            }
+            const newlikeStatus = like_1.LikeStatus[newLikeStatusString];
+            const currentLikeStatusUser = yield this.commentsRepository.getStatusByUserId(commentId, userId);
+            const currentStatus = currentLikeStatusUser
+                ? currentLikeStatusUser.status
+                : like_1.LikeStatus.None;
+            const { likesCount, dislikesCount, finalStatus } = this.updateReaction(currentStatus, newlikeStatus, comment.likesInfo.likesCount, comment.likesInfo.dislikesCount);
+            yield this.commentsRepository.updateStatusByUserId(commentId, userId, finalStatus);
+            yield this.commentsRepository.setCommentLikeStatus(comment.id, likesCount, dislikesCount);
+            return {
+                status: result_object_1.resultStatus.SUCCESS,
+                extensions: [],
+                data: {},
+            };
+        });
+    }
+    updateReaction(currentStatus, newStatus, likesCount, dislikesCount) {
+        if (currentStatus === newStatus) {
+            return { likesCount, dislikesCount, finalStatus: currentStatus };
+        }
+        if (currentStatus === like_1.LikeStatus.Like && likesCount > 0) {
+            likesCount--;
+        }
+        if (currentStatus === like_1.LikeStatus.Dislike && dislikesCount > 0) {
+            dislikesCount--;
+        }
+        if (newStatus === like_1.LikeStatus.Like) {
+            likesCount++;
+        }
+        if (newStatus === like_1.LikeStatus.Dislike) {
+            dislikesCount++;
+        }
+        return { likesCount, dislikesCount, finalStatus: newStatus };
     }
 };
 CommentsService = __decorate([
