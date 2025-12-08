@@ -1,5 +1,5 @@
-import mongoose, { HydratedDocument, model, Model } from "mongoose";
-import { Blog } from "../types/blog";
+import mongoose, {HydratedDocument, model, Model} from "mongoose";
+import {Blog} from "../types/blog";
 
 // TODO use it
 export type BlogHydrateDocument = HydratedDocument<Blog>;
@@ -16,3 +16,24 @@ const blogSchema = new mongoose.Schema<Blog>(
 );
 
 export const BlogMongooseModel = model<Blog, BlogModel>("blog", blogSchema);
+
+
+class BlogEntity{
+    name: string;
+    description: string;
+    websiteUrl: string;
+    isMembership: boolean;
+
+    private constructor(private blogParams: Blog) {
+        this.name = blogParams.name;
+        this.description = blogParams.description;
+        this.websiteUrl = blogParams.websiteUrl;
+        this.isMembership = blogParams.isMembership;
+    }
+
+    static async createBlog(blog: Blog) {
+        return new BlogEntity(blog);
+    }
+}
+
+new BlogMongooseModel()
