@@ -1,39 +1,39 @@
-import mongoose, {HydratedDocument, model, Model} from "mongoose";
-import {Blog} from "../types/blog";
+import {BlogRequestBody} from "../blog";
 
-// TODO use it
-export type BlogHydrateDocument = HydratedDocument<Blog>;
-type BlogModel = Model<Blog>;
+export class BlogEntity {
+    private id?: string;
+    private name: string;
+    private description: string;
+    private websiteUrl: string;
+    private isMembership: boolean = false;
 
-const blogSchema = new mongoose.Schema<Blog>(
-  {
-    name: { type: String, required: true, maxLength: 15 },
-    description: { type: String, required: true, maxLength: 500 },
-    websiteUrl: { type: String, required: true, maxLength: 100 },
-    isMembership: { type: Boolean, default: false },
-  },
-  { timestamps: true },
-);
-
-export const BlogMongooseModel = model<Blog, BlogModel>("blog", blogSchema);
-
-
-class BlogEntity{
-    name: string;
-    description: string;
-    websiteUrl: string;
-    isMembership: boolean;
-
-    private constructor(private blogParams: Blog) {
-        this.name = blogParams.name;
-        this.description = blogParams.description;
-        this.websiteUrl = blogParams.websiteUrl;
-        this.isMembership = blogParams.isMembership;
+    constructor(params: { id?: string } & BlogRequestBody & { isMembership?: boolean }) {
+        this.id = params.id; // важно!
+        this.name = params.name;
+        this.description = params.description;
+        this.websiteUrl = params.websiteUrl;
+        this.isMembership = params.isMembership ?? false;
     }
 
-    static async createBlog(blog: Blog) {
-        return new BlogEntity(blog);
+    static restore(params: { id: string } & BlogRequestBody & { isMembership: boolean }): BlogEntity {
+        return new BlogEntity(params);
     }
+
+    updateData(params: BlogRequestBody) {
+        this.name = params.name;
+        this.description = params.description;
+        this.websiteUrl = params.websiteUrl;
+    }
+
+    toggleMembership() {
+        this.isMembership = !this.isMembership;
+    }
+
+    getId() { return this.id }
+    getName() { return this.name }
+    getDescription() { return this.description }
+    getWebsiteUrl() { return this.websiteUrl }
+    getIsMembership() { return this.isMembership }
+
 }
 
-new BlogMongooseModel()

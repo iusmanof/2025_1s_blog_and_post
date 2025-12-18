@@ -44,7 +44,7 @@ let BlogsRepository = class BlogsRepository {
             const search = searchNameTerm
                 ? { name: { $regex: searchNameTerm, $options: "i" } }
                 : {};
-            const result = yield blog_entity_1.BlogMongooseModel.find(search)
+            const result = yield blog_entity_1.BlogModel.find(search)
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
@@ -53,7 +53,7 @@ let BlogsRepository = class BlogsRepository {
                 var { _id } = _a, rest = __rest(_a, ["_id"]);
                 return (Object.assign(Object.assign({}, rest), { id: _id.toString() }));
             });
-            const totalCount = yield blog_entity_1.BlogMongooseModel.find(search).countDocuments();
+            const totalCount = yield blog_entity_1.BlogModel.find(search).countDocuments();
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
@@ -68,29 +68,23 @@ let BlogsRepository = class BlogsRepository {
             if (!mongoose_1.default.isValidObjectId(id)) {
                 return null;
             }
-            const result = yield blog_entity_1.BlogMongooseModel.findById(id).exec();
+            const result = yield blog_entity_1.BlogModel.findById(id).exec();
             if (!result)
                 return null;
             const _a = result.toObject(), { _id } = _a, rest = __rest(_a, ["_id"]);
             return Object.assign(Object.assign({}, rest), { id: _id.toString() });
         });
     }
-    createBlog(blog) {
+    createBlog(blogParams) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blogCreatedWithDate = {
-                name: blog.name,
-                description: blog.description,
-                websiteUrl: blog.websiteUrl,
-                createdAt: new Date().toISOString(),
-                isMembership: false,
-            };
-            const result = yield blog_entity_1.BlogMongooseModel.create(blogCreatedWithDate);
-            return Object.assign(Object.assign({}, blogCreatedWithDate), { id: result._id.toString() });
+            const blogCreated = blog_entity_1.BlogModel.create_blog(blogParams);
+            yield blog_entity_1.BlogModel.create(blogCreated);
+            return blogCreated;
         });
     }
     updateBlog(id, blog) {
         return __awaiter(this, void 0, void 0, function* () {
-            const isUpdated = yield blog_entity_1.BlogMongooseModel.updateOne({ _id: id }, {
+            const isUpdated = yield blog_entity_1.BlogModel.updateOne({ _id: id }, {
                 $set: {
                     name: blog.name,
                     description: blog.description,
@@ -118,7 +112,7 @@ let BlogsRepository = class BlogsRepository {
     }
     deleteBlog(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const isDeleted = yield blog_entity_1.BlogMongooseModel.deleteOne({
+            const isDeleted = yield blog_entity_1.BlogModel.deleteOne({
                 _id: new mongodb_1.ObjectId(id),
             });
             return isDeleted.deletedCount !== 0;
@@ -126,7 +120,7 @@ let BlogsRepository = class BlogsRepository {
     }
     deleteAllBlogs() {
         return __awaiter(this, void 0, void 0, function* () {
-            return blog_entity_1.BlogMongooseModel.deleteMany({});
+            return blog_entity_1.BlogModel.deleteMany({});
         });
     }
 };

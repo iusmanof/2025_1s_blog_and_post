@@ -34,7 +34,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const mongodb_1 = require("mongodb");
-const blogs_repository_1 = require("../../blogs/repositories/blogs.repository");
+const blogs_repository_1 = require("../../blogs/infrastructure/blogs.repository");
 const post_entity_1 = require("../domain/post.entity");
 let PostsRepository = class PostsRepository {
     constructor(blogsRepository) {
@@ -45,7 +45,7 @@ let PostsRepository = class PostsRepository {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === "asc" ? 1 : -1;
-            const result = yield post_entity_1.PostMongooseModel.find({})
+            const result = yield post_entity_1.PostModel.find({})
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
@@ -64,7 +64,7 @@ let PostsRepository = class PostsRepository {
             //   ...rest,
             //   id: _id.toString(),
             // }));
-            const totalCount = yield post_entity_1.PostMongooseModel.countDocuments({});
+            const totalCount = yield post_entity_1.PostModel.countDocuments({});
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
@@ -81,7 +81,7 @@ let PostsRepository = class PostsRepository {
             if (!mongodb_1.ObjectId.isValid(id)) {
                 return null;
             }
-            const result = yield post_entity_1.PostMongooseModel.findOne({ _id: new mongodb_1.ObjectId(id) });
+            const result = yield post_entity_1.PostModel.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (!result) {
                 return null;
             }
@@ -91,7 +91,7 @@ let PostsRepository = class PostsRepository {
     createPost(post) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield this.blogsRepository.getBlogById(post.blogId);
-            const postDocument = new post_entity_1.PostMongooseModel({
+            const postDocument = new post_entity_1.PostModel({
                 title: post.title,
                 shortDescription: post.shortDescription,
                 content: post.content,
@@ -105,7 +105,7 @@ let PostsRepository = class PostsRepository {
     }
     deletePost(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const isDeleted = yield post_entity_1.PostMongooseModel.deleteOne({
+            const isDeleted = yield post_entity_1.PostModel.deleteOne({
                 _id: new mongodb_1.ObjectId(id),
             });
             return isDeleted.deletedCount !== 0;
@@ -122,7 +122,7 @@ let PostsRepository = class PostsRepository {
             if (post.blogName) {
                 updateFields.blogName = post.blogName;
             }
-            const isUpdated = yield post_entity_1.PostMongooseModel.updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+            const isUpdated = yield post_entity_1.PostModel.updateOne({ _id: new mongodb_1.ObjectId(id) }, {
                 $set: updateFields,
             });
             return (yield isUpdated.matchedCount) !== 0;
@@ -130,7 +130,7 @@ let PostsRepository = class PostsRepository {
     }
     deleteAllPosts() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield post_entity_1.PostMongooseModel.deleteMany({});
+            yield post_entity_1.PostModel.deleteMany({});
         });
     }
     getPostByBlogId(blogId, query) {
@@ -138,12 +138,12 @@ let PostsRepository = class PostsRepository {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === "asc" ? 1 : -1;
-            const result = yield post_entity_1.PostMongooseModel.find({ blogId })
+            const result = yield post_entity_1.PostModel.find({ blogId })
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
                 .exec();
-            const totalCount = yield post_entity_1.PostMongooseModel.countDocuments({ blogId });
+            const totalCount = yield post_entity_1.PostModel.countDocuments({ blogId });
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,

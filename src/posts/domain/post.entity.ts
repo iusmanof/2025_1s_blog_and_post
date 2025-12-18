@@ -1,21 +1,39 @@
-import mongoose, { HydratedDocument, model, Model } from "mongoose";
-import { Post } from "../types/post";
+import { PostRequestBody } from "../post"; // Assuming PostRequestBody is another type that contains title, shortDescription, content, etc.
 
-export type PostHydrateDocument = HydratedDocument<Post>;
-type PostModel = Model<Post>;
+export class PostEntity {
+    private id?: string;
+    private title: string;
+    private shortDescription: string;
+    private content: string;
+    private blogId: string;
+    private blogName: string;
+    private extendedLikesInfo?: any; // You can define a more specific type for extendedLikesInfo if needed
 
-const postSchema = new mongoose.Schema<Post>(
-  {
-    title: { type: String, required: true },
-    shortDescription: { type: String, required: true },
-    content: { type: String, required: true },
-    blogId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "blog",
-      required: true,
-    },
-  },
-  { timestamps: true },
-);
+    constructor(params: { id?: string } & PostRequestBody ) {
+        this.id = params.id; // важно!
+        this.title = params.title;
+        this.shortDescription = params.shortDescription;
+        this.content = params.content;
+        this.blogId = params.blogId;
+        this.blogName = params.blogName;
+        this.extendedLikesInfo = params.extendedLikesInfo;
+    }
 
-export const PostMongooseModel = model<Post, PostModel>("post", postSchema);
+    static restore(params: { id: string } & PostRequestBody & { createdAt: Date; extendedLikesInfo: any; }): PostEntity {
+        return new PostEntity(params);
+    }
+
+    updateData(params: PostRequestBody) {
+        this.title = params.title;
+        this.shortDescription = params.shortDescription;
+        this.content = params.content;
+    }
+
+    getId() { return this.id }
+    getTitle() { return this.title }
+    getShortDescription() { return this.shortDescription }
+    getContent() { return this.content }
+    getBlogId() { return this.blogId }
+    getBlogName() { return this.blogName }
+    getExtendedLikesInfo() { return this.extendedLikesInfo }
+}

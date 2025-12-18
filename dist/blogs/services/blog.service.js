@@ -40,22 +40,8 @@ let BlogService = class BlogService {
     }
     create(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.blogsRepository.createBlog(body);
-        });
-    }
-    createPostByBlogId(body, blogId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.blogsRepository.createPostByBlogId(body, blogId);
-        });
-    }
-    update(id, body) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.blogsRepository.updateBlog(id, body);
-        });
-    }
-    delete(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.blogsRepository.deleteBlog(id);
+            const res = yield this.blogsRepository.createBlog(body);
+            return Object.assign(Object.assign({}, res), { id: res._id.toString() });
         });
     }
 };
@@ -65,4 +51,97 @@ exports.BlogService = BlogService = __decorate([
     __param(0, (0, inversify_1.inject)(blogs_repository_1.BlogsRepository)),
     __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository])
 ], BlogService);
+/;
+blogs /
+    domain /
+    blog.entity.ts;
+blog.repository.ts(интерфейс);
+application /
+    blog.service.ts(твои, use - cases);
+infrastructure /
+    blog.repository.mongo.ts;
+blog.mapper.ts;
+blog.model.ts(Mongoose, Schema);
+blog.controller.ts;
+Почему;
+это;
+проблема ?
+    :
+;
+Service;
+лезет;
+в;
+детали;
+хранилища;
+Service;
+знает;
+про;
+Mongoose;
+_id;
+Service;
+работает;
+с;
+инфраструктурой, а;
+не;
+доменом;
+Service;
+маппит;
+данные, а;
+должен;
+только;
+orchestrate;
+use - ;
+А;
+по;
+слоям;
+должно;
+быть: Mapper;
+занимается;
+_id;
+Repo;
+вызывает;
+Mapper;
+Service;
+получает;
+чистый;
+доменный;
+объект;
+Controller;
+возвращает;
+DTO;
+Как;
+должно;
+быть;
+Repository;
+возвращает;
+Domain;
+Entity;
+return BlogMapper.toDomain(doc);
+Service;
+работает;
+с;
+Entity(не, Mongo, doc);
+return Object.assign({ id: blog.id, name: blog.name }, );
+Controller;
+просто;
+отвечает;
+JSON;
+res.json(blogDto);
+//////////////////////////////////////
+async;
+createPostByBlogId(body, posts_dto_1.PostsDto, blogId, string);
+{
+    return await this.blogsRepository.createPostByBlogId(body, blogId);
+}
+async;
+update(id, string, body, blog_dto_1.BlogBase);
+{
+    return await this.blogsRepository.updateBlog(id, body);
+}
+async;
+delete (id);
+string;
+{
+    return await this.blogsRepository.deleteBlog(id);
+}
 //# sourceMappingURL=blog.service.js.map
