@@ -1,6 +1,5 @@
 import mongoose, {HydratedDocument, model, Model} from "mongoose";
 import {Post} from "../post";
-import {ObjectId} from "mongodb";
 
 export type PostProps = {
     title: string;
@@ -22,14 +21,13 @@ const postMethods = {
 
 const postStaticMethods = {
     create_post_in_blog(params: { title: string; shortDescription: string; content: string; blogId: string; blogName?: string }): PostDocument {
-        const post = new PostModel({
+        return new PostModel({
             title: params.title,
             shortDescription: params.shortDescription,
             content: params.content,
             blogId: new mongoose.Types.ObjectId(params.blogId), // конвертация здесь
             blogName: params.blogName || "Unknown",
         });
-        return post;
     },
 }
 

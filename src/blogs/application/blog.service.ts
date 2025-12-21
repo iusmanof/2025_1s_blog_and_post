@@ -1,5 +1,5 @@
 import {inject, injectable} from "inversify";
-import {BlogRequestBody, BlogMongoDb, BlogPresentation, BlogQuery, BlogWithId} from "../blog";
+import {BlogRequestBody, BlogPresentation, BlogQuery} from "../blog";
 import {PostsDto} from "../../posts/posts.dto";
 import {BlogsRepository} from "../infrastructure/blogs.repository";
 import {BlogModel} from "../infrastructure/blog.mongo";
@@ -56,7 +56,6 @@ export class BlogService {
 
 
     async createPostByBlogId(postBody: PostsDto, blogId: string) {
-        // TODO  BlogModel.findById(blogId); не используется напрмяую !!!
         const blog = await BlogModel.findById(blogId);
         if (!blog) return null;
 

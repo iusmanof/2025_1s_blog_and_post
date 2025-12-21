@@ -1,5 +1,5 @@
 import {injectable} from "inversify";
-import { BlogQuery, BlogResponseBody }  from "../blog";
+import { BlogQuery }  from "../blog";
 import mongoose from "mongoose";
 import {BlogDocument, BlogModel} from "./blog.mongo";
 import {BlogEntity} from "../domain/blog.entity";
@@ -81,21 +81,23 @@ export class BlogsRepository {
     async deleteAllBlogs() {
         return BlogModel.deleteMany({});
     }
-}
 
-// async getBlogById(id: string): Promise<BlogEntity | null> {
-//     if (!mongoose.isValidObjectId(id)) return null;
+//     async getBlogById(id: string): Promise<BlogEntity | null> {
+//         if (!mongoose.isValidObjectId(id)) return null;
 //
-// const doc = await BlogModel.findById(id);
-// if (!doc) return null;
+//         const doc = await BlogModel.findById(id);
+//         if (!doc) return null;
 //
 // // Восстанавливаем Domain Entity из документа
-// return BlogEntity.restore({
-//     id: doc._id.toString(),
-//     name: doc.name,
-//     description: doc.description,
-//     websiteUrl: doc.websiteUrl,
-//     isMembership: doc.isMembership,
-// });
-// }
-//
+//         return BlogEntity.restore({
+//             id: doc._id.toString(),
+//             name: doc.name,
+//             description: doc.description,
+//             websiteUrl: doc.websiteUrl,
+//             isMembership: doc.isMembership,
+//         });
+//     }
+
+}
+
+

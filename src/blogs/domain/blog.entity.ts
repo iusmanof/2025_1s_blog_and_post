@@ -8,7 +8,7 @@ export class BlogEntity {
     private isMembership: boolean = false;
 
     constructor(params: { id?: string } & BlogRequestBody & { isMembership?: boolean }) {
-        this.id = params.id; // важно!
+        this.id = params.id;
         this.name = params.name;
         this.description = params.description;
         this.websiteUrl = params.websiteUrl;

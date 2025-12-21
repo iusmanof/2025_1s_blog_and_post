@@ -37,7 +37,6 @@ let BlogController = class BlogController {
         this.postService = postService;
         this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const blogCreated = yield this.blogService.create(req.body);
-            // mapper
             return res.status(http_status_code_1.default.CREATED_201).json(blogCreated);
         });
         this.findMany = (req, res) => __awaiter(this, void 0, void 0, function* () {

@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
 
-import { PostModelWithId, PostQuery, PostsDto } from "../posts.dto";
+import { PostModelWithId, PostQuery } from "../posts.dto";
 import { ObjectId } from "mongodb";
 import { BlogsRepository } from "../../blogs/infrastructure/blogs.repository";
 import { PostModel } from "./post.mongo";
-import mongoose from "mongoose";
+import {PostEntity} from "../domain/post.entity";
 
 @injectable()
 class PostsRepository {
@@ -13,12 +13,17 @@ class PostsRepository {
   ) {}
 
 
-    // async createPost(newPost: PostsDto) {
-    //     const blog = await this.blogsRepository.getBlogById(newPost.blogId);
-    //     const post = PostModel.create_post_in_blog({ ...newPost, blogName: blog?.name });
-    //     await post.save();
-    //     return post;
-    // }
+    async createPost(newPost: PostEntity) {
+        const blog = await this.blogsRepository.getBlogById(newPost.getBlogId());
+        if (blog){
+            newPost.setBlogName(blog.getName())
+        } else {
+            newPost.setBlogName("")
+        }
+        const post = PostModel.create_post_in_blog({ ...newPost.toPrimitives() });
+        await post.save();
+        return post;
+    }
 
 
     async getAllPosts(query: PostQuery) {
@@ -38,21 +43,6 @@ class PostsRepository {
       .limit(+pageSize)
       .exec();
 
-    // let resultWithId: {
-    //   title: string;
-    //   shortDescription: string;
-    //   content: string;
-    //   blogId: string;
-    //   blogName: string;
-    //   createdAt: string;
-    //   id: string;
-    // }[];
-    // TODO refactoring resultWithId
-    // resultWithId = result.map(({ _id, ...rest }) => ({
-    //   ...rest,
-    //   id: _id.toString(),
-    // }));
-
     const totalCount = await PostModel.countDocuments({});
 
     return {
@@ -60,8 +50,6 @@ class PostsRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +totalCount,
-      // TODO refactoring resultWithId
-      // items: resultWithId,
       items: result,
     };
   }
@@ -136,8 +124,6 @@ class PostsRepository {
       page: +pageNumber,
       pageSize: +pageSize,
       totalCount: +totalCount,
-      // TODO postWithId refactoring
-      // items: postWithId,
       items: result,
     };
   }

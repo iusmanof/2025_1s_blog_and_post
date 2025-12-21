@@ -5,7 +5,7 @@ class BlogEntity {
     constructor(params) {
         var _a;
         this.isMembership = false;
-        this.id = params.id; // важно!
+        this.id = params.id;
         this.name = params.name;
         this.description = params.description;
         this.websiteUrl = params.websiteUrl;

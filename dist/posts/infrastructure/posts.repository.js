@@ -29,12 +29,20 @@ let PostsRepository = class PostsRepository {
     constructor(blogsRepository) {
         this.blogsRepository = blogsRepository;
     }
-    // async createPost(newPost: PostsDto) {
-    //     const blog = await this.blogsRepository.getBlogById(newPost.blogId);
-    //     const post = PostModel.create_post_in_blog({ ...newPost, blogName: blog?.name });
-    //     await post.save();
-    //     return post;
-    // }
+    createPost(newPost) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blog = yield this.blogsRepository.getBlogById(newPost.getBlogId());
+            if (blog) {
+                newPost.setBlogName(blog.getName());
+            }
+            else {
+                newPost.setBlogName("");
+            }
+            const post = post_mongo_1.PostModel.create_post_in_blog(Object.assign({}, newPost.toPrimitives()));
+            yield post.save();
+            return post;
+        });
+    }
     getAllPosts(query) {
         return __awaiter(this, void 0, void 0, function* () {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
