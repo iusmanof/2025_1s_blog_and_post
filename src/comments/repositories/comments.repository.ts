@@ -1,8 +1,8 @@
 import {inject, injectable} from "inversify";
 import {ObjectId} from "mongodb";
 import {CommentsQuery} from "../types/comments-query";
-import {UsersQueryRepository} from "../../users/repositories/users.query.repository";
-import {UserMongooseModel} from "../../users/domain/user.entity";
+import {UsersQueryRepository} from "../../users/infrastructure/users.query.repository";
+import {UserModel} from "../../users/infrastructure/user.mongo";
 import {CommentMongooseModel, CommentReactionModel,} from "../domain/comments.entiry";
 import mongoose from "mongoose";
 
@@ -14,7 +14,7 @@ export class CommentsRepository {
   ) {}
 
   async create(userId: string, postId: string, content: string) {
-    const user = await UserMongooseModel.findById(userId);
+    const user = await UserModel.findById(userId);
     if (!user) return null;
 
     const newComment = await CommentMongooseModel.create({

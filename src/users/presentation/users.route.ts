@@ -7,7 +7,7 @@ import { loginValidation } from "../../core/milldlewares/login.validation-middle
 import { emailValidation } from "../../core/milldlewares/email.validation-middleware";
 import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
 import { usersInputValidationMiddleware } from "../../core/milldlewares/users-input.validation-middleware";
-import { UserController } from "../controllers/user.controller";
+import { UserController } from "./user.controller";
 
 const userController = container.get(UserController);
 

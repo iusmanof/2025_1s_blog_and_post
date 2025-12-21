@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginRegistrationValidationMiddleware = void 0;
 const express_validator_1 = require("express-validator");
 const composition_root_1 = require("../../composition.root");
-const users_repository_1 = require("../../users/repositories/users.repository");
+const users_repository_1 = require("../../users/infrastructure/users.repository");
 const usersRepository = composition_root_1.container.get(users_repository_1.UsersRepository);
 exports.loginRegistrationValidationMiddleware = (0, express_validator_1.body)("login")
     .isString()

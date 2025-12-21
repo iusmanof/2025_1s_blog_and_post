@@ -32,10 +32,10 @@ const jwt_adapter_1 = require("../adapters/jwt.adapter");
 const security_devices_service_1 = require("./security-devices.service");
 const email_adapter_1 = require("../adapters/email.adapter");
 const bcrypt_adapter_1 = require("../adapters/bcrypt.adapter");
-const users_repository_1 = require("../../users/repositories/users.repository");
+const users_repository_1 = require("../../users/infrastructure/users.repository");
 const security_devices_query_repository_1 = require("../repositories/security-devices.query-repository");
 const security_devices_repository_1 = require("../repositories/security-devices.repository");
-const users_query_repository_1 = require("../../users/repositories/users.query.repository");
+const users_query_repository_1 = require("../../users/infrastructure/users.query.repository");
 let AuthService = class AuthService {
     constructor(jwtAdapter, emailAdapter, emailAdapterRecoveryPassword, emailAdapterYandex, bcryptAdapter, securityDevicesService, securityDevicesQueryRepository, securityDevicesRepository, usersQueryRepository, usersRepository) {
         this.jwtAdapter = jwtAdapter;
@@ -60,7 +60,7 @@ let AuthService = class AuthService {
                     data: null,
                 };
             }
-            const passwordCorrect = yield this.bcryptAdapter.checkPassword(password, user.password);
+            const passwordCorrect = yield this.bcryptAdapter.checkPassword(password, user.passwordHash);
             if (!passwordCorrect) {
                 return {
                     status: result_object_1.resultStatus.ERROR,
@@ -95,7 +95,7 @@ let AuthService = class AuthService {
             const newUser = {
                 login: login,
                 email: email,
-                password: passwordHash,
+                passwordHash: passwordHash,
                 createdAt: new Date(),
                 emailConfirmation: {
                     confirmationCode: (0, crypto_1.randomUUID)(),
@@ -104,7 +104,7 @@ let AuthService = class AuthService {
                 },
                 passwordRecovery: null,
             };
-            yield this.usersRepository.create(newUser);
+            // await this.usersRepository.create(newUser);
             if (newUser.emailConfirmation) {
                 try {
                     yield this.emailAdapter.nodemailer(email, email_template_1.emailTemplate.registrationEmail(newUser.emailConfirmation.confirmationCode));

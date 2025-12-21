@@ -80,7 +80,6 @@ let BlogController = class BlogController {
             }
             res.status(http_status_code_1.default.NO_CONTENT_204).send();
         });
-        // TODO реализовать DDD
         this.createPostByBlogId = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const blog = yield this.blogService.findById(req.params.blogId);
             if (!blog) {

@@ -13,10 +13,10 @@ import {
   EmailAdapterYandex,
 } from "../adapters/email.adapter";
 import { BcryptAdapter } from "../adapters/bcrypt.adapter";
-import { UsersRepository } from "../../users/repositories/users.repository";
+import { UsersRepository } from "../../users/infrastructure/users.repository";
 import { SecurityDevicesQueryRepository } from "../repositories/security-devices.query-repository";
 import { SecurityDevicesRepository } from "../repositories/security-devices.repository";
-import { UsersQueryRepository } from "../../users/repositories/users.query.repository";
+import { UsersQueryRepository } from "../../users/infrastructure/users.query.repository";
 
 @injectable()
 export class AuthService {
@@ -62,7 +62,7 @@ export class AuthService {
 
     const passwordCorrect = await this.bcryptAdapter.checkPassword(
       password,
-      user.password,
+      user.passwordHash,
     );
     if (!passwordCorrect) {
       return {
@@ -116,7 +116,7 @@ export class AuthService {
     const newUser: User = {
       login: login,
       email: email,
-      password: passwordHash,
+      passwordHash: passwordHash,
       createdAt: new Date(),
       emailConfirmation: {
         confirmationCode: randomUUID(),
@@ -125,7 +125,7 @@ export class AuthService {
       },
       passwordRecovery: null,
     };
-    await this.usersRepository.create(newUser);
+    // await this.usersRepository.create(newUser);
 
     if (newUser.emailConfirmation) {
       try {
@@ -146,7 +146,7 @@ export class AuthService {
     };
   }
 
-  async confirmUser(code: string): Promise<ResultObject<User | null>> {
+  async confirmUser(code: string) {
     const user = await this.usersRepository.findByConfirmationCode(code);
 
     if (!user) {
@@ -158,7 +158,7 @@ export class AuthService {
       };
     }
 
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailConfirmation!.isConfirmed) {
       return {
         status: resultStatus.BAD_REQUEST,
         errorMessages: "Bad request",
@@ -167,7 +167,7 @@ export class AuthService {
       };
     }
 
-    if (user.emailConfirmation.expirationDate! < new Date()) {
+    if (user.emailConfirmation!.expirationDate! < new Date()) {
       return {
         status: resultStatus.CODE_EXPIRED,
         errorMessages: "Bad request",
@@ -196,7 +196,7 @@ export class AuthService {
         data: null,
       };
     }
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailConfirmation!.isConfirmed) {
       return {
         status: resultStatus.BAD_REQUEST,
         errorMessages: "Bad request",

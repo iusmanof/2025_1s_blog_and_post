@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { UsersRepository } from "./users/repositories/users.repository";
+import { UsersRepository } from "./users/infrastructure/users.repository";
 import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
-import { UsersService } from "./users/services/users.service";
+import { UsersService } from "./users/application/users.service";
 import {
   EmailAdapter,
   EmailAdapterRecoveryPassword,
@@ -20,11 +20,11 @@ import CommentsService from "./comments/services/comments.service";
 import { CommentsRepository } from "./comments/repositories/comments.repository";
 import PostsRepository from "./posts/infrastructure/posts.repository";
 import { PostService } from "./posts/application/post.service";
-import { UsersQueryRepository } from "./users/repositories/users.query.repository";
+import { UsersQueryRepository } from "./users/infrastructure/users.query.repository";
 import { BlogController } from "./blogs/presentation/blog.controller";
 import { CommentController } from "./comments/controllers/comment.controller";
 import { PostController } from "./posts/presentation/post.controller";
-import { UserController } from "./users/controllers/user.controller";
+import { UserController } from "./users/presentation/user.controller";
 import { AuthController } from "./auth/controllers/auth.controller";
 import { SecurityDeviceController } from "./auth/controllers/security-devices.controller";
 

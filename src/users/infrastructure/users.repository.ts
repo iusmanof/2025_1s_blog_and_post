@@ -4,24 +4,24 @@ import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
 import { User } from "../types/user";
 import { ObjectId, WithId } from "mongodb";
 import { add } from "date-fns";
-import { UserMongooseModel } from "../domain/user.entity";
-import { UserCreateDto } from "../types/user-create-dto";
+import { UserModel } from "./user.mongo";
+import {UserEntity} from "../domain/user.entity";
 
 @injectable()
 export class UsersRepository {
   async findMany(
     queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
-  ): Promise<{ items: User[]; totalCount: number }> {
+  ) {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
     const skip = (pageNumber - 1) * pageSize;
     const [items, totalCount] = await Promise.all([
-      UserMongooseModel.find()
+      UserModel.find()
         .sort({ [sortBy]: sortDirection })
         .skip(skip)
         .limit(+pageSize)
         .lean(),
 
-      UserMongooseModel.countDocuments({}),
+      UserModel.countDocuments({}),
     ]);
     return { items, totalCount };
   }
@@ -30,47 +30,47 @@ export class UsersRepository {
     if (!ObjectId.isValid(id)) {
       return null;
     }
-    return UserMongooseModel.findOne({ _id: new ObjectId(id) });
+    return UserModel.findOne({ _id: new ObjectId(id) });
   }
 
   async findByLoginOrEmail(loginOrEmail: string) {
-    return UserMongooseModel.findOne({
+    return UserModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
   }
 
   async findByEmail(email: string) {
-    return UserMongooseModel.findOne({ email: email });
+    return UserModel.findOne({ email: email });
   }
 
   async findByLogin(login: string) {
-    return UserMongooseModel.findOne({ login: login });
+    return UserModel.findOne({ login: login });
   }
 
-  async create(user: UserCreateDto) {
-    const newUser = await UserMongooseModel.create(user);
+  async create(user: UserEntity) {
+    const newUser = await UserModel.create(user);
     return newUser._id.toString();
   }
 
   async delete(id: string): Promise<boolean> {
-    const deleteResult = await UserMongooseModel.deleteOne({
+    const deleteResult = await UserModel.deleteOne({
       _id: new ObjectId(id),
     });
     return deleteResult.deletedCount === 1;
   }
 
   async deleteAllUsers() {
-    await UserMongooseModel.deleteMany({});
+    await UserModel.deleteMany({});
   }
 
   async findByConfirmationCode(code: string) {
-    return UserMongooseModel.findOne({
+    return UserModel.findOne({
       "emailConfirmation.confirmationCode": code,
-    });
+    }).lean();
   }
 
   async findBYEmailAndRefreshCode(email: string, code: string) {
-    return UserMongooseModel.updateOne(
+    return UserModel.updateOne(
       { email },
       {
         $set: {
@@ -85,14 +85,14 @@ export class UsersRepository {
   }
 
   async confirmCode(code: string) {
-    return UserMongooseModel.updateOne(
+    return UserModel.updateOne(
       { "emailConfirmation.confirmationCode": code },
       { $set: { "emailConfirmation.isConfirmed": true } },
-    );
+    ).lean();
   }
 
   async setRecoveryCode(email: string, recoveryCode: string) {
-    return UserMongooseModel.updateOne(
+    return UserModel.updateOne(
       { email },
       {
         $set: {
@@ -106,7 +106,7 @@ export class UsersRepository {
   }
 
   async findByRecoveryCode(recoveryCode: string) {
-    return UserMongooseModel.findOne({
+    return UserModel.findOne({
       "passwordRecovery.recoveryCode": recoveryCode,
     });
   }
@@ -115,7 +115,7 @@ export class UsersRepository {
     recoveryCode: string,
     hashedPassword: string,
   ) {
-    return UserMongooseModel.updateOne(
+    return UserModel.updateOne(
       { "passwordRecovery.recoveryCode": recoveryCode },
       {
         $set: { password: hashedPassword },

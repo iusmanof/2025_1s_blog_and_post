@@ -81,7 +81,6 @@ let BlogService = class BlogService {
     }
     createPostByBlogId(postBody, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // TODO  BlogModel.findById(blogId); не используется напрмяую !!!
             const blog = yield blog_mongo_1.BlogModel.findById(blogId);
             if (!blog)
                 return null;

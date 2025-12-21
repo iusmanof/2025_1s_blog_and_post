@@ -2,17 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogEntity = void 0;
 class BlogEntity {
-    constructor(params) {
-        var _a;
+    constructor({ name, description, websiteUrl, isMembership = false, id, }) {
         this.isMembership = false;
-        this.id = params.id;
-        this.name = params.name;
-        this.description = params.description;
-        this.websiteUrl = params.websiteUrl;
-        this.isMembership = (_a = params.isMembership) !== null && _a !== void 0 ? _a : false;
+        this.name = name;
+        this.description = description;
+        this.websiteUrl = websiteUrl;
+        this.isMembership = isMembership;
+        this.id = id;
     }
-    static restore(params) {
-        return new BlogEntity(params);
+    static restore({ id, name, description, websiteUrl, isMembership, }) {
+        return new BlogEntity({ id, name, description, websiteUrl, isMembership });
     }
     updateData(params) {
         this.name = params.name;

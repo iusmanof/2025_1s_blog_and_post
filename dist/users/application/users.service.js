@@ -1,45 +1,64 @@
 "use strict";
-var __awaiter =
-  (this && this.__awaiter) ||
-  function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-      return value instanceof P
-        ? value
-        : new P(function (resolve) {
-            resolve(value);
-          });
-    }
-    return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator["throw"](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersService = void 0;
-const users_repositories_1 = require("../repositories/users.repositories");
-exports.usersService = {
-  findMany(queryDto) {
-    return __awaiter(this, void 0, void 0, function* () {
-      return users_repositories_1.usersRepository.findMany(queryDto);
-    });
-  },
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UsersService = void 0;
+const inversify_1 = require("inversify");
+const users_repository_1 = require("../infrastructure/users.repository");
+const bcrypt_adapter_1 = require("../../auth/adapters/bcrypt.adapter");
+const user_entity_1 = require("../domain/user.entity");
+let UsersService = class UsersService {
+    constructor(usersRepository, bcryptAdapter) {
+        this.usersRepository = usersRepository;
+        this.bcryptAdapter = bcryptAdapter;
+    }
+    findMany(queryDto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.usersRepository.findMany(queryDto);
+        });
+    }
+    create(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const passwordHash = yield this.bcryptAdapter.generateHash(dto.password);
+            const userEntity = new user_entity_1.UserEntity({ login: dto.login, email: dto.email, passwordHash: passwordHash });
+            return yield this.usersRepository.create(userEntity);
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.usersRepository.findById(id);
+            if (!user) {
+                return false;
+            }
+            return yield this.usersRepository.delete(id);
+        });
+    }
+};
+exports.UsersService = UsersService;
+exports.UsersService = UsersService = __decorate([
+    (0, inversify_1.injectable)(),
+    __param(0, (0, inversify_1.inject)(users_repository_1.UsersRepository)),
+    __param(1, (0, inversify_1.inject)(bcrypt_adapter_1.BcryptAdapter)),
+    __metadata("design:paramtypes", [users_repository_1.UsersRepository,
+        bcrypt_adapter_1.BcryptAdapter])
+], UsersService);
 //# sourceMappingURL=users.service.js.map

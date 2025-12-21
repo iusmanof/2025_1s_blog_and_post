@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRouter = void 0;
+const composition_root_1 = require("../../composition.root");
+const express_1 = require("express");
+const super_admin_guard_middleware_1 = require("../../core/milldlewares/super-admin.guard-middleware");
+const query_pagination_sorting_validation_middleware_1 = require("../../core/milldlewares/query-pagination-sorting.validation-middleware");
+const password_validation_middleware_1 = require("../../auth/middlewares/password.validation-middleware");
+const login_validation_middleware_1 = require("../../core/milldlewares/login.validation-middleware");
+const email_validation_middleware_1 = require("../../core/milldlewares/email.validation-middleware");
+const input_validation_middleware_1 = require("../../core/milldlewares/input-validation-middleware");
+const users_input_validation_middleware_1 = require("../../core/milldlewares/users-input.validation-middleware");
+const user_controller_1 = require("./user.controller");
+const userController = composition_root_1.container.get(user_controller_1.UserController);
+exports.userRouter = (0, express_1.Router)();
+exports.userRouter.use(super_admin_guard_middleware_1.basicAuth);
+exports.userRouter.get("/", (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidationWithEmailAndLogin)(), input_validation_middleware_1.inputValidationMiddleware, userController.findAllUsers);
+exports.userRouter.post("/", login_validation_middleware_1.loginValidation, password_validation_middleware_1.passwordValidation, email_validation_middleware_1.emailValidation, users_input_validation_middleware_1.usersInputValidationMiddleware, userController.createUser);
+exports.userRouter.delete("/:id", super_admin_guard_middleware_1.basicAuth, userController.delete);
+//# sourceMappingURL=users.route.js.map

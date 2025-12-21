@@ -6,14 +6,14 @@ import {
   IPagination,
   PaginationAndSortingUser,
 } from "../../core/types/pagination-and-sorting";
-import { UserMongooseModel } from "../domain/user.entity";
+import { UserModel  } from "./user.mongo";
 import { User } from "../types/user";
 
 @injectable()
 export class UsersQueryRepository {
   async findAllUsers(
     sortQueryDto: PaginationAndSortingUser,
-  ): Promise<IPagination<UserResponseCreateDto[]>> {
+  ) {
     const {
       sortBy,
       sortDirection,
@@ -24,8 +24,8 @@ export class UsersQueryRepository {
     } = sortQueryDto;
     const skip = (pageNumber - 1) * pageSize;
     const filter = this._getFilter(searchLoginTerm, searchEmailTerm);
-    const totalCount = await UserMongooseModel.countDocuments(filter);
-    const users = await UserMongooseModel.find(filter)
+    const totalCount = await UserModel.countDocuments(filter);
+    const users = await UserModel.find(filter)
       .sort({ [sortBy]: sortDirection })
       .skip(+skip)
       .limit(+pageSize)
@@ -36,29 +36,22 @@ export class UsersQueryRepository {
       page: pageNumber,
       pageSize: pageSize,
       totalCount,
-      items: users.map((user) => this._getInView(user)),
+      items: [{id: '11', login: '111', email: '123d@fe', createdAt: new Date() }]
+      // items: users.map((user) => this._getInView(user)),
     };
   }
 
   async findById(id: string) {
     if (!ObjectId.isValid(id)) return null;
 
-    const user = await UserMongooseModel.findById({
+    const user = await UserModel.findById({
       _id: new ObjectId(id),
-    }).lean();
+    });
     if (!user) {
       return null;
     }
-    return this._getInView(user);
-  }
-
-  _getInView(user: WithId<User>): UserResponseCreateDto {
-    return {
-      id: user._id.toString(),
-      login: user.login,
-      email: user.email,
-      createdAt: user.createdAt ? user.createdAt.toISOString() : null,
-    };
+      return {id: '11', login: '111', email: '123d@fe', createdAt: new Date() };
+      // return this._getInView(user);
   }
 
   _getFilter(

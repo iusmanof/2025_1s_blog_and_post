@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import { container } from "../../composition.root";
-import { UsersRepository } from "../../users/repositories/users.repository";
+import { UsersRepository } from "../../users/infrastructure/users.repository";
 const usersRepository = container.get(UsersRepository);
 
 export const loginRegistrationValidationMiddleware = body("login")

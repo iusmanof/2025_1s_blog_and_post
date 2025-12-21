@@ -71,6 +71,11 @@ let PostService = class PostService {
             return yield this.postsRepository.deletePost(id);
         });
     }
+    findPostsByBlogId(blogId, query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.postsRepository.getPostByBlogId(blogId, query);
+        });
+    }
 };
 exports.PostService = PostService;
 exports.PostService = PostService = __decorate([

@@ -50,18 +50,18 @@ let PostController = class PostController {
             }
             res.status(200).json(postFounded);
         });
-        this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const postCreated = yield this.postService.create(req.body);
-            const apiErrorMsg = [];
-            if (!postCreated) {
-                apiErrorMsg.push({ message: "ID Not found", field: "id" });
-                res
-                    .status(http_status_code_2.default.NOT_FOUND_404)
-                    .json({ errorsMessages: apiErrorMsg });
-                return;
-            }
-            res.status(http_status_code_2.default.CREATED_201).json(postCreated);
-        });
+        // create = async (req: Request<PostsDto>, res: Response) => {
+        //   const postCreated = await this.postService.create(req.body);
+        //   const apiErrorMsg: FieldError[] = [];
+        //   if (!postCreated) {
+        //     apiErrorMsg.push({ message: "ID Not found", field: "id" });
+        //     res
+        //       .status(HTTP_STATUS.NOT_FOUND_404)
+        //       .json({ errorsMessages: apiErrorMsg });
+        //     return;
+        //   }
+        //   res.status(HTTP_STATUS.CREATED_201).json(postCreated);
+        // };
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const postIsUpdated = yield this.postService.update(req.params.id, req.body);
             const apiErrorMsg = [];

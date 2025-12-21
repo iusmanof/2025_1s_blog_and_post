@@ -1,11 +1,10 @@
 import { inject, injectable } from "inversify";
 
 import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
-import { UsersRepository } from "../repositories/users.repository";
+import { UsersRepository } from "../infrastructure/users.repository";
 import { UserCreateDto } from "../types/user-create-dto";
-import { User } from "../types/user";
 import { BcryptAdapter } from "../../auth/adapters/bcrypt.adapter";
-import { UserMongooseModel } from "../domain/user.entity";
+import {UserEntity} from "../domain/user.entity";
 
 @injectable()
 export class UsersService {
@@ -15,21 +14,15 @@ export class UsersService {
   ) {}
   async findMany(
     queryDto: PaginationAndSorting<"login" | "email" | "createdAt">,
-  ): Promise<{ items: User[]; totalCount: number }> {
+  ){
     return this.usersRepository.findMany(queryDto);
   }
+
   async create(dto: UserCreateDto): Promise<string> {
-    const { login, password, email } = new UserMongooseModel(dto);
+    const passwordHash = await this.bcryptAdapter.generateHash(dto.password);
+    const userEntity = new UserEntity({login: dto.login, email: dto.email, passwordHash: passwordHash})
 
-    const passwordHash = await this.bcryptAdapter.generateHash(password);
-
-    const newUser = await UserMongooseModel.create({
-      login,
-      email,
-      password: passwordHash,
-    });
-
-    return await this.usersRepository.create(newUser);
+    return await this.usersRepository.create(userEntity);
   }
   async delete(id: string): Promise<boolean> {
     const user = await this.usersRepository.findById(id);

@@ -1,14 +1,8 @@
 import mongoose, {HydratedDocument, model, Model} from "mongoose";
-import {BlogRequestBody } from "../blog";
+import {BlogProps, BlogRequestBody} from "../blog";
 import {BlogEntity} from "../domain/blog.entity";
 
-export type BlogProps = {
-    name: string;
-    description: string;
-    websiteUrl: string;
-    isMembership: boolean;
-    createdAt: Date;
-};
+
 export type BlogDocument = HydratedDocument<BlogProps, BlogMethods>
 type BlogMethods = typeof blogMethods;
 type BlogStaticMethods = typeof blogStaticMethods;

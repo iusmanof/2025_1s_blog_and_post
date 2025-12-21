@@ -11,8 +11,21 @@ export interface IPasswordRecovery {
 export interface User {
   login: string;
   email: string;
-  password: string;
+  passwordHash: string;
   passwordRecovery: IPasswordRecovery | null;
   emailConfirmation: IEmailConfirmation;
   createdAt: Date;
+}
+
+
+export interface EntityParams {
+    login: string;
+    email: string;
+    passwordHash: string;
+}
+
+export type UserProps = {
+    login: string;
+    email: string;
+    password: string;
 }

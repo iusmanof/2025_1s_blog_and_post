@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { UsersService } from "../services/users.service";
+import { UsersService } from "../application/users.service";
 import { Request, Response } from "express";
 import {
   IPagination,
@@ -8,7 +8,7 @@ import {
 import { UserResponseCreateDto } from "../types/user-response-create-dto";
 import { sortQueryFieldsUtil } from "../../core/utils/sort-query-default.util";
 import httpStatusCode from "../../core/types/http-status-code";
-import { UsersQueryRepository } from "../repositories/users.query.repository";
+import { UsersQueryRepository } from "../infrastructure/users.query.repository";
 import { UserCreateDto } from "../types/user-create-dto";
 import HttpStatusCode from "../../core/types/http-status-code";
 
@@ -34,7 +34,6 @@ export class UserController {
       searchEmailTerm,
     } = sortQueryFieldsUtil(query);
 
-    // TODO controller dont work with queryRepository
     const users = await this.usersQueryRepository.findAllUsers({
       pageNumber,
       pageSize,

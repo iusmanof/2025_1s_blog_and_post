@@ -5,7 +5,7 @@ import { runDB, stopDb } from "../src/core/db/mongo.db";
 import { clearDb } from "./utils/clearDb";
 import cookieParser from "cookie-parser";
 
-import { UsersService } from "../src/users/services/users.service";
+import { UsersService } from "../src/users/application/users.service";
 import { container } from "../src/composition.root";
 const usersService = container.get(UsersService);
 

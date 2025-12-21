@@ -15,7 +15,7 @@ export class BlogService {
     ) {
     }
 
-    async create(blogRequestBody: BlogRequestBody): Promise<BlogPresentation> {
+    async create(blogRequestBody: BlogRequestBody) {
         const blogEntity = new BlogEntity(blogRequestBody)
         const savedBlog = await this.blogsRepository.save(blogEntity);
 

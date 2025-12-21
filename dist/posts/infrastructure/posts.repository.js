@@ -53,28 +53,12 @@ let PostsRepository = class PostsRepository {
                 .skip(+skip)
                 .limit(+pageSize)
                 .exec();
-            // let resultWithId: {
-            //   title: string;
-            //   shortDescription: string;
-            //   content: string;
-            //   blogId: string;
-            //   blogName: string;
-            //   createdAt: string;
-            //   id: string;
-            // }[];
-            // TODO refactoring resultWithId
-            // resultWithId = result.map(({ _id, ...rest }) => ({
-            //   ...rest,
-            //   id: _id.toString(),
-            // }));
             const totalCount = yield post_mongo_1.PostModel.countDocuments({});
             return {
                 pagesCount: +Math.ceil(totalCount / pageSize),
                 page: +pageNumber,
                 pageSize: +pageSize,
                 totalCount: +totalCount,
-                // TODO refactoring resultWithId
-                // items: resultWithId,
                 items: result,
             };
         });
@@ -137,8 +121,6 @@ let PostsRepository = class PostsRepository {
                 page: +pageNumber,
                 pageSize: +pageSize,
                 totalCount: +totalCount,
-                // TODO postWithId refactoring
-                // items: postWithId,
                 items: result,
             };
         });

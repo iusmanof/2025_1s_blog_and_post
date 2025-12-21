@@ -27,8 +27,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentsRepository = void 0;
 const inversify_1 = require("inversify");
 const mongodb_1 = require("mongodb");
-const users_query_repository_1 = require("../../users/repositories/users.query.repository");
-const user_entity_1 = require("../../users/domain/user.entity");
+const users_query_repository_1 = require("../../users/infrastructure/users.query.repository");
+const user_mongo_1 = require("../../users/infrastructure/user.mongo");
 const comments_entiry_1 = require("../domain/comments.entiry");
 const mongoose_1 = __importDefault(require("mongoose"));
 let CommentsRepository = class CommentsRepository {
@@ -37,7 +37,7 @@ let CommentsRepository = class CommentsRepository {
     }
     create(userId, postId, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_entity_1.UserMongooseModel.findById(userId);
+            const user = yield user_mongo_1.UserModel.findById(userId);
             if (!user)
                 return null;
             const newComment = yield comments_entiry_1.CommentMongooseModel.create({

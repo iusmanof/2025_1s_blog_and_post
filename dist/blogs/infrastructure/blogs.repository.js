@@ -97,20 +97,4 @@ exports.BlogsRepository = BlogsRepository;
 exports.BlogsRepository = BlogsRepository = __decorate([
     (0, inversify_1.injectable)()
 ], BlogsRepository);
-// async getBlogById(id: string): Promise<BlogEntity | null> {
-//     if (!mongoose.isValidObjectId(id)) return null;
-//
-// const doc = await BlogModel.findById(id);
-// if (!doc) return null;
-//
-// // Восстанавливаем Domain Entity из документа
-// return BlogEntity.restore({
-//     id: doc._id.toString(),
-//     name: doc.name,
-//     description: doc.description,
-//     websiteUrl: doc.websiteUrl,
-//     isMembership: doc.isMembership,
-// });
-// }
-//
 //# sourceMappingURL=blogs.repository.js.map

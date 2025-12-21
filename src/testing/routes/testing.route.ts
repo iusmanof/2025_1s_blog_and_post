@@ -6,7 +6,7 @@ import { BlogsRepository } from "../../blogs/infrastructure/blogs.repository";
 import { CommentsRepository } from "../../comments/repositories/comments.repository";
 import PostsRepository from "../../posts/infrastructure/posts.repository";
 import { SecurityDevicesRepository } from "../../auth/repositories/security-devices.repository";
-import { UsersRepository } from "../../users/repositories/users.repository";
+import { UsersRepository } from "../../users/infrastructure/users.repository";
 
 const authRepository = container.get(AuthRepository);
 const blogsRepository = container.get(BlogsRepository);

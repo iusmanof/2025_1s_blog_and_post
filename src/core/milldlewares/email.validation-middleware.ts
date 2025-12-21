@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { UsersRepository } from "../../users/repositories/users.repository";
+import { UsersRepository } from "../../users/infrastructure/users.repository";
 import { container } from "../../composition.root";
 
 const usersRepository = container.get(UsersRepository);

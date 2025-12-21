@@ -1,3 +1,11 @@
+export type BlogProps = {
+    name: string;
+    description: string;
+    websiteUrl: string;
+    isMembership: boolean;
+    createdAt: Date;
+};
+
 // POST
 export type BlogRequestBody = {
     name: string;

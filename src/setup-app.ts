@@ -11,7 +11,7 @@ import {
 import { blogRouter } from "./blogs/presentation/blog.route";
 import { postRouter } from "./posts/presentation/post.route";
 import { testingRouter } from "./testing/routes/testing.route";
-import { userRouter } from "./users/routes/users.route";
+import { userRouter } from "./users/presentation/users.route";
 import { authRouter } from "./auth/routes/auth.routes";
 import { commentsRouter } from "./comments/routes/comments.route";
 import cookieParser from "cookie-parser";
