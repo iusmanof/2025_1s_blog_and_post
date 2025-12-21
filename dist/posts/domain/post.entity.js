@@ -6,8 +6,6 @@ class PostEntity {
         this.title = params.title;
         this.shortDescription = params.shortDescription;
         this.content = params.content;
-        this.blogId = params.blogId;
-        this.blogName = params.blogName;
     }
     static restore(params) {
         return new PostEntity(params);
@@ -31,8 +29,12 @@ class PostEntity {
     getShortDescription() { return this.shortDescription; }
     getContent() { return this.content; }
     getBlogId() { return this.blogId; }
+    getBlogName() { return this.blogName; }
     setBlogName(blogName) {
         this.blogName = blogName;
+    }
+    setBlogId(blogId) {
+        this.blogId = blogId;
     }
 }
 exports.PostEntity = PostEntity;

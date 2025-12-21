@@ -55,9 +55,9 @@ blogRouter.post(
   blogController.createPostByBlogId,
 );
 
-// blogRouter.get(
-//   "/:blogId/posts",
-//   paramIdMiddleware,
-//   paginationAndSortingValidation(),
-//   blogController.findPostsByBlogId,
-// );
+blogRouter.get(
+  "/:blogId/posts",
+  paramIdMiddleware,
+  paginationAndSortingValidation(),
+  blogController.findPostsByBlogId,
+);

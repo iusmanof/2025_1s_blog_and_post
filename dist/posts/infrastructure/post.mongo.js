@@ -41,14 +41,13 @@ const postMethods = {
 };
 const postStaticMethods = {
     create_post_in_blog(params) {
-        const post = new exports.PostModel({
+        return new exports.PostModel({
             title: params.title,
             shortDescription: params.shortDescription,
             content: params.content,
             blogId: new mongoose_1.default.Types.ObjectId(params.blogId), // конвертация здесь
             blogName: params.blogName || "Unknown",
         });
-        return post;
     },
 };
 const postSchema = new mongoose_1.default.Schema({

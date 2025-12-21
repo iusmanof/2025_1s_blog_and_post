@@ -1,0 +1,4 @@
+export class AuthEntity {
+    constructor() {
+    }
+}

@@ -30,9 +30,9 @@ const http_status_code_1 = __importDefault(require("../../core/types/http-status
 const post_service_1 = require("../application/post.service");
 const http_status_code_2 = __importDefault(require("../../core/types/http-status-code"));
 const result_object_1 = require("../../core/types/result-object");
-const comments_service_1 = __importDefault(require("../../comments/services/comments.service"));
+const comments_service_1 = __importDefault(require("../../comments/application/comments.service"));
 const http_status_code_3 = __importDefault(require("../../core/types/http-status-code"));
-const jwt_adapter_1 = require("../../auth/adapters/jwt.adapter");
+const jwt_adapter_1 = require("../../auth/application/adapters/jwt.adapter");
 let PostController = class PostController {
     constructor(postService, commentsService, jwtAdapter) {
         this.postService = postService;

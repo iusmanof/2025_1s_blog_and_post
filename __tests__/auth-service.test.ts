@@ -5,13 +5,13 @@ import { add } from "date-fns";
 import { User } from "../src/users/types/user";
 import { afterEach } from "node:test";
 import { resultStatus } from "../src/core/types/result-object";
-import { emailTemplate } from "../src/auth/adapters/email.template";
+import { emailTemplate } from "../src/auth/application/adapters/email.template";
 
 import { container } from "../src/composition.root";
-import { AuthService } from "../src/auth/services/auth.service";
-import { EmailAdapter } from "../src/auth/adapters/email.adapter";
+import { AuthService } from "../src/auth/application/auth.service";
+import { EmailAdapter } from "../src/auth/application/adapters/email.adapter";
 
-jest.mock("../src/auth/adapters/email.adapter");
+jest.mock("../src/auth/application/adapters/email.adapter");
 jest.mock("uuid", () => ({
   v4: () => "123456789",
 }));

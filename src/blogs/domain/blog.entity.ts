@@ -1,4 +1,4 @@
-import {BlogRequestBody} from "../blog";
+import {BlogRequestBody} from "../types/blog";
 
 export class BlogEntity {
     private id?: string;

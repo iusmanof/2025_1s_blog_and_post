@@ -89,6 +89,25 @@ let BlogController = class BlogController {
             const blogCreated = yield this.blogService.createPostByBlogId(req.body, req.params.blogId);
             res.status(http_status_code_2.default.CREATED_201).json(blogCreated);
         });
+        this.findPostsByBlogId = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const errors = (0, express_validator_1.validationResult)(req);
+            if (!errors.isEmpty()) {
+                res.status(http_status_code_2.default.NOT_FOUND_404).json({ errors: errors.array() });
+                return;
+            }
+            const blogId = req.params.blogId;
+            const blog = yield this.blogService.findById(blogId);
+            if (!blog) {
+                res.status(http_status_code_2.default.NOT_FOUND_404).send("Blog not found.");
+                return;
+            }
+            const posts = yield this.postService.findPostsByBlogId(blogId, req.query);
+            if (!posts) {
+                res.status(http_status_code_2.default.NOT_FOUND_404).send("Posts not found.");
+                return;
+            }
+            res.status(200).json(posts);
+        });
     }
 };
 exports.BlogController = BlogController;

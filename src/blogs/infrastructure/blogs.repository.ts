@@ -1,5 +1,5 @@
 import {injectable} from "inversify";
-import { BlogQuery }  from "../blog";
+import { BlogQuery }  from "../types/blog";
 import mongoose from "mongoose";
 import {BlogDocument, BlogModel} from "./blog.mongo";
 import {BlogEntity} from "../domain/blog.entity";
@@ -56,7 +56,7 @@ export class BlogsRepository {
         };
     }
 
-    async getBlogById(id: string): Promise<BlogEntity | null> {
+    async getBlogById(id: string| undefined): Promise<BlogEntity | null> {
         if (!mongoose.isValidObjectId(id)) {
             return null;
         }

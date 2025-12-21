@@ -1,11 +1,11 @@
 import "reflect-metadata";
 import { container } from "../../composition.root";
 import { Request, Response, Router } from "express";
-import { AuthRepository } from "../../auth/repositories/auth.repository";
+import { AuthRepository } from "../../auth/infrastructure/auth.repository";
 import { BlogsRepository } from "../../blogs/infrastructure/blogs.repository";
-import { CommentsRepository } from "../../comments/repositories/comments.repository";
+import { CommentsRepository } from "../../comments/infrastructure/comments.repository";
 import PostsRepository from "../../posts/infrastructure/posts.repository";
-import { SecurityDevicesRepository } from "../../auth/repositories/security-devices.repository";
+import { SecurityDevicesRepository } from "../../auth/infrastructure/security-devices.repository";
 import { UsersRepository } from "../../users/infrastructure/users.repository";
 
 const authRepository = container.get(AuthRepository);

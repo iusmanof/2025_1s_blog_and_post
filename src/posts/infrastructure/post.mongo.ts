@@ -1,5 +1,5 @@
 import mongoose, {HydratedDocument, model, Model} from "mongoose";
-import {Post} from "../post";
+import {Post} from "../types/post";
 
 export type PostProps = {
     title: string;
@@ -7,6 +7,7 @@ export type PostProps = {
     content: string;
     blogId: mongoose.Types.ObjectId;
     blogName: string;
+    createdAt?: Date;
 }
 
 export type PostDocument = HydratedDocument<PostProps, PostMethods>;

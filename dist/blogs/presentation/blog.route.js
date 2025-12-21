@@ -13,6 +13,7 @@ const title_validation_1 = require("../../core/milldlewares/title-validation");
 const contentValidation_1 = require("../../core/milldlewares/contentValidation");
 const short_description_validation_1 = require("../../core/milldlewares/short-description-validation");
 const query_id_middleware_1 = require("../../core/milldlewares/query-id.middleware");
+const param_id_middleware_1 = require("../../core/milldlewares/param-id.middleware");
 const blog_controller_1 = require("./blog.controller");
 exports.blogRouter = (0, express_1.Router)();
 const blogController = composition_root_1.container.get(blog_controller_1.BlogController);
@@ -22,10 +23,5 @@ exports.blogRouter.get("/:id", query_id_middleware_1.queryIdMiddleware, blogCont
 exports.blogRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [nameValidation_1.nameValidation, website_validation_1.websiteValidation], input_validation_middleware_1.inputValidationMiddleware, blogController.update);
 exports.blogRouter.delete("/:id", query_id_middleware_1.queryIdMiddleware, super_admin_guard_middleware_1.basicAuth, blogController.delete);
 exports.blogRouter.post("/:blogId/posts", super_admin_guard_middleware_1.basicAuth, [title_validation_1.titleValidation, contentValidation_1.contentValidation, short_description_validation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, blogController.createPostByBlogId);
-// blogRouter.get(
-//   "/:blogId/posts",
-//   paramIdMiddleware,
-//   paginationAndSortingValidation(),
-//   blogController.findPostsByBlogId,
-// );
+exports.blogRouter.get("/:blogId/posts", param_id_middleware_1.paramIdMiddleware, (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), blogController.findPostsByBlogId);
 //# sourceMappingURL=blog.route.js.map

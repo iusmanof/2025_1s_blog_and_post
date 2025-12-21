@@ -29,7 +29,7 @@ const inversify_1 = require("inversify");
 const comments_service_1 = __importDefault(require("../services/comments.service"));
 const result_object_1 = require("../../core/types/result-object");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
-const jwt_adapter_1 = require("../../auth/adapters/jwt.adapter");
+const jwt_adapter_1 = require("../../auth/application/adapters/jwt.adapter");
 let CommentController = class CommentController {
     constructor(commentsService, jwtAdapter) {
         this.commentsService = commentsService;

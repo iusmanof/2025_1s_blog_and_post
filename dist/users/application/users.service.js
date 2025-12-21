@@ -24,7 +24,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const inversify_1 = require("inversify");
 const users_repository_1 = require("../infrastructure/users.repository");
-const bcrypt_adapter_1 = require("../../auth/adapters/bcrypt.adapter");
+const bcrypt_adapter_1 = require("../../auth/application/adapters/bcrypt.adapter");
 const user_entity_1 = require("../domain/user.entity");
 let UsersService = class UsersService {
     constructor(usersRepository, bcryptAdapter) {

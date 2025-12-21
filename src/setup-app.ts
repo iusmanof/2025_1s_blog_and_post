@@ -12,10 +12,10 @@ import { blogRouter } from "./blogs/presentation/blog.route";
 import { postRouter } from "./posts/presentation/post.route";
 import { testingRouter } from "./testing/routes/testing.route";
 import { userRouter } from "./users/presentation/users.route";
-import { authRouter } from "./auth/routes/auth.routes";
-import { commentsRouter } from "./comments/routes/comments.route";
+import { authRouter } from "./auth/presentation/auth.routes";
+import { commentsRouter } from "./comments/presentation/comments.route";
 import cookieParser from "cookie-parser";
-import { securityDevicesRouter } from "./auth/routes/security-devices.routes";
+import { securityDevicesRouter } from "./auth/presentation/security-devices.routes";
 
 export const SETUP_APP = (app: Express) => {
   app.set("trust proxy", true);

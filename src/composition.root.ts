@@ -1,32 +1,32 @@
 import "reflect-metadata";
 import { Container } from "inversify";
 import { UsersRepository } from "./users/infrastructure/users.repository";
-import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
+import { BcryptAdapter } from "./auth/application/adapters/bcrypt.adapter";
 import { UsersService } from "./users/application/users.service";
 import {
   EmailAdapter,
   EmailAdapterRecoveryPassword,
   EmailAdapterYandex,
-} from "./auth/adapters/email.adapter";
-import { JwtAdapter } from "./auth/adapters/jwt.adapter";
-import { AuthRepository } from "./auth/repositories/auth.repository";
-import { SecurityDevicesQueryRepository } from "./auth/repositories/security-devices.query-repository";
-import { SecurityDevicesRepository } from "./auth/repositories/security-devices.repository";
-import { AuthService } from "./auth/services/auth.service";
-import { SecurityDevicesService } from "./auth/services/security-devices.service";
+} from "./auth/application/adapters/email.adapter";
+import { JwtAdapter } from "./auth/application/adapters/jwt.adapter";
+import { AuthRepository } from "./auth/infrastructure/auth.repository";
+import { SecurityDevicesQueryRepository } from "./auth/infrastructure/security-devices.query-repository";
+import { SecurityDevicesRepository } from "./auth/infrastructure/security-devices.repository";
+import { AuthService } from "./auth/application/auth.service";
+import { SecurityDevicesService } from "./auth/application/security-devices.service";
 import { BlogsRepository } from "./blogs/infrastructure/blogs.repository";
 import { BlogService } from "./blogs/application/blog.service";
-import CommentsService from "./comments/services/comments.service";
-import { CommentsRepository } from "./comments/repositories/comments.repository";
+import CommentsService from "./comments/application/comments.service";
+import { CommentsRepository } from "./comments/infrastructure/comments.repository";
 import PostsRepository from "./posts/infrastructure/posts.repository";
 import { PostService } from "./posts/application/post.service";
 import { UsersQueryRepository } from "./users/infrastructure/users.query.repository";
 import { BlogController } from "./blogs/presentation/blog.controller";
-import { CommentController } from "./comments/controllers/comment.controller";
+import { CommentController } from "./comments/presentation/comment.controller";
 import { PostController } from "./posts/presentation/post.controller";
 import { UserController } from "./users/presentation/user.controller";
-import { AuthController } from "./auth/controllers/auth.controller";
-import { SecurityDeviceController } from "./auth/controllers/security-devices.controller";
+import { AuthController } from "./auth/presentation/auth.controller";
+import { SecurityDeviceController } from "./auth/presentation/security-devices.controller";
 
 export const container = new Container();
 

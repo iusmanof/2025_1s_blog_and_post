@@ -4,16 +4,16 @@ import {
   RequestWithParams,
   RequestWithQuery,
 } from "../../core/types/request-types";
-import { PostsDto, PostModelWithId, PostQuery } from "../posts.dto";
+import { PostModelWithId, PostQuery } from "../types/posts.dto";
 import httpStatusCode from "../../core/types/http-status-code";
 import { PostService } from "../application/post.service";
 import HTTP_STATUS from "../../core/types/http-status-code";
 import { FieldError } from "../../core/types/field-error";
 import { resultStatus } from "../../core/types/result-object";
-import CommentsService from "../../comments/services/comments.service";
+import CommentsService from "../../comments/application/comments.service";
 import { CommentsQuery } from "../../comments/types/comments-query";
 import HttpStatusCode from "../../core/types/http-status-code";
-import { JwtAdapter } from "../../auth/adapters/jwt.adapter";
+import { JwtAdapter } from "../../auth/application/adapters/jwt.adapter";
 
 @injectable()
 export class PostController {

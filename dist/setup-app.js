@@ -19,10 +19,10 @@ const blog_route_1 = require("./blogs/presentation/blog.route");
 const post_route_1 = require("./posts/presentation/post.route");
 const testing_route_1 = require("./testing/routes/testing.route");
 const users_route_1 = require("./users/presentation/users.route");
-const auth_routes_1 = require("./auth/routes/auth.routes");
-const comments_route_1 = require("./comments/routes/comments.route");
+const auth_routes_1 = require("./auth/presentation/auth.routes");
+const comments_route_1 = require("./comments/presentation/comments.route");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const security_devices_routes_1 = require("./auth/routes/security-devices.routes");
+const security_devices_routes_1 = require("./auth/presentation/security-devices.routes");
 const SETUP_APP = (app) => {
     app.set("trust proxy", true);
     app.use(express_1.default.json());

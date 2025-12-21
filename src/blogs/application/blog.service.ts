@@ -1,11 +1,10 @@
 import {inject, injectable} from "inversify";
-import {BlogRequestBody, BlogPresentation, BlogQuery} from "../blog";
-import {PostsDto} from "../../posts/posts.dto";
+import {BlogRequestBody, BlogQuery} from "../types/blog";
+import {PostsDto} from "../../posts/types/posts.dto";
 import {BlogsRepository} from "../infrastructure/blogs.repository";
-import {BlogModel} from "../infrastructure/blog.mongo";
-import {PostModel} from "../../posts/infrastructure/post.mongo";
 import PostsRepository from "../../posts/infrastructure/posts.repository";
 import {BlogEntity} from "../domain/blog.entity";
+import {PostEntity} from "../../posts/domain/post.entity";
 
 @injectable()
 export class BlogService {
@@ -54,29 +53,23 @@ export class BlogService {
         return true;
     }
 
-
     async createPostByBlogId(postBody: PostsDto, blogId: string) {
-        const blog = await BlogModel.findById(blogId);
+        const blog = await this.blogsRepository.getBlogById(blogId);
         if (!blog) return null;
 
-        const post = PostModel.create_post_in_blog({
-            title: postBody.title,
-            shortDescription: postBody.shortDescription,
-            content: postBody.content,
-            blogId: String(blog._id),
-            blogName: blog.name,
-        });
+        const postEntity = new PostEntity(postBody)
+        postEntity.setBlogId(blog.getId()!)
+        postEntity.setBlogName(blog.getName())
 
-        // await this.postsRepository.save(post);
-
+        const post = await this.postsRepository.createPost(postEntity)
         return {
-            id: post._id.toString(),
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: blog._id.toString(),
-            blogName: blog.name,
-            // createdAt: post.createdAt.toISOString(),
+            id: postEntity.getId(),
+            title: postEntity.getTitle(),
+            shortDescription: postEntity.getShortDescription(),
+            content: postEntity.getContent(),
+            blogId: postEntity.getBlogId(),
+            blogName: postEntity.getBlogName(),
+            createdAt: post.createdAt,
         };
     }
 }

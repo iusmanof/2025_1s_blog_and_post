@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify";
 import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
 import { UsersRepository } from "../infrastructure/users.repository";
 import { UserCreateDto } from "../types/user-create-dto";
-import { BcryptAdapter } from "../../auth/adapters/bcrypt.adapter";
+import { BcryptAdapter } from "../../auth/application/adapters/bcrypt.adapter";
 import {UserEntity} from "../domain/user.entity";
 
 @injectable()

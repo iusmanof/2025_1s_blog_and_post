@@ -16,7 +16,7 @@ exports.userIdBelongsToAnotherMiddleware = void 0;
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
 const composition_root_1 = require("../../composition.root");
 const jwt_adapter_1 = require("../adapters/jwt.adapter");
-const security_devices_query_repository_1 = require("../repositories/security-devices.query-repository");
+const security_devices_query_repository_1 = require("../infrastructure/security-devices.query-repository");
 const jwtAdapter = composition_root_1.container.get(jwt_adapter_1.JwtAdapter);
 const securityDevicesQueryRepository = composition_root_1.container.get(security_devices_query_repository_1.SecurityDevicesQueryRepository);
 const userIdBelongsToAnotherMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

@@ -1,5 +1,5 @@
 import mongoose, {HydratedDocument, model, Model} from "mongoose";
-import {BlogProps, BlogRequestBody} from "../blog";
+import {BlogProps, BlogRequestBody} from "../types/blog";
 import {BlogEntity} from "../domain/blog.entity";
 
 

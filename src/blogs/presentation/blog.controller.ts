@@ -4,13 +4,13 @@ import {
     RequestWithParamsAndQuery,
     RequestWithQuery,
 } from "../../core/types/request-types";
-import {BlogQuery, BlogWithId} from "../blog";
+import {BlogQuery, BlogWithId} from "../types/blog";
 import {Request, Response} from "express";
 import HTTP_STATUS from "../../core/types/http-status-code";
 import {BlogService} from "../application/blog.service";
 import {validationResult} from "express-validator";
 import {FieldError} from "../../core/types/field-error";
-import {PostsDto} from "../../posts/posts.dto";
+import {PostsDto} from "../../posts/types/posts.dto";
 import httpStatusCode from "../../core/types/http-status-code";
 import {PostService} from "../../posts/application/post.service";
 
@@ -103,5 +103,31 @@ export class BlogController {
             req.params.blogId,
         );
         res.status(httpStatusCode.CREATED_201).json(blogCreated);
+    };
+
+    findPostsByBlogId = async (
+        req: RequestWithParamsAndQuery<{ blogId: string }, BlogQuery>,
+        res: Response,
+    ) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(httpStatusCode.NOT_FOUND_404).json({ errors: errors.array() });
+            return;
+        }
+
+        const blogId = req.params.blogId;
+
+        const blog = await this.blogService.findById(blogId);
+        if (!blog) {
+            res.status(httpStatusCode.NOT_FOUND_404).send("Blog not found.");
+            return;
+        }
+
+        const posts = await this.postService.findPostsByBlogId(blogId, req.query);
+        if (!posts) {
+            res.status(httpStatusCode.NOT_FOUND_404).send("Posts not found.");
+            return;
+        }
+        res.status(200).json(posts);
     };
 }

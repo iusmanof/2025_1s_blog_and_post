@@ -27,10 +27,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogService = void 0;
 const inversify_1 = require("inversify");
 const blogs_repository_1 = require("../infrastructure/blogs.repository");
-const blog_mongo_1 = require("../infrastructure/blog.mongo");
-const post_mongo_1 = require("../../posts/infrastructure/post.mongo");
 const posts_repository_1 = __importDefault(require("../../posts/infrastructure/posts.repository"));
 const blog_entity_1 = require("../domain/blog.entity");
+const post_entity_1 = require("../../posts/domain/post.entity");
 let BlogService = class BlogService {
     constructor(blogsRepository, postsRepository) {
         this.blogsRepository = blogsRepository;
@@ -81,25 +80,21 @@ let BlogService = class BlogService {
     }
     createPostByBlogId(postBody, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blog_mongo_1.BlogModel.findById(blogId);
+            const blog = yield this.blogsRepository.getBlogById(blogId);
             if (!blog)
                 return null;
-            const post = post_mongo_1.PostModel.create_post_in_blog({
-                title: postBody.title,
-                shortDescription: postBody.shortDescription,
-                content: postBody.content,
-                blogId: String(blog._id),
-                blogName: blog.name,
-            });
-            // await this.postsRepository.save(post);
+            const postEntity = new post_entity_1.PostEntity(postBody);
+            postEntity.setBlogId(blog.getId());
+            postEntity.setBlogName(blog.getName());
+            const post = yield this.postsRepository.createPost(postEntity);
             return {
-                id: post._id.toString(),
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: blog._id.toString(),
-                blogName: blog.name,
-                // createdAt: post.createdAt.toISOString(),
+                id: postEntity.getId(),
+                title: postEntity.getTitle(),
+                shortDescription: postEntity.getShortDescription(),
+                content: postEntity.getContent(),
+                blogId: postEntity.getBlogId(),
+                blogName: postEntity.getBlogName(),
+                createdAt: post.createdAt,
             };
         });
     }

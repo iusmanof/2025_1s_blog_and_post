@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.accessTokenGuard = void 0;
 const http_status_code_1 = __importDefault(require("../core/types/http-status-code"));
-const jwt_adapter_1 = require("./adapters/jwt.adapter");
+const jwt_adapter_1 = require("./application/adapters/jwt.adapter");
 const composition_root_1 = require("../composition.root");
 const jwtAdapter = composition_root_1.container.get(jwt_adapter_1.JwtAdapter);
 const accessTokenGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

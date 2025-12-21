@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 
-import { PostsDto, PostModelWithId, PostQuery } from "../posts.dto";
+import { PostsDto, PostModelWithId, PostQuery } from "../types/posts.dto";
 import PostsRepository from "../infrastructure/posts.repository";
 import {PostEntity} from "../domain/post.entity";
 
