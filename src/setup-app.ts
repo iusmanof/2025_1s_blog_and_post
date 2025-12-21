@@ -8,8 +8,8 @@ import {
   COMMENTS_PATH,
   SECURITY_DEVICES_PATH,
 } from "./core/db/paths";
-import { blogRouter } from "./blogs/routes/blog.route";
-import { postRouter } from "./posts/routes/post.route";
+import { blogRouter } from "./blogs/presentation/blog.route";
+import { postRouter } from "./posts/presentation/post.route";
 import { testingRouter } from "./testing/routes/testing.route";
 import { userRouter } from "./users/routes/users.route";
 import { authRouter } from "./auth/routes/auth.routes";

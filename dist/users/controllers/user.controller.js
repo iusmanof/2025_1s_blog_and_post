@@ -53,7 +53,11 @@ let UserController = class UserController {
             const { login, password, email } = req.body;
             const userId = yield this.usersService.create({ login, password, email });
             const newUser = yield this.usersQueryRepository.findById(userId);
-            return res.status(http_status_code_1.default.CREATED_201).send(newUser);
+            if (!newUser) {
+                res.status(http_status_code_1.default.NOT_FOUND_404).send();
+                return;
+            }
+            res.status(http_status_code_1.default.CREATED_201).json(newUser);
         });
         this.delete = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersService.delete(req.params.id);

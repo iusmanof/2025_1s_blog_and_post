@@ -17,11 +17,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthRepository = void 0;
 const inversify_1 = require("inversify");
-const mongo_db_1 = require("../../core/db/mongo.db");
+const rtoken_entiry_1 = require("../domain/rtoken.entiry");
 let AuthRepository = class AuthRepository {
     addTokenInBlackList(rfToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getRefreshTokenCollection)().insertOne({
+            yield rtoken_entiry_1.RTokenMongooseModel.create({
                 token: rfToken,
                 createdAt: new Date(),
             });
@@ -29,12 +29,12 @@ let AuthRepository = class AuthRepository {
     }
     findRefreshTokenInBlackList(refresh_token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getRefreshTokenCollection)().findOne({ token: refresh_token });
+            return yield rtoken_entiry_1.RTokenMongooseModel.findOne({ token: refresh_token }).exec();
         });
     }
     deleteRefreshTokenBlackList() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getRefreshTokenCollection)().deleteMany({});
+            yield rtoken_entiry_1.RTokenMongooseModel.deleteMany({}).exec();
         });
     }
 };

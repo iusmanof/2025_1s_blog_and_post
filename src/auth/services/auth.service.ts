@@ -3,11 +3,15 @@ import { v4 as uuidv4 } from "uuid";
 import { randomUUID } from "crypto";
 import { add } from "date-fns";
 import { ResultObject, resultStatus } from "../../core/types/result-object";
-import { UserDbDto } from "../../users/types/user-db-dto";
+import { User } from "../../users/types/user";
 import { emailTemplate } from "../adapters/email.template";
 import { JwtAdapter } from "../adapters/jwt.adapter";
 import { SecurityDevicesService } from "./security-devices.service";
-import {EmailAdapter, EmailAdapterRecoveryPassword, EmailAdapterYandex} from "../adapters/email.adapter";
+import {
+  EmailAdapter,
+  EmailAdapterRecoveryPassword,
+  EmailAdapterYandex,
+} from "../adapters/email.adapter";
 import { BcryptAdapter } from "../adapters/bcrypt.adapter";
 import { UsersRepository } from "../../users/repositories/users.repository";
 import { SecurityDevicesQueryRepository } from "../repositories/security-devices.query-repository";
@@ -19,8 +23,10 @@ export class AuthService {
   constructor(
     @inject(JwtAdapter) private readonly jwtAdapter: JwtAdapter,
     @inject(EmailAdapter) private readonly emailAdapter: EmailAdapter,
-    @inject(EmailAdapterRecoveryPassword) private readonly emailAdapterRecoveryPassword: EmailAdapterRecoveryPassword,
-    @inject(EmailAdapterYandex) private readonly emailAdapterYandex: EmailAdapterYandex,
+    @inject(EmailAdapterRecoveryPassword)
+    private readonly emailAdapterRecoveryPassword: EmailAdapterRecoveryPassword,
+    @inject(EmailAdapterYandex)
+    private readonly emailAdapterYandex: EmailAdapterYandex,
     @inject(BcryptAdapter) private readonly bcryptAdapter: BcryptAdapter,
     @inject(SecurityDevicesService)
     private readonly securityDevicesService: SecurityDevicesService,
@@ -105,9 +111,9 @@ export class AuthService {
     login: string,
     email: string,
     password: string,
-  ): Promise<ResultObject<UserDbDto | null | string>> {
+  ): Promise<ResultObject<User | null | string>> {
     const passwordHash = await this.bcryptAdapter.generateHash(password);
-    const newUser: UserDbDto = {
+    const newUser: User = {
       login: login,
       email: email,
       password: passwordHash,
@@ -117,6 +123,7 @@ export class AuthService {
         expirationDate: add(new Date(), { hours: 1, minutes: 30 }),
         isConfirmed: false,
       },
+      passwordRecovery: null,
     };
     await this.usersRepository.create(newUser);
 
@@ -139,7 +146,7 @@ export class AuthService {
     };
   }
 
-  async confirmUser(code: string): Promise<ResultObject<UserDbDto | null>> {
+  async confirmUser(code: string): Promise<ResultObject<User | null>> {
     const user = await this.usersRepository.findByConfirmationCode(code);
 
     if (!user) {
@@ -151,7 +158,7 @@ export class AuthService {
       };
     }
 
-    if (user.emailConfirmation!.isConfirmed) {
+    if (user.emailConfirmation.isConfirmed) {
       return {
         status: resultStatus.BAD_REQUEST,
         errorMessages: "Bad request",
@@ -160,7 +167,7 @@ export class AuthService {
       };
     }
 
-    if (user.emailConfirmation?.expirationDate! < new Date()) {
+    if (user.emailConfirmation.expirationDate! < new Date()) {
       return {
         status: resultStatus.CODE_EXPIRED,
         errorMessages: "Bad request",
@@ -178,9 +185,7 @@ export class AuthService {
     };
   }
 
-  async resendCode(
-    email: string,
-  ): Promise<ResultObject<UserDbDto | null | string>> {
+  async resendCode(email: string): Promise<ResultObject<User | null | string>> {
     const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
@@ -191,7 +196,7 @@ export class AuthService {
         data: null,
       };
     }
-    if (user!.emailConfirmation?.isConfirmed) {
+    if (user.emailConfirmation.isConfirmed) {
       return {
         status: resultStatus.BAD_REQUEST,
         errorMessages: "Bad request",
@@ -317,49 +322,49 @@ export class AuthService {
     if (!result) return null;
 
     return {
-      login: result?.login,
-      email: result?.email,
-      userId: result?.id,
+      login: result.login,
+      email: result.email,
+      userId: result.id,
     };
   }
 
   async passwordRecovery(email: string) {
-      const checkEmail = await this.usersRepository.findByEmail(email);
-      const recovery_code = randomUUID();
+    const checkEmail = await this.usersRepository.findByEmail(email);
+    const recovery_code = randomUUID();
 
-      if (checkEmail) {
-          try {
-              console.log(email)
-              // отправляем email с кодом
-              await this.emailAdapterYandex.nodemailer(
-                  email,
-                  emailTemplate.recoveryPasswordEmail(recovery_code)
-              );
-          } catch (err) {
-              console.log("send email error", err);
-          }
-
-          await this.usersRepository.setRecoveryCode(email, recovery_code);
-
-          return recovery_code;
+    if (checkEmail) {
+      try {
+        await this.emailAdapterYandex.nodemailer(
+          email,
+          emailTemplate.recoveryPasswordEmail(recovery_code),
+        );
+      } catch (err) {
+        console.log("send email error", err);
       }
 
-      return null;
+      await this.usersRepository.setRecoveryCode(email, recovery_code);
+
+      return recovery_code;
+    }
+
+    return null;
   }
 
-   async confirmPasswordRecovery(newPassword: string, recoveryCode: string) {
-       const user = await this.usersRepository.findByRecoveryCode( recoveryCode );
-       if (!user || !user.passwordRecovery) return false;
+  async confirmPasswordRecovery(newPassword: string, recoveryCode: string) {
+    const user = await this.usersRepository.findByRecoveryCode(recoveryCode);
+    if (!user || !user.passwordRecovery) return false;
 
-       if (user.passwordRecovery.expirationDate < new Date()) {
-           return false;
-       }
+    if (user.passwordRecovery.expirationDate < new Date()) {
+      return false;
+    }
 
-       const hashedPassword = await this.bcryptAdapter.generateHash(newPassword);
+    const hashedPassword = await this.bcryptAdapter.generateHash(newPassword);
 
-       await this.usersRepository.updatePasswordByRecoveryCode(recoveryCode, hashedPassword);
+    await this.usersRepository.updatePasswordByRecoveryCode(
+      recoveryCode,
+      hashedPassword,
+    );
 
-       return true;
-   }
+    return true;
+  }
 }
-

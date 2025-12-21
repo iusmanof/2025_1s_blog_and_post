@@ -29,12 +29,27 @@ const inversify_1 = require("inversify");
 const comments_service_1 = __importDefault(require("../services/comments.service"));
 const result_object_1 = require("../../core/types/result-object");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
+const jwt_adapter_1 = require("../../auth/adapters/jwt.adapter");
 let CommentController = class CommentController {
-    constructor(commentsService) {
+    constructor(commentsService, jwtAdapter) {
         this.commentsService = commentsService;
+        this.jwtAdapter = jwtAdapter;
         this.getByCommentId = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const commentId = req.params.id;
-            const result = yield this.commentsService.getByCommentId(commentId);
+            // add userId
+            let userId = null;
+            const authHeader = req.headers.authorization;
+            const token = (authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith("Bearer "))
+                ? authHeader.split(" ")[1]
+                : null;
+            if (token) {
+                try {
+                    const payload = yield this.jwtAdapter.verifyAccessToken(token);
+                    userId = payload.id;
+                }
+                catch (_a) { }
+            }
+            const result = yield this.commentsService.getByCommentId(commentId, userId);
             if (result.status === result_object_1.resultStatus.NOT_FOUND) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Not Found");
                 return;
@@ -44,7 +59,8 @@ let CommentController = class CommentController {
         this.deleteById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const commentId = req.params.id;
             const userId = req.user.id;
-            const comment = yield this.commentsService.getCommentById(commentId, userId);
+            //getCommentById
+            const comment = yield this.commentsService.getByCommentId(commentId, userId);
             if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
                 return;
@@ -69,7 +85,8 @@ let CommentController = class CommentController {
             const commentId = req.params.id;
             const content = req.body.content;
             const userId = req.user.id;
-            const comment = yield this.commentsService.getCommentById(commentId, userId);
+            //getCommentById
+            const comment = yield this.commentsService.getByCommentId(commentId, userId);
             if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
                 return;
@@ -83,9 +100,29 @@ let CommentController = class CommentController {
             const result = yield this.commentsService.updateById(commentId, content);
             if (result.status === result_object_1.resultStatus.ERROR) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not updated");
+                return;
             }
             if (result.status === result_object_1.resultStatus.SUCCESS) {
                 res.status(http_status_code_1.default.NO_CONTENT_204).send("Updated successfully");
+                return;
+            }
+        });
+        this.setLikeStatus = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const commentId = req.params.id;
+            const likeStatus = req.body.likeStatus;
+            const userId = req.user.id;
+            const result = yield this.commentsService.setLikeStatus(commentId, likeStatus, userId);
+            if (result.status === result_object_1.resultStatus.ERROR) {
+                res.status(http_status_code_1.default.BAD_REQUEST_400).send("Comment is invalid");
+                return;
+            }
+            if (result.status === result_object_1.resultStatus.NOT_FOUND) {
+                res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not founded");
+                return;
+            }
+            if (result.status === result_object_1.resultStatus.SUCCESS) {
+                res.status(http_status_code_1.default.NO_CONTENT_204).send("Update like status");
+                return;
             }
         });
     }
@@ -94,6 +131,8 @@ exports.CommentController = CommentController;
 exports.CommentController = CommentController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(comments_service_1.default)),
-    __metadata("design:paramtypes", [comments_service_1.default])
+    __param(1, (0, inversify_1.inject)(jwt_adapter_1.JwtAdapter)),
+    __metadata("design:paramtypes", [comments_service_1.default,
+        jwt_adapter_1.JwtAdapter])
 ], CommentController);
 //# sourceMappingURL=comment.controller.js.map

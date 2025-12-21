@@ -3,23 +3,27 @@ import { Container } from "inversify";
 import { UsersRepository } from "./users/repositories/users.repository";
 import { BcryptAdapter } from "./auth/adapters/bcrypt.adapter";
 import { UsersService } from "./users/services/users.service";
-import {EmailAdapter, EmailAdapterRecoveryPassword, EmailAdapterYandex} from "./auth/adapters/email.adapter";
+import {
+  EmailAdapter,
+  EmailAdapterRecoveryPassword,
+  EmailAdapterYandex,
+} from "./auth/adapters/email.adapter";
 import { JwtAdapter } from "./auth/adapters/jwt.adapter";
 import { AuthRepository } from "./auth/repositories/auth.repository";
 import { SecurityDevicesQueryRepository } from "./auth/repositories/security-devices.query-repository";
 import { SecurityDevicesRepository } from "./auth/repositories/security-devices.repository";
 import { AuthService } from "./auth/services/auth.service";
 import { SecurityDevicesService } from "./auth/services/security-devices.service";
-import { BlogsRepository } from "./blogs/repositories/blogs.repository";
-import { BlogService } from "./blogs/services/blog.service";
+import { BlogsRepository } from "./blogs/infrastructure/blogs.repository";
+import { BlogService } from "./blogs/application/blog.service";
 import CommentsService from "./comments/services/comments.service";
 import { CommentsRepository } from "./comments/repositories/comments.repository";
-import { PostsRepository } from "./posts/repositories/posts.repository";
-import { PostService } from "./posts/services/post.service";
+import PostsRepository from "./posts/infrastructure/posts.repository";
+import { PostService } from "./posts/application/post.service";
 import { UsersQueryRepository } from "./users/repositories/users.query.repository";
-import { BlogController } from "./blogs/controllers/blog.controller";
+import { BlogController } from "./blogs/presentation/blog.controller";
 import { CommentController } from "./comments/controllers/comment.controller";
-import { PostController } from "./posts/controllers/post.controller";
+import { PostController } from "./posts/presentation/post.controller";
 import { UserController } from "./users/controllers/user.controller";
 import { AuthController } from "./auth/controllers/auth.controller";
 import { SecurityDeviceController } from "./auth/controllers/security-devices.controller";

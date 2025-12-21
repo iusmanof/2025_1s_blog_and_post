@@ -17,23 +17,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersRepository = void 0;
 const inversify_1 = require("inversify");
-const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
 const date_fns_1 = require("date-fns");
+const user_entity_1 = require("../domain/user.entity");
 let UsersRepository = class UsersRepository {
     findMany(queryDto) {
         return __awaiter(this, void 0, void 0, function* () {
             const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
-            const filter = {};
             const skip = (pageNumber - 1) * pageSize;
             const [items, totalCount] = yield Promise.all([
-                (0, mongo_db_1.getUserCollection)()
-                    .find(filter)
+                user_entity_1.UserMongooseModel.find()
                     .sort({ [sortBy]: sortDirection })
                     .skip(skip)
                     .limit(+pageSize)
-                    .toArray(),
-                (0, mongo_db_1.getUserCollection)().countDocuments(filter),
+                    .lean(),
+                user_entity_1.UserMongooseModel.countDocuments({}),
             ]);
             return { items, totalCount };
         });
@@ -43,35 +41,35 @@ let UsersRepository = class UsersRepository {
             if (!mongodb_1.ObjectId.isValid(id)) {
                 return null;
             }
-            return (0, mongo_db_1.getUserCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
+            return user_entity_1.UserMongooseModel.findOne({ _id: new mongodb_1.ObjectId(id) });
         });
     }
     findByLoginOrEmail(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getUserCollection)().findOne({
+            return user_entity_1.UserMongooseModel.findOne({
                 $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
             });
         });
     }
     findByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getUserCollection)().findOne({ email: email });
+            return user_entity_1.UserMongooseModel.findOne({ email: email });
         });
     }
     findByLogin(login) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getUserCollection)().findOne({ login: login });
+            return user_entity_1.UserMongooseModel.findOne({ login: login });
         });
     }
     create(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newUser = yield (0, mongo_db_1.getUserCollection)().insertOne(Object.assign({}, user));
-            return newUser.insertedId.toString();
+            const newUser = yield user_entity_1.UserMongooseModel.create(user);
+            return newUser._id.toString();
         });
     }
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deleteResult = yield (0, mongo_db_1.getUserCollection)().deleteOne({
+            const deleteResult = yield user_entity_1.UserMongooseModel.deleteOne({
                 _id: new mongodb_1.ObjectId(id),
             });
             return deleteResult.deletedCount === 1;
@@ -79,19 +77,19 @@ let UsersRepository = class UsersRepository {
     }
     deleteAllUsers() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getUserCollection)().deleteMany({});
+            yield user_entity_1.UserMongooseModel.deleteMany({});
         });
     }
     findByConfirmationCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().findOne({
+            return user_entity_1.UserMongooseModel.findOne({
                 "emailConfirmation.confirmationCode": code,
             });
         });
     }
     findBYEmailAndRefreshCode(email, code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getUserCollection)().updateOne({ email }, {
+            return user_entity_1.UserMongooseModel.updateOne({ email }, {
                 $set: {
                     "emailConfirmation.confirmationCode": code,
                     "emailConfirmation.expirationDate": (0, date_fns_1.add)(new Date(), {
@@ -104,12 +102,12 @@ let UsersRepository = class UsersRepository {
     }
     confirmCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getUserCollection)().updateOne({ "emailConfirmation.confirmationCode": code }, { $set: { "emailConfirmation.isConfirmed": true } });
+            return user_entity_1.UserMongooseModel.updateOne({ "emailConfirmation.confirmationCode": code }, { $set: { "emailConfirmation.isConfirmed": true } });
         });
     }
     setRecoveryCode(email, recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().updateOne({ email }, {
+            return user_entity_1.UserMongooseModel.updateOne({ email }, {
                 $set: {
                     passwordRecovery: {
                         recoveryCode,
@@ -121,16 +119,16 @@ let UsersRepository = class UsersRepository {
     }
     findByRecoveryCode(recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().findOne({
-                "passwordRecovery.recoveryCode": recoveryCode
+            return user_entity_1.UserMongooseModel.findOne({
+                "passwordRecovery.recoveryCode": recoveryCode,
             });
         });
     }
     updatePasswordByRecoveryCode(recoveryCode, hashedPassword) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getUserCollection)().updateOne({ "passwordRecovery.recoveryCode": recoveryCode }, {
+            return user_entity_1.UserMongooseModel.updateOne({ "passwordRecovery.recoveryCode": recoveryCode }, {
                 $set: { password: hashedPassword },
-                $unset: { passwordRecovery: "" } // удаляем код после смены пароля
+                $unset: { passwordRecovery: "" }, // удаляем код после смены пароля
             });
         });
     }

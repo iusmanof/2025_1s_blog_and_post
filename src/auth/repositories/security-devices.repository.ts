@@ -1,40 +1,40 @@
 import { injectable } from "inversify";
-import { getSecurityDeviceCollection } from "../../core/db/mongo.db";
 import {
   SecurityDeviceDbDto,
   UPDATEsecurityDeviceDbDto,
 } from "../types/security-device-db.dto";
+import { DeviceMongooseModel } from "../domain/device.entity";
 
 @injectable()
 export class SecurityDevicesRepository {
   async findAllDevices() {
-    return await getSecurityDeviceCollection().find().toArray();
+    return await DeviceMongooseModel.find().exec();
   }
   async findAllDevicesByUserId(userId: string) {
-    return await getSecurityDeviceCollection().find({ userId }).toArray();
+    return await DeviceMongooseModel.find({ userId }).exec();
   }
   async addDevice(dbDto: SecurityDeviceDbDto) {
-    await getSecurityDeviceCollection().insertOne(dbDto);
+    await DeviceMongooseModel.create(dbDto);
   }
   async updateDevice(
     deviceId: string,
     updatedDbDto: UPDATEsecurityDeviceDbDto,
   ) {
-    await getSecurityDeviceCollection().updateOne(
+    await DeviceMongooseModel.updateOne(
       { deviceId: deviceId },
       { $set: updatedDbDto },
-    );
+    ).exec();
   }
   async deleteDevice(deviceId: string): Promise<{ count: number }> {
-    const result = await getSecurityDeviceCollection().deleteOne({ deviceId });
+    const result = await DeviceMongooseModel.deleteOne({ deviceId }).exec();
     return { count: result.deletedCount ?? 0 };
   }
   async deleteAllDevices() {
-    return getSecurityDeviceCollection().deleteMany({});
+    return DeviceMongooseModel.deleteMany({}).exec();
   }
   async deleteAllDevicesExcludeCurrent(deviceId: string) {
-    await getSecurityDeviceCollection().deleteMany({
+    await DeviceMongooseModel.deleteMany({
       deviceId: { $ne: deviceId },
-    });
+    }).exec();
   }
 }

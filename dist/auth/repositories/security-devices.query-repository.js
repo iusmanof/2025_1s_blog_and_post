@@ -17,24 +17,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SecurityDevicesQueryRepository = void 0;
 const inversify_1 = require("inversify");
-const mongo_db_1 = require("../../core/db/mongo.db");
+const device_entity_1 = require("../domain/device.entity");
 let SecurityDevicesQueryRepository = class SecurityDevicesQueryRepository {
     findAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getSecurityDeviceCollection)().find({}).toArray();
+            return yield device_entity_1.DeviceMongooseModel.find({}).exec();
         });
     }
     geByDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getSecurityDeviceCollection)().findOne({ deviceId: deviceId });
+            return yield device_entity_1.DeviceMongooseModel.findOne({ deviceId: deviceId }).exec();
         });
     }
     findByIdAndIat(deviceId, iat) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getSecurityDeviceCollection)().findOne({
+            return yield device_entity_1.DeviceMongooseModel.findOne({
                 deviceId: deviceId,
                 lastActivateDate: iat,
-            });
+            }).exec();
         });
     }
 };

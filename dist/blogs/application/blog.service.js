@@ -1,73 +1,116 @@
 "use strict";
-var __awaiter =
-  (this && this.__awaiter) ||
-  function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-      return value instanceof P
-        ? value
-        : new P(function (resolve) {
-            resolve(value);
-          });
-    }
-    return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator["throw"](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  };
-Object.defineProperty(exports, "__esModule", { value: true });
-const blogs_repository_1 = require("../repositories/blogs.repository");
-const BlogService = {
-  findMany: (query) =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      // Business logic layer
-      return yield blogs_repository_1.blogsRepository.getAllBlogs(query);
-    }),
-  findById: (id) =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      // Business logic layer
-      return yield blogs_repository_1.blogsRepository.getBlogById(id);
-    }),
-  create: (body) =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      // Business logic layer
-      return yield blogs_repository_1.blogsRepository.createBlog(body);
-    }),
-  createPostByBlogId: (body, blogId) =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      // Business logic layer
-      return yield blogs_repository_1.blogsRepository.createPostByBlogId(
-        body,
-        blogId,
-      );
-    }),
-  update: (id, body) =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      // Business logic layer
-      return yield blogs_repository_1.blogsRepository.updateBlog(id, body);
-    }),
-  delete: (id) =>
-    __awaiter(void 0, void 0, void 0, function* () {
-      // Business logic layer
-      return yield blogs_repository_1.blogsRepository.deleteBlog(id);
-    }),
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-exports.default = BlogService;
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BlogService = void 0;
+const inversify_1 = require("inversify");
+const blogs_repository_1 = require("../infrastructure/blogs.repository");
+const blog_mongo_1 = require("../infrastructure/blog.mongo");
+const post_mongo_1 = require("../../posts/infrastructure/post.mongo");
+const posts_repository_1 = __importDefault(require("../../posts/infrastructure/posts.repository"));
+const blog_entity_1 = require("../domain/blog.entity");
+let BlogService = class BlogService {
+    constructor(blogsRepository, postsRepository) {
+        this.blogsRepository = blogsRepository;
+        this.postsRepository = postsRepository;
+    }
+    create(blogRequestBody) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blogEntity = new blog_entity_1.BlogEntity(blogRequestBody);
+            const savedBlog = yield this.blogsRepository.save(blogEntity);
+            return {
+                id: savedBlog.id,
+                name: savedBlog.name,
+                description: savedBlog.description,
+                websiteUrl: savedBlog.websiteUrl,
+                createdAt: savedBlog.createdAt,
+                isMembership: savedBlog.isMembership,
+            };
+        });
+    }
+    findMany(query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.getAllBlogs(query);
+        });
+    }
+    findById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.getBlogById(id);
+        });
+    }
+    update(id, blogRequestBody) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blogEntity = yield this.blogsRepository.getBlogById(id);
+            if (!blogEntity)
+                return null;
+            blogEntity.updateData(blogRequestBody);
+            yield this.blogsRepository.save(blogEntity);
+            return true;
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blogEntity = yield this.blogsRepository.getBlogById(id);
+            if (!blogEntity)
+                return false;
+            yield this.blogsRepository.deleteBlog(blogEntity);
+            return true;
+        });
+    }
+    createPostByBlogId(postBody, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // TODO  BlogModel.findById(blogId); не используется напрмяую !!!
+            const blog = yield blog_mongo_1.BlogModel.findById(blogId);
+            if (!blog)
+                return null;
+            const post = post_mongo_1.PostModel.create_post_in_blog({
+                title: postBody.title,
+                shortDescription: postBody.shortDescription,
+                content: postBody.content,
+                blogId: String(blog._id),
+                blogName: blog.name,
+            });
+            // await this.postsRepository.save(post);
+            return {
+                id: post._id.toString(),
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.content,
+                blogId: blog._id.toString(),
+                blogName: blog.name,
+                // createdAt: post.createdAt.toISOString(),
+            };
+        });
+    }
+};
+exports.BlogService = BlogService;
+exports.BlogService = BlogService = __decorate([
+    (0, inversify_1.injectable)(),
+    __param(0, (0, inversify_1.inject)(blogs_repository_1.BlogsRepository)),
+    __param(1, (0, inversify_1.inject)(posts_repository_1.default)),
+    __metadata("design:paramtypes", [blogs_repository_1.BlogsRepository,
+        posts_repository_1.default])
+], BlogService);
 //# sourceMappingURL=blog.service.js.map

@@ -1,22 +1,18 @@
-export type User = {
+export interface IEmailConfirmation {
+  confirmationCode: string;
+  expirationDate: Date;
+  isConfirmed: boolean;
+}
+export interface IPasswordRecovery {
+  recoveryCode: string;
+  expirationDate: Date;
+}
+
+export interface User {
   login: string;
+  email: string;
   password: string;
-  email: string;
-};
-
-export type UserDB = {
-  login: string;
-  email: string;
-};
-
-export type IUserDB = {
-  login: string;
-  email: string;
-  passwordHash: string;
+  passwordRecovery: IPasswordRecovery | null;
+  emailConfirmation: IEmailConfirmation;
   createdAt: Date;
-  emailConfirmation: {
-    confirmationCode: string;
-    expirationDate: Date;
-    isConfirmed: false;
-  };
-};
+}

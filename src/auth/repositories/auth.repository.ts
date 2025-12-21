@@ -1,18 +1,18 @@
 import { injectable } from "inversify";
-import { getRefreshTokenCollection } from "../../core/db/mongo.db";
+import { RTokenMongooseModel } from "../domain/rtoken.entiry";
 
 @injectable()
 export class AuthRepository {
   async addTokenInBlackList(rfToken: string) {
-    await getRefreshTokenCollection().insertOne({
+    await RTokenMongooseModel.create({
       token: rfToken,
       createdAt: new Date(),
     });
   }
   async findRefreshTokenInBlackList(refresh_token: string) {
-    return await getRefreshTokenCollection().findOne({ token: refresh_token });
+    return await RTokenMongooseModel.findOne({ token: refresh_token }).exec();
   }
   async deleteRefreshTokenBlackList() {
-    await getRefreshTokenCollection().deleteMany({});
+    await RTokenMongooseModel.deleteMany({}).exec();
   }
 }

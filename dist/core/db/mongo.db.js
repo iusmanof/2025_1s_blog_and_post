@@ -8,81 +8,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runDB = void 0;
-exports.getBlogCollection = getBlogCollection;
-exports.getPostCollection = getPostCollection;
-exports.getUserCollection = getUserCollection;
-exports.getCommentCollection = getCommentCollection;
-exports.getRefreshTokenCollection = getRefreshTokenCollection;
-exports.getSecurityDeviceCollection = getSecurityDeviceCollection;
 exports.stopDb = stopDb;
+const mongoose_1 = __importDefault(require("mongoose"));
 const mongodb_1 = require("mongodb");
 const settings_1 = require("./settings");
 let client;
-let blogCollection;
-let postCollection;
-let userCollection;
-let commentCollection;
-let listRefreshTokenCollection;
-let securityDevicesCollection;
 const runDB = (url) => __awaiter(void 0, void 0, void 0, function* () {
     client = new mongodb_1.MongoClient(url);
     try {
-        yield client.connect();
-        const db = client.db(settings_1.SETTINGS.DB_NAME);
-        blogCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_BLOGS);
-        postCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_POSTS);
-        userCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_USERS);
-        listRefreshTokenCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_LIST_REFRESH_TOKEN);
-        commentCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_COMMENTS);
-        securityDevicesCollection = db.collection(settings_1.SETTINGS.DB_COLLECTION_SECURITY_DEVICES);
-        console.log("Connect successfully to server");
+        yield mongoose_1.default.connect(settings_1.SETTINGS.MONGODB_URI + "/" + settings_1.SETTINGS.DB_NAME_MONGOOSE);
+        console.log("Connect successfully to DB_NAME_MONGOOSE");
     }
     catch (e) {
         console.error("Don't connect to server");
         console.log(e);
         yield client.close();
+        yield mongoose_1.default.disconnect();
         throw e;
     }
 });
 exports.runDB = runDB;
-function getBlogCollection() {
-    if (!blogCollection) {
-        throw new Error("Collection blog not initialized");
-    }
-    return blogCollection;
-}
-function getPostCollection() {
-    if (!postCollection) {
-        throw new Error("Collection post not initialized");
-    }
-    return postCollection;
-}
-function getUserCollection() {
-    if (!userCollection) {
-        throw new Error("Collection user not initialized");
-    }
-    return userCollection;
-}
-function getCommentCollection() {
-    if (!commentCollection) {
-        throw new Error("Collection comment not initialized");
-    }
-    return commentCollection;
-}
-function getRefreshTokenCollection() {
-    if (!listRefreshTokenCollection) {
-        throw new Error("Collection token not initialized");
-    }
-    return listRefreshTokenCollection;
-}
-function getSecurityDeviceCollection() {
-    if (!securityDevicesCollection) {
-        throw new Error("Collection security-device not initialized");
-    }
-    return securityDevicesCollection;
-}
 function stopDb() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!client) {

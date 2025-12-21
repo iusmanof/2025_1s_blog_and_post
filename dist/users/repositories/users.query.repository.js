@@ -17,33 +17,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersQueryRepository = void 0;
 const inversify_1 = require("inversify");
-const mongo_db_1 = require("../../core/db/mongo.db");
 const mongodb_1 = require("mongodb");
+const user_entity_1 = require("../domain/user.entity");
 let UsersQueryRepository = class UsersQueryRepository {
     findAllUsers(sortQueryDto) {
         return __awaiter(this, void 0, void 0, function* () {
             const { sortBy, sortDirection, pageSize, pageNumber, searchEmailTerm, searchLoginTerm, } = sortQueryDto;
             const skip = (pageNumber - 1) * pageSize;
             const filter = this._getFilter(searchLoginTerm, searchEmailTerm);
-            const totalCount = yield (0, mongo_db_1.getUserCollection)().countDocuments(filter);
-            const users = yield (0, mongo_db_1.getUserCollection)()
-                .find(filter)
+            const totalCount = yield user_entity_1.UserMongooseModel.countDocuments(filter);
+            const users = yield user_entity_1.UserMongooseModel.find(filter)
                 .sort({ [sortBy]: sortDirection })
                 .skip(+skip)
                 .limit(+pageSize)
-                .toArray();
+                .exec();
             return {
                 pagesCount: Math.ceil(totalCount / pageSize),
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount,
-                items: users.map((u) => this._getInView(u)),
+                items: users.map((user) => this._getInView(user)),
             };
         });
     }
     findById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield (0, mongo_db_1.getUserCollection)().findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (!mongodb_1.ObjectId.isValid(id))
+                return null;
+            const user = yield user_entity_1.UserMongooseModel.findById({
+                _id: new mongodb_1.ObjectId(id),
+            }).lean();
             if (!user) {
                 return null;
             }
@@ -59,7 +62,6 @@ let UsersQueryRepository = class UsersQueryRepository {
         };
     }
     _getFilter(loginQuery, emailQuery) {
-        // let filter: { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } = {};
         const filters = [];
         if (loginQuery) {
             filters.push({ login: { $regex: loginQuery, $options: "i" } });

@@ -1,13 +1,13 @@
 import { injectable } from "inversify";
 
 import { UserResponseCreateDto } from "../types/user-response-create-dto";
-import { getUserCollection } from "../../core/db/mongo.db";
 import { ObjectId, WithId } from "mongodb";
-import { UserDbDto } from "../types/user-db-dto";
 import {
   IPagination,
   PaginationAndSortingUser,
 } from "../../core/types/pagination-and-sorting";
+import { UserMongooseModel } from "../domain/user.entity";
+import { User } from "../types/user";
 
 @injectable()
 export class UsersQueryRepository {
@@ -24,30 +24,35 @@ export class UsersQueryRepository {
     } = sortQueryDto;
     const skip = (pageNumber - 1) * pageSize;
     const filter = this._getFilter(searchLoginTerm, searchEmailTerm);
-    const totalCount = await getUserCollection().countDocuments(filter);
-    const users = await getUserCollection()
-      .find(filter)
+    const totalCount = await UserMongooseModel.countDocuments(filter);
+    const users = await UserMongooseModel.find(filter)
       .sort({ [sortBy]: sortDirection })
       .skip(+skip)
       .limit(+pageSize)
-      .toArray();
+      .exec();
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount,
-      items: users.map((u) => this._getInView(u)),
+      items: users.map((user) => this._getInView(user)),
     };
   }
-  async findById(id: string): Promise<UserResponseCreateDto | null> {
-    const user = await getUserCollection().findOne({ _id: new ObjectId(id) });
+
+  async findById(id: string) {
+    if (!ObjectId.isValid(id)) return null;
+
+    const user = await UserMongooseModel.findById({
+      _id: new ObjectId(id),
+    }).lean();
     if (!user) {
       return null;
     }
     return this._getInView(user);
   }
-  _getInView(user: WithId<UserDbDto>): UserResponseCreateDto {
+
+  _getInView(user: WithId<User>): UserResponseCreateDto {
     return {
       id: user._id.toString(),
       login: user.login,
@@ -55,6 +60,7 @@ export class UsersQueryRepository {
       createdAt: user.createdAt ? user.createdAt.toISOString() : null,
     };
   }
+
   _getFilter(
     loginQuery: string | null,
     emailQuery: string | null,
@@ -62,8 +68,6 @@ export class UsersQueryRepository {
     login?: { $regex: string; $options: string };
     email?: { $regex: string; $options: string };
   } {
-    // let filter: { login?: { $regex: string; $options: string }, email?: { $regex: string; $options: string } } = {};
-
     const filters = [];
 
     if (loginQuery) {

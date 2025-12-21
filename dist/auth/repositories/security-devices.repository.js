@@ -17,45 +17,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SecurityDevicesRepository = void 0;
 const inversify_1 = require("inversify");
-const mongo_db_1 = require("../../core/db/mongo.db");
+const device_entity_1 = require("../domain/device.entity");
 let SecurityDevicesRepository = class SecurityDevicesRepository {
     findAllDevices() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getSecurityDeviceCollection)().find().toArray();
+            return yield device_entity_1.DeviceMongooseModel.find().exec();
         });
     }
     findAllDevicesByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, mongo_db_1.getSecurityDeviceCollection)().find({ userId }).toArray();
+            return yield device_entity_1.DeviceMongooseModel.find({ userId }).exec();
         });
     }
     addDevice(dbDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getSecurityDeviceCollection)().insertOne(dbDto);
+            yield device_entity_1.DeviceMongooseModel.create(dbDto);
         });
     }
     updateDevice(deviceId, updatedDbDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getSecurityDeviceCollection)().updateOne({ deviceId: deviceId }, { $set: updatedDbDto });
+            yield device_entity_1.DeviceMongooseModel.updateOne({ deviceId: deviceId }, { $set: updatedDbDto }).exec();
         });
     }
     deleteDevice(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const result = yield (0, mongo_db_1.getSecurityDeviceCollection)().deleteOne({ deviceId });
+            const result = yield device_entity_1.DeviceMongooseModel.deleteOne({ deviceId }).exec();
             return { count: (_a = result.deletedCount) !== null && _a !== void 0 ? _a : 0 };
         });
     }
     deleteAllDevices() {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, mongo_db_1.getSecurityDeviceCollection)().deleteMany({});
+            return device_entity_1.DeviceMongooseModel.deleteMany({}).exec();
         });
     }
     deleteAllDevicesExcludeCurrent(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, mongo_db_1.getSecurityDeviceCollection)().deleteMany({
+            yield device_entity_1.DeviceMongooseModel.deleteMany({
                 deviceId: { $ne: deviceId },
-            });
+            }).exec();
         });
     }
 };

@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { accessTokenGuard } from "../../auth/access-token.guard";
-import { commentValidationa } from "../../core/milldlewares/comments-validation.middleware";
+import { commentValidationa } from "../middlewares/comments-validation.middleware";
 import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
 import { container } from "../../composition.root";
 import { CommentController } from "../controllers/comment.controller";
+import { likeStatusValidation } from "../middlewares/likeStatus-validation.middleware";
 
 const commentController = container.get(CommentController);
 
@@ -19,4 +20,12 @@ commentsRouter.put(
   [commentValidationa],
   inputValidationMiddleware,
   commentController.updateById,
+);
+
+commentsRouter.put(
+  "/:id/like-status",
+  accessTokenGuard,
+  [likeStatusValidation],
+  inputValidationMiddleware,
+  commentController.setLikeStatus,
 );
