@@ -1,75 +1,67 @@
-import {inject, injectable} from "inversify";
-import {BlogRequestBody, BlogQuery} from "../types/blog";
-import {PostsDto} from "../../posts/types/posts.dto";
-import {BlogsRepository} from "../infrastructure/blogs.repository";
+import { inject, injectable } from "inversify";
+import { BlogRequestBody, BlogQuery } from "../types/blog";
+import { PostsDto } from "../../posts/types/posts.dto";
+import { BlogsRepository } from "../infrastructure/blogs.repository";
 import PostsRepository from "../../posts/infrastructure/posts.repository";
-import {BlogEntity} from "../domain/blog.entity";
-import {PostEntity} from "../../posts/domain/post.entity";
+import { BlogEntity } from "../domain/blog.entity";
+import { mapPostToView } from "../../posts/application/post.mapper";
 
 @injectable()
 export class BlogService {
-    constructor(
-        @inject(BlogsRepository) private readonly blogsRepository: BlogsRepository,
-        @inject(PostsRepository) private readonly postsRepository: PostsRepository,
-    ) {
-    }
+  constructor(
+    @inject(BlogsRepository) private readonly blogsRepository: BlogsRepository,
+    @inject(PostsRepository) private readonly postsRepository: PostsRepository,
+  ) {}
 
-    async create(blogRequestBody: BlogRequestBody) {
-        const blogEntity = new BlogEntity(blogRequestBody)
-        const savedBlog = await this.blogsRepository.save(blogEntity);
+  async create(blogRequestBody: BlogRequestBody) {
+    const blogEntity = new BlogEntity(blogRequestBody);
+    const savedBlog = await this.blogsRepository.save(blogEntity);
 
-        return {
-            id: savedBlog.id,
-            name: savedBlog.name,
-            description: savedBlog.description,
-            websiteUrl: savedBlog.websiteUrl,
-            createdAt: savedBlog.createdAt,
-            isMembership: savedBlog.isMembership,
-        };
-    }
+    return {
+      id: savedBlog.id,
+      name: savedBlog.name,
+      description: savedBlog.description,
+      websiteUrl: savedBlog.websiteUrl,
+      createdAt: savedBlog.createdAt,
+      isMembership: savedBlog.isMembership,
+    };
+  }
 
-    async findMany(query: BlogQuery) {
-        return await this.blogsRepository.getAllBlogs(query);
-    }
+  async findMany(query: BlogQuery) {
+    return await this.blogsRepository.getAllBlogs(query);
+  }
 
-    async findById(id: string) {
-        return await this.blogsRepository.getBlogById(id);
-    }
+  async findById(id: string) {
+    return await this.blogsRepository.getBlogById(id);
+  }
 
-    async update(id: string, blogRequestBody: BlogRequestBody) {
-        const blogEntity = await this.blogsRepository.getBlogById(id);
-        if (!blogEntity) return null;
+  async update(id: string, blogRequestBody: BlogRequestBody) {
+    const blogEntity = await this.blogsRepository.getBlogById(id);
+    if (!blogEntity) return null;
 
-        blogEntity.updateData(blogRequestBody)
+    blogEntity.updateData(blogRequestBody);
 
-        await this.blogsRepository.save(blogEntity);
-        return true;
-    }
+    await this.blogsRepository.save(blogEntity);
+    return true;
+  }
 
-    async delete(id: string): Promise<boolean> {
-        const blogEntity = await this.blogsRepository.getBlogById(id);
-        if (!blogEntity) return false;
-        await this.blogsRepository.deleteBlog(blogEntity);
-        return true;
-    }
+  async delete(id: string): Promise<boolean> {
+    const blogEntity = await this.blogsRepository.getBlogById(id);
+    if (!blogEntity) return false;
+    await this.blogsRepository.deleteBlog(blogEntity);
+    return true;
+  }
 
-    async createPostByBlogId(postBody: PostsDto, blogId: string) {
-        const blog = await this.blogsRepository.getBlogById(blogId);
-        if (!blog) return null;
+  async createPostByBlogId(postBody: PostsDto, blogId: string) {
+    const blog = await this.blogsRepository.getBlogById(blogId);
+    if (!blog) return null;
 
-        const postEntity = new PostEntity(postBody)
-        postEntity.setBlogId(blog.getId()!)
-        postEntity.setBlogName(blog.getName())
+    const post = await this.postsRepository.createPost({
+      ...postBody,
+      blogId: blog.getId()!,
+      blogName: blog.getName(),
+    });
 
-        const post = await this.postsRepository.createPost(postEntity)
-        return {
-            id: postEntity.getId(),
-            title: postEntity.getTitle(),
-            shortDescription: postEntity.getShortDescription(),
-            content: postEntity.getContent(),
-            blogId: postEntity.getBlogId(),
-            blogName: postEntity.getBlogName(),
-            createdAt: post.createdAt,
-        };
-    }
+    return mapPostToView(post);
+  }
 }

@@ -1,14 +1,13 @@
 import { validationResult } from "express-validator";
 import { NextFunction, Request, Response } from "express";
-import httpStatusCode from "../types/http-status-code";
+import httpStatusCode from "../../../core/types/http-status-code";
 
-export const usersInputValidationMiddleware = (
+export const inputUsersValidationMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   const errors = validationResult(req);
-  console.log(errors);
 
   if (!errors.isEmpty()) {
     const errorsArray = errors.array({ onlyFirstError: true }).map((err) => {

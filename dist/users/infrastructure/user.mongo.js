@@ -35,13 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-// Схема для подтверждения email
 const emailConfirmationSchema = new mongoose_1.default.Schema({
     confirmationCode: { type: String, required: true },
     expirationDate: { type: Date, required: true },
     isConfirmed: { type: Boolean, required: true, default: false },
 }, { _id: false });
-// Схема для восстановления пароля
 const passwordRecoverySchema = new mongoose_1.default.Schema({
     recoveryCode: { type: String, required: true },
     expirationDate: { type: Date, required: true },
@@ -49,9 +47,10 @@ const passwordRecoverySchema = new mongoose_1.default.Schema({
 const userMethods = {
     confirmEmail(confirmationCode) {
         if (this.emailConfirmation &&
-            this.emailConfirmation.confirmationCode === confirmationCode) {
+            this.emailConfirmation.confirmationCode ===
+                confirmationCode) {
             this.emailConfirmation.isConfirmed = true;
-            this.emailConfirmation.expirationDate = new Date(); // Устанавливаем дату подтверждения
+            this.emailConfirmation.expirationDate = new Date();
             return true;
         }
         return false;
@@ -63,40 +62,49 @@ const userMethods = {
         };
     },
     isPasswordRecoveryValid(recoveryCode) {
-        if (this.passwordRecovery &&
-            this.passwordRecovery.recoveryCode === recoveryCode &&
-            this.passwordRecovery.expirationDate > new Date()) {
-            return true;
+        const passwordRecovery = this.passwordRecovery;
+        if (passwordRecovery) {
+            return (passwordRecovery.recoveryCode === recoveryCode &&
+                passwordRecovery.expirationDate > new Date());
         }
         return false;
     },
+    isEmailConfirmed() {
+        var _a, _b;
+        return (_b = (_a = this.emailConfirmation) === null || _a === void 0 ? void 0 : _a.isConfirmed) !== null && _b !== void 0 ? _b : false;
+    },
 };
-// Статические методы для создания пользователя
 const userStaticMethods = {
-    create_user(login, email, passwordHash) {
+    createUser(login, email, passwordHash) {
         return new exports.UserModel({
             login,
             email,
             passwordHash,
-            emailConfirmation: { confirmationCode: "", expirationDate: new Date(), isConfirmed: false },
-            passwordRecovery: { recoveryCode: "", expirationDate: new Date() }
+            emailConfirmation: {
+                confirmationCode: "",
+                expirationDate: new Date(),
+                isConfirmed: false,
+            },
+            passwordRecovery: {
+                recoveryCode: "",
+                expirationDate: new Date(),
+            },
+            createdAt: new Date(),
         });
     },
 };
-// Схема пользователя
 const userSchema = new mongoose_1.default.Schema({
     login: { type: String, required: true, maxLength: 15 },
     email: { type: String, required: true, maxLength: 500, unique: true },
     passwordHash: { type: String, required: true, maxLength: 100 },
     emailConfirmation: { type: emailConfirmationSchema, required: false },
     passwordRecovery: { type: passwordRecoverySchema, required: false },
+    createdAt: { type: Date, required: true, default: Date.now },
 }, {
     timestamps: true,
     optimisticConcurrency: true,
 });
-// Привязываем методы к схеме
 userSchema.methods = userMethods;
 userSchema.statics = userStaticMethods;
-// Экспорт модели пользователя
-exports.UserModel = (0, mongoose_1.model)("user", userSchema);
+exports.UserModel = (0, mongoose_1.model)("User", userSchema);
 //# sourceMappingURL=user.mongo.js.map

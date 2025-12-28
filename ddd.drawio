@@ -1,10 +1,10 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram name="Страница-1" id="YupEnTtc_iYPccB54v4k">
-    <mxGraphModel dx="2852" dy="2525" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1042" dy="1461" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="bUcxhAOlMSA_tILVoLKn-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="bUcxhAOlMSA_tILVoLKn-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry y="-800" width="1290" height="1590" as="geometry" />
         </mxCell>
         <mxCell id="5iFhTPKqwHFO7R7yZCcb-2" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" parent="1" edge="1">
@@ -145,6 +145,14 @@
         <mxCell id="5iFhTPKqwHFO7R7yZCcb-54" value="1. new BlogEntity()" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="5iFhTPKqwHFO7R7yZCcb-53" vertex="1" connectable="0">
           <mxGeometry x="0.0422" y="-3" relative="1" as="geometry">
             <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zM31KywmnfsuTN66Jie5-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="5iFhTPKqwHFO7R7yZCcb-55" target="5iFhTPKqwHFO7R7yZCcb-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="290" />
+              <mxPoint x="378" y="290" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="5iFhTPKqwHFO7R7yZCcb-55" value="post.entity" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">

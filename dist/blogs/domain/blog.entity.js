@@ -21,11 +21,21 @@ class BlogEntity {
     toggleMembership() {
         this.isMembership = !this.isMembership;
     }
-    getId() { return this.id; }
-    getName() { return this.name; }
-    getDescription() { return this.description; }
-    getWebsiteUrl() { return this.websiteUrl; }
-    getIsMembership() { return this.isMembership; }
+    getId() {
+        return this.id;
+    }
+    getName() {
+        return this.name;
+    }
+    getDescription() {
+        return this.description;
+    }
+    getWebsiteUrl() {
+        return this.websiteUrl;
+    }
+    getIsMembership() {
+        return this.isMembership;
+    }
 }
 exports.BlogEntity = BlogEntity;
 //# sourceMappingURL=blog.entity.js.map

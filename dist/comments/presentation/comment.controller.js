@@ -26,17 +26,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentController = void 0;
 const inversify_1 = require("inversify");
-const comments_service_1 = __importDefault(require("../application/comments.service"));
 const result_object_1 = require("../../core/types/result-object");
 const http_status_code_1 = __importDefault(require("../../core/types/http-status-code"));
 const jwt_adapter_1 = require("../../auth/application/adapters/jwt.adapter");
+const comments_service_1 = require("../application/comments.service");
 let CommentController = class CommentController {
     constructor(commentsService, jwtAdapter) {
         this.commentsService = commentsService;
         this.jwtAdapter = jwtAdapter;
         this.getByCommentId = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const commentId = req.params.id;
-            // add userId
             let userId = null;
             const authHeader = req.headers.authorization;
             const token = (authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith("Bearer "))
@@ -44,8 +43,10 @@ let CommentController = class CommentController {
                 : null;
             if (token) {
                 try {
-                    const payload = yield this.jwtAdapter.verifyAccessToken(token);
-                    userId = payload.id;
+                    const payload = (yield this.jwtAdapter.verifyAccessToken(token));
+                    if (payload === null || payload === void 0 ? void 0 : payload.id) {
+                        userId = payload.id;
+                    }
                 }
                 catch (_a) { }
             }
@@ -59,7 +60,6 @@ let CommentController = class CommentController {
         this.deleteById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const commentId = req.params.id;
             const userId = req.user.id;
-            //getCommentById
             const comment = yield this.commentsService.getByCommentId(commentId, userId);
             if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
@@ -85,7 +85,6 @@ let CommentController = class CommentController {
             const commentId = req.params.id;
             const content = req.body.content;
             const userId = req.user.id;
-            //getCommentById
             const comment = yield this.commentsService.getByCommentId(commentId, userId);
             if (comment.status == result_object_1.resultStatus.NOT_FOUND) {
                 res.status(http_status_code_1.default.NOT_FOUND_404).send("Comment not found");
@@ -130,9 +129,9 @@ let CommentController = class CommentController {
 exports.CommentController = CommentController;
 exports.CommentController = CommentController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(comments_service_1.default)),
+    __param(0, (0, inversify_1.inject)(comments_service_1.CommentsService)),
     __param(1, (0, inversify_1.inject)(jwt_adapter_1.JwtAdapter)),
-    __metadata("design:paramtypes", [comments_service_1.default,
+    __metadata("design:paramtypes", [comments_service_1.CommentsService,
         jwt_adapter_1.JwtAdapter])
 ], CommentController);
 //# sourceMappingURL=comment.controller.js.map

@@ -21,20 +21,17 @@ const rtoken_mongo_1 = require("./rtoken.mongo");
 let AuthRepository = class AuthRepository {
     addTokenInBlackList(rfToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield rtoken_mongo_1.RTokenMongooseModel.create({
-                token: rfToken,
-                createdAt: new Date(),
-            });
+            yield rtoken_mongo_1.RTokenMongooseModel.addTokenInBlackList(rfToken);
         });
     }
     findRefreshTokenInBlackList(refresh_token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield rtoken_mongo_1.RTokenMongooseModel.findOne({ token: refresh_token }).exec();
+            return rtoken_mongo_1.RTokenMongooseModel.findRefreshTokenInBlackList(refresh_token);
         });
     }
     deleteRefreshTokenBlackList() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield rtoken_mongo_1.RTokenMongooseModel.deleteMany({}).exec();
+            yield rtoken_mongo_1.RTokenMongooseModel.deleteRefreshTokenBlackList();
         });
     }
 };

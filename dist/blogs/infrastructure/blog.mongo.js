@@ -43,7 +43,7 @@ const blogMethods = {
     },
     toggleMembership() {
         this.isMembership = !this.isMembership;
-    }
+    },
 };
 const blogStaticMethods = {
     create_blog(blogParams) {
@@ -53,7 +53,7 @@ const blogStaticMethods = {
         newBlog.websiteUrl = blogParams.getWebsiteUrl();
         newBlog.isMembership = blogParams.getIsMembership();
         return newBlog;
-    }
+    },
 };
 const blogSchema = new mongoose_1.default.Schema({
     name: { type: String, required: true, maxLength: 15 },
@@ -62,7 +62,7 @@ const blogSchema = new mongoose_1.default.Schema({
     isMembership: { type: Boolean, default: false },
 }, {
     timestamps: true,
-    optimisticConcurrency: true
+    optimisticConcurrency: true,
 });
 blogSchema.methods = blogMethods;
 blogSchema.statics = blogStaticMethods;

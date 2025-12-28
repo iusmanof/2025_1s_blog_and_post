@@ -1,7 +1,11 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
 
-export const inputValidationMiddleware: RequestHandler = (req, res, next) => {
+export const inputBlogsValidationMiddleware: RequestHandler = (
+  req,
+  res,
+  next,
+) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const errorsArray = errors.array({ onlyFirstError: true }).map((err) => ({

@@ -8,33 +8,33 @@ import { DeviceMongooseModel } from "./device.mongo";
 @injectable()
 export class SecurityDevicesRepository {
   async findAllDevices() {
-    return await DeviceMongooseModel.find().exec();
+    return DeviceMongooseModel.findAll();
   }
+
   async findAllDevicesByUserId(userId: string) {
-    return await DeviceMongooseModel.find({ userId }).exec();
+    return DeviceMongooseModel.findAllDevicesByUserId(userId);
   }
+
   async addDevice(dbDto: SecurityDeviceDbDto) {
-    await DeviceMongooseModel.create(dbDto);
+    await DeviceMongooseModel.addDevice(dbDto);
   }
+
   async updateDevice(
     deviceId: string,
     updatedDbDto: UPDATEsecurityDeviceDbDto,
   ) {
-    await DeviceMongooseModel.updateOne(
-      { deviceId: deviceId },
-      { $set: updatedDbDto },
-    ).exec();
+    await DeviceMongooseModel.updateDevice(deviceId, updatedDbDto);
   }
+
   async deleteDevice(deviceId: string): Promise<{ count: number }> {
-    const result = await DeviceMongooseModel.deleteOne({ deviceId }).exec();
-    return { count: result.deletedCount ?? 0 };
+    return DeviceMongooseModel.deleteDevice(deviceId);
   }
+
   async deleteAllDevices() {
-    return DeviceMongooseModel.deleteMany({}).exec();
+    await DeviceMongooseModel.deleteAllDevices();
   }
+
   async deleteAllDevicesExcludeCurrent(deviceId: string) {
-    await DeviceMongooseModel.deleteMany({
-      deviceId: { $ne: deviceId },
-    }).exec();
+    await DeviceMongooseModel.deleteAllDevicesExcludeCurrent(deviceId);
   }
 }

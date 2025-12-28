@@ -1,7 +1,7 @@
 import {
   ADMIN_PASSWORD,
   ADMIN_USERNAME,
-} from "../milldlewares/super-admin.guard-middleware";
+} from "../milldlewares/super-admin.guard.middleware";
 
 export function generateAdminAuthToken() {
   const credentials = `${ADMIN_USERNAME}:${ADMIN_PASSWORD}`;

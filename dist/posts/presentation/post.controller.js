@@ -30,38 +30,42 @@ const http_status_code_1 = __importDefault(require("../../core/types/http-status
 const post_service_1 = require("../application/post.service");
 const http_status_code_2 = __importDefault(require("../../core/types/http-status-code"));
 const result_object_1 = require("../../core/types/result-object");
-const comments_service_1 = __importDefault(require("../../comments/application/comments.service"));
 const http_status_code_3 = __importDefault(require("../../core/types/http-status-code"));
 const jwt_adapter_1 = require("../../auth/application/adapters/jwt.adapter");
+const comments_service_1 = require("../../comments/application/comments.service");
 let PostController = class PostController {
     constructor(postService, commentsService, jwtAdapter) {
         this.postService = postService;
         this.commentsService = commentsService;
         this.jwtAdapter = jwtAdapter;
         this.findMany = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const result = yield this.postService.findMany(req.query);
-            res.status(http_status_code_1.default.OK_200).send(result);
+            var _a;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            const result = yield this.postService.findMany(req.query, userId);
+            res.status(http_status_code_1.default.OK_200).json(result);
         });
         this.findById = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const postFounded = yield this.postService.findById(req.params.id);
+            var _a;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            const postFounded = yield this.postService.findById(req.params.id, userId);
             if (!postFounded) {
-                res.status(http_status_code_2.default.NOT_FOUND_404).send("No posts found.");
+                res.sendStatus(404);
                 return;
             }
             res.status(200).json(postFounded);
         });
-        // create = async (req: Request<PostsDto>, res: Response) => {
-        //   const postCreated = await this.postService.create(req.body);
-        //   const apiErrorMsg: FieldError[] = [];
-        //   if (!postCreated) {
-        //     apiErrorMsg.push({ message: "ID Not found", field: "id" });
-        //     res
-        //       .status(HTTP_STATUS.NOT_FOUND_404)
-        //       .json({ errorsMessages: apiErrorMsg });
-        //     return;
-        //   }
-        //   res.status(HTTP_STATUS.CREATED_201).json(postCreated);
-        // };
+        this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const postCreated = yield this.postService.create(req.body);
+            const apiErrorMsg = [];
+            if (!postCreated) {
+                apiErrorMsg.push({ message: "ID Not found", field: "id" });
+                res
+                    .status(http_status_code_2.default.NOT_FOUND_404)
+                    .json({ errorsMessages: apiErrorMsg });
+                return;
+            }
+            res.status(http_status_code_2.default.CREATED_201).json(postCreated);
+        });
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const postIsUpdated = yield this.postService.update(req.params.id, req.body);
             const apiErrorMsg = [];
@@ -117,7 +121,7 @@ let PostController = class PostController {
                 : null;
             if (token) {
                 try {
-                    const payload = yield this.jwtAdapter.verifyAccessToken(token);
+                    const payload = (yield this.jwtAdapter.verifyAccessToken(token));
                     userId = payload.id;
                 }
                 catch (_a) { }
@@ -129,16 +133,32 @@ let PostController = class PostController {
             }
             res.status(http_status_code_3.default.OK_200).json(result.data);
         });
+        this.getLikeStatus = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const { postId } = req.params;
+            const { likeStatus } = req.body;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            if (!userId) {
+                res.sendStatus(http_status_code_2.default.UNAUTHORIZED_401);
+                return;
+            }
+            const result = yield this.postService.getLikeStatus(postId, userId, likeStatus);
+            if (!result) {
+                res.sendStatus(http_status_code_2.default.NOT_FOUND_404);
+                return;
+            }
+            res.sendStatus(http_status_code_3.default.NO_CONTENT_204);
+        });
     }
 };
 exports.PostController = PostController;
 exports.PostController = PostController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(post_service_1.PostService)),
-    __param(1, (0, inversify_1.inject)(comments_service_1.default)),
+    __param(1, (0, inversify_1.inject)(comments_service_1.CommentsService)),
     __param(2, (0, inversify_1.inject)(jwt_adapter_1.JwtAdapter)),
     __metadata("design:paramtypes", [post_service_1.PostService,
-        comments_service_1.default,
+        comments_service_1.CommentsService,
         jwt_adapter_1.JwtAdapter])
 ], PostController);
 //# sourceMappingURL=post.controller.js.map

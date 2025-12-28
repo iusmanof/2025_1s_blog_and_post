@@ -21,20 +21,17 @@ const device_mongo_1 = require("./device.mongo");
 let SecurityDevicesQueryRepository = class SecurityDevicesQueryRepository {
     findAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield device_mongo_1.DeviceMongooseModel.find({}).exec();
+            return device_mongo_1.DeviceMongooseModel.findAll();
         });
     }
     geByDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield device_mongo_1.DeviceMongooseModel.findOne({ deviceId: deviceId }).exec();
+            return device_mongo_1.DeviceMongooseModel.geByDeviceId(deviceId);
         });
     }
     findByIdAndIat(deviceId, iat) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield device_mongo_1.DeviceMongooseModel.findOne({
-                deviceId: deviceId,
-                lastActivateDate: iat,
-            }).exec();
+            return device_mongo_1.DeviceMongooseModel.findByIdAndIat(deviceId, iat);
         });
     }
 };

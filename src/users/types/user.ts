@@ -17,15 +17,14 @@ export interface User {
   createdAt: Date;
 }
 
-
 export interface EntityParams {
-    login: string;
-    email: string;
-    passwordHash: string;
+  login: string;
+  email: string;
+  passwordHash: string;
 }
 
 export type UserProps = {
-    login: string;
-    email: string;
-    password: string;
-}
+  login: string;
+  email: string;
+  password: string;
+};

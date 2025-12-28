@@ -39,7 +39,11 @@ let UsersService = class UsersService {
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             const passwordHash = yield this.bcryptAdapter.generateHash(dto.password);
-            const userEntity = new user_entity_1.UserEntity({ login: dto.login, email: dto.email, passwordHash: passwordHash });
+            const userEntity = new user_entity_1.UserEntity({
+                login: dto.login,
+                email: dto.email,
+                passwordHash: passwordHash,
+            });
             return yield this.usersRepository.create(userEntity);
         });
     }

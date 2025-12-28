@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-export const loginOrEmailValidation = body("loginOrEmail")
+export const loginOrEmailValidationMiddleware = body("loginOrEmail")
   .trim()
   .isString()
   .isLength({ min: 3, max: 20 })

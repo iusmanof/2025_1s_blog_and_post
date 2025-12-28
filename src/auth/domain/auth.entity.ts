@@ -1,4 +1,3 @@
 export class AuthEntity {
-    constructor() {
-    }
+  constructor() {}
 }

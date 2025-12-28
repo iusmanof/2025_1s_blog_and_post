@@ -1,38 +1,83 @@
-import { Comment, ICommentatorInfo } from "../types/comment";
-import mongoose, { HydratedDocument, model, Model, Schema } from "mongoose";
-import { ICommentReaction, ILikesInfo } from "../types/like";
+import mongoose, { Document, Schema, model } from "mongoose";
+import { ILikesInfo, ICommentReaction } from "../types/like";
 
-export type CommentHydrateDocument = HydratedDocument<Comment>;
+export interface IComment {
+  postId: string;
+  content: string;
+  commentatorInfo: { userId: string; userLogin: string };
+  likesInfo: ILikesInfo & { myStatus?: string };
+  createdAt: string;
+}
 
-type CommentModel = Model<Comment>;
+export interface CommentDocument extends IComment, Document {
+  updateReaction(currentStatus: string, newStatus: string): void;
+  setMyStatus(status: string): void;
+}
 
-export const commentatorInfoSchema = new mongoose.Schema<ICommentatorInfo>(
+export interface CommentModel extends mongoose.Model<CommentDocument> {
+  createFromEntity(entity: {
+    userId: string;
+    postId: string;
+    content: string;
+    userLogin: string;
+  }): Promise<CommentDocument>;
+}
+
+const commentSchema = new Schema<CommentDocument>(
   {
-    userId: { type: String, required: true },
-    userLogin: { type: String, required: true },
-  },
-  { _id: false },
-);
-
-export const likeInfoSchema = new mongoose.Schema<ILikesInfo>(
-  {
-    likesCount: { type: Number, required: true },
-    dislikesCount: { type: Number, required: true },
-  },
-  { _id: false },
-);
-
-const commentSchema = new mongoose.Schema<Comment>(
-  {
-    postId: { type: Schema.Types.ObjectId, ref: "Post", required: true },
+    postId: { type: String, required: true },
     content: { type: String, required: true },
-    commentatorInfo: { type: commentatorInfoSchema, required: true },
-    likesInfo: { type: likeInfoSchema, required: true },
+    commentatorInfo: {
+      userId: { type: String, required: true },
+      userLogin: { type: String, required: true },
+    },
+    likesInfo: {
+      likesCount: { type: Number, required: true, default: 0 },
+      dislikesCount: { type: Number, required: true, default: 0 },
+      myStatus: { type: String, default: "None" },
+    },
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );
 
-const commentReactionSchema = new mongoose.Schema<ICommentReaction>(
+commentSchema.methods.updateReaction = function (
+  currentStatus: string,
+  newStatus: string,
+) {
+  if (currentStatus === newStatus) return;
+
+  if (currentStatus === "Like" && this.likesInfo.likesCount > 0)
+    this.likesInfo.likesCount--;
+  if (currentStatus === "Dislike" && this.likesInfo.dislikesCount > 0)
+    this.likesInfo.dislikesCount--;
+
+  if (newStatus === "Like") this.likesInfo.likesCount++;
+  if (newStatus === "Dislike") this.likesInfo.dislikesCount++;
+
+  this.likesInfo.myStatus = newStatus;
+};
+
+commentSchema.methods.setMyStatus = function (status: string) {
+  this.likesInfo.myStatus = status;
+};
+
+commentSchema.statics.createFromEntity = async function (entity: {
+  userId: string;
+  postId: string;
+  content: string;
+  userLogin: string;
+}) {
+  const comment = new this({
+    postId: entity.postId,
+    content: entity.content,
+    commentatorInfo: { userId: entity.userId, userLogin: entity.userLogin },
+    likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: "None" },
+  });
+  await comment.save();
+  return comment;
+};
+
+const commentReactionSchema = new Schema<ICommentReaction>(
   {
     userId: { type: String, required: true },
     commentId: { type: Schema.Types.ObjectId, ref: "comment", required: true },
@@ -40,14 +85,14 @@ const commentReactionSchema = new mongoose.Schema<ICommentReaction>(
   },
   { timestamps: true },
 );
+
 commentReactionSchema.index({ userId: 1, commentId: 1 }, { unique: true });
 
-export const CommentReactionModel = model(
+export const CommentReactionModel = model<ICommentReaction>(
   "commentReaction",
   commentReactionSchema,
 );
-
-export const CommentMongooseModel = model<Comment, CommentModel>(
+export const CommentMongooseModel = model<CommentDocument, CommentModel>(
   "comment",
   commentSchema,
 );

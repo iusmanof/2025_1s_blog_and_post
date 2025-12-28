@@ -1,132 +1,129 @@
-import {inject, injectable} from "inversify";
+import { inject, injectable } from "inversify";
 
-import {PostModelWithId, PostQuery} from "../types/posts.dto";
-import {ObjectId} from "mongodb";
-import {BlogsRepository} from "../../blogs/infrastructure/blogs.repository";
-import {PostModel} from "./post.mongo";
-import {PostEntity} from "../domain/post.entity";
+import { PostModelWithId, PostQuery, PostsDto } from "../types/posts.dto";
+import { ObjectId } from "mongodb";
+import { BlogsRepository } from "../../blogs/infrastructure/blogs.repository";
+import { PostModel } from "./post.mongo";
+import { BlogModel } from "../../blogs/infrastructure/blog.mongo";
+import mongoose from "mongoose";
 
 @injectable()
 class PostsRepository {
-    constructor(
-        @inject(BlogsRepository) private readonly blogsRepository: BlogsRepository,
-    ) {
+  constructor(
+    @inject(BlogsRepository) private readonly blogsRepository: BlogsRepository,
+  ) {}
+
+  async createPost(dto: PostsDto) {
+    if (!mongoose.isValidObjectId(dto.blogId)) {
+      throw new Error("Blog not found");
     }
 
-    async createPost(newPost: PostEntity) {
-        const blog = await this.blogsRepository.getBlogById(newPost.getBlogId());
-        if (blog) {
-            newPost.setBlogName(blog.getName())
-        } else {
-            newPost.setBlogName("")
-        }
+    const blogId = new mongoose.Types.ObjectId(dto.blogId);
 
-        const post = PostModel.create_post_in_blog({...newPost.toPrimitives()});
-        await post.save();
-        return post;
+    const blog = await BlogModel.findById(blogId);
+    if (!blog) throw new Error("Blog not found");
+
+    const post = PostModel.createPost({
+      ...dto,
+      blogId: dto.blogId,
+      blogName: blog.name,
+    });
+
+    await post.save();
+    return post;
+  }
+
+  async getAllPosts(query: PostQuery) {
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = query;
+
+    const skip = (pageNumber - 1) * pageSize;
+    const sortDir = sortDirection === "asc" ? 1 : -1;
+
+    const items = await PostModel.find({})
+      .sort({ [sortBy]: sortDir })
+      .skip(+skip)
+      .limit(+pageSize)
+      .exec();
+
+    const totalCount = await PostModel.countDocuments({});
+
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items,
+    };
+  }
+
+  async getPostById(id: string) {
+    if (!ObjectId.isValid(id)) {
+      return null;
     }
 
-    async getAllPosts(query: PostQuery) {
-        const {
-            pageNumber = 1,
-            pageSize = 10,
-            sortBy = "createdAt",
-            sortDirection = "desc",
-        } = query;
+    return PostModel.findById(id).exec();
+  }
 
-        const skip = (pageNumber - 1) * pageSize;
-        const sortDir = sortDirection === "asc" ? 1 : -1;
+  async updatePost(id: string, post: PostModelWithId) {
+    const result = await PostModel.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          title: post.title,
+          shortDescription: post.shortDescription,
+          content: post.content,
+          blogId: post.blogId,
+        },
+      },
+    );
 
-        const result = await PostModel.find({})
-            .sort({[sortBy]: sortDir})
-            .skip(+skip)
-            .limit(+pageSize)
-            .exec();
+    return result.matchedCount === 1;
+  }
 
-        const totalCount = await PostModel.countDocuments({});
+  async deletePost(id: string) {
+    const result = await PostModel.deleteOne({
+      _id: new ObjectId(id),
+    });
 
-        return {
-            pagesCount: +Math.ceil(totalCount / pageSize),
-            page: +pageNumber,
-            pageSize: +pageSize,
-            totalCount: +totalCount,
-            items: result,
-        };
-    }
+    return result.deletedCount === 1;
+  }
 
-    async getPostById(id: string) {
-        if (!ObjectId.isValid(id)) {
-            return null;
-        }
+  async deleteAllPosts() {
+    await PostModel.deleteMany({});
+  }
 
-        const result = await PostModel.findOne({_id: new ObjectId(id)});
-        if (!result) {
-            return null;
-        }
-        return {
-            ...result.toObject(),
-            id: result._id.toString(),
-        };
-    }
+  async getPostByBlogId(blogId: string, query: PostQuery) {
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = query;
 
-    async deletePost(id: string) {
-        const isDeleted = await PostModel.deleteOne({
-            _id: new ObjectId(id),
-        });
-        return isDeleted.deletedCount !== 0;
-    }
+    const skip = (pageNumber - 1) * pageSize;
+    const sortDir = sortDirection === "asc" ? 1 : -1;
 
-    async updatePost(id: string, post: PostModelWithId) {
-        const updateFields: Partial<PostModelWithId> = {
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId,
-        };
+    const items = await PostModel.find({ blogId })
+      .sort({ [sortBy]: sortDir })
+      .skip(+skip)
+      .limit(+pageSize)
+      .exec();
 
-        if (post.blogName) {
-            updateFields.blogName = post.blogName;
-        }
-        const isUpdated = await PostModel.updateOne(
-            {_id: new ObjectId(id)},
-            {
-                $set: updateFields,
-            },
-        );
-        return (await isUpdated.matchedCount) !== 0;
-    }
+    const totalCount = await PostModel.countDocuments({ blogId });
 
-    async deleteAllPosts() {
-        await PostModel.deleteMany({});
-    }
-
-    async getPostByBlogId(blogId: string, query: PostQuery) {
-        const {
-            pageNumber = 1,
-            pageSize = 10,
-            sortBy = "createdAt",
-            sortDirection = "desc",
-        } = query;
-
-        const skip = (pageNumber - 1) * pageSize;
-        const sortDir = sortDirection === "asc" ? 1 : -1;
-
-        const result = await PostModel.find({blogId})
-            .sort({[sortBy]: sortDir})
-            .skip(+skip)
-            .limit(+pageSize)
-            .exec();
-
-        const totalCount = await PostModel.countDocuments({blogId});
-
-        return {
-            pagesCount: +Math.ceil(totalCount / pageSize),
-            page: +pageNumber,
-            pageSize: +pageSize,
-            totalCount: +totalCount,
-            items: result,
-        };
-    }
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items,
+    };
+  }
 }
 
 export default PostsRepository;

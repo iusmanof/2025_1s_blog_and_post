@@ -1,25 +1,17 @@
 import { injectable } from "inversify";
-import { HydratedDocument } from "mongoose";
-import { IDevice } from "../types/device";
 import { DeviceMongooseModel } from "./device.mongo";
 
 @injectable()
 export class SecurityDevicesQueryRepository {
-  async findAll(): Promise<HydratedDocument<IDevice>[]> {
-    return await DeviceMongooseModel.find({}).exec();
+  async findAll() {
+    return DeviceMongooseModel.findAll();
   }
-  async geByDeviceId(
-    deviceId: string,
-  ): Promise<HydratedDocument<IDevice> | null> {
-    return await DeviceMongooseModel.findOne({ deviceId: deviceId }).exec();
+
+  async geByDeviceId(deviceId: string) {
+    return DeviceMongooseModel.geByDeviceId(deviceId);
   }
-  async findByIdAndIat(
-    deviceId: string,
-    iat: number,
-  ): Promise<HydratedDocument<IDevice> | null> {
-    return await DeviceMongooseModel.findOne({
-      deviceId: deviceId,
-      lastActivateDate: iat,
-    }).exec();
+
+  async findByIdAndIat(deviceId: string, iat: number) {
+    return DeviceMongooseModel.findByIdAndIat(deviceId, iat);
   }
 }

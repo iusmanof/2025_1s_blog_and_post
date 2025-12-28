@@ -1,19 +1,13 @@
 import { injectable } from "inversify";
 
 import { UserResponseCreateDto } from "../types/user-response-create-dto";
-import { ObjectId, WithId } from "mongodb";
-import {
-  IPagination,
-  PaginationAndSortingUser,
-} from "../../core/types/pagination-and-sorting";
-import { UserModel  } from "./user.mongo";
-import { User } from "../types/user";
+import { ObjectId } from "mongodb";
+import { PaginationAndSortingUser } from "../../core/types/pagination-and-sorting";
+import { UserDocument, UserModel } from "./user.mongo";
 
 @injectable()
 export class UsersQueryRepository {
-  async findAllUsers(
-    sortQueryDto: PaginationAndSortingUser,
-  ) {
+  async findAllUsers(sortQueryDto: PaginationAndSortingUser) {
     const {
       sortBy,
       sortDirection,
@@ -36,22 +30,26 @@ export class UsersQueryRepository {
       page: pageNumber,
       pageSize: pageSize,
       totalCount,
-      items: [{id: '11', login: '111', email: '123d@fe', createdAt: new Date() }]
-      // items: users.map((user) => this._getInView(user)),
+      items: users.map((user) => this._getInView(user)),
     };
   }
 
   async findById(id: string) {
     if (!ObjectId.isValid(id)) return null;
 
-    const user = await UserModel.findById({
-      _id: new ObjectId(id),
-    });
-    if (!user) {
-      return null;
-    }
-      return {id: '11', login: '111', email: '123d@fe', createdAt: new Date() };
-      // return this._getInView(user);
+    const user = await UserModel.findById(id);
+    if (!user) return null;
+
+    return this._getInView(user);
+  }
+
+  _getInView(user: UserDocument): UserResponseCreateDto {
+    return {
+      id: user._id.toString(),
+      login: user.login,
+      email: user.email,
+      createdAt: user.createdAt.toISOString(),
+    };
   }
 
   _getFilter(
@@ -61,22 +59,19 @@ export class UsersQueryRepository {
     login?: { $regex: string; $options: string };
     email?: { $regex: string; $options: string };
   } {
-    const filters = [];
+    const filter: {
+      login?: { $regex: string; $options: string };
+      email?: { $regex: string; $options: string };
+    } = {};
 
     if (loginQuery) {
-      filters.push({ login: { $regex: loginQuery, $options: "i" } });
-    }
-    if (emailQuery) {
-      filters.push({ email: { $regex: emailQuery, $options: "i" } });
+      filter.login = { $regex: loginQuery, $options: "i" };
     }
 
-    if (filters.length === 0) {
-      return {};
+    if (emailQuery) {
+      filter.email = { $regex: emailQuery, $options: "i" };
     }
-    if (filters.length === 1) {
-      return filters[0];
-    }
-    // @ts-ignore
-    return { $or: filters };
+
+    return filter;
   }
 }

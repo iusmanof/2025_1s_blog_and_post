@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
-import CommentsService from "../application/comments.service";
 import { Request, Response } from "express";
 import { resultStatus } from "../../core/types/result-object";
 import httpStatusCode from "../../core/types/http-status-code";
 import { JwtAdapter } from "../../auth/application/adapters/jwt.adapter";
+import { CommentsService } from "../application/comments.service";
+import { AccessTokenPayload } from "../../posts/presentation/middlewares/optional-access-token.guard.middleware";
 
 @injectable()
 export class CommentController {
@@ -15,7 +16,6 @@ export class CommentController {
   getByCommentId = async (req: Request<{ id: string }>, res: Response) => {
     const commentId = req.params.id;
 
-    // add userId
     let userId: string | null = null;
     const authHeader = req.headers.authorization;
     const token = authHeader?.startsWith("Bearer ")
@@ -24,8 +24,13 @@ export class CommentController {
 
     if (token) {
       try {
-        const payload: any = await this.jwtAdapter.verifyAccessToken(token);
-        userId = payload.id;
+        const payload = (await this.jwtAdapter.verifyAccessToken(
+          token,
+        )) as AccessTokenPayload | null;
+
+        if (payload?.id) {
+          userId = payload.id;
+        }
       } catch {}
     }
 
@@ -43,7 +48,6 @@ export class CommentController {
     const commentId = req.params.id;
     const userId = req.user.id;
 
-    //getCommentById
     const comment = await this.commentsService.getByCommentId(
       commentId,
       userId,
@@ -73,14 +77,13 @@ export class CommentController {
   };
 
   updateById = async (
-    req: Request<{ id: string }, {}, { content: string }>,
+    req: Request<{ id: string }, Record<string, never>, { content: string }>,
     res: Response,
   ) => {
     const commentId = req.params.id;
     const content = req.body.content;
     const userId = req.user.id;
 
-    //getCommentById
     const comment = await this.commentsService.getByCommentId(
       commentId,
       userId,
@@ -110,7 +113,7 @@ export class CommentController {
   };
 
   setLikeStatus = async (
-    req: Request<{ id: string }, {}, { likeStatus: string }>,
+    req: Request<{ id: string }, Record<string, never>, { likeStatus: string }>,
     res: Response,
   ) => {
     const commentId = req.params.id;

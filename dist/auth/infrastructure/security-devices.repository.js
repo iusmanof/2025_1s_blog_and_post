@@ -21,41 +21,37 @@ const device_mongo_1 = require("./device.mongo");
 let SecurityDevicesRepository = class SecurityDevicesRepository {
     findAllDevices() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield device_mongo_1.DeviceMongooseModel.find().exec();
+            return device_mongo_1.DeviceMongooseModel.findAll();
         });
     }
     findAllDevicesByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield device_mongo_1.DeviceMongooseModel.find({ userId }).exec();
+            return device_mongo_1.DeviceMongooseModel.findAllDevicesByUserId(userId);
         });
     }
     addDevice(dbDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield device_mongo_1.DeviceMongooseModel.create(dbDto);
+            yield device_mongo_1.DeviceMongooseModel.addDevice(dbDto);
         });
     }
     updateDevice(deviceId, updatedDbDto) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield device_mongo_1.DeviceMongooseModel.updateOne({ deviceId: deviceId }, { $set: updatedDbDto }).exec();
+            yield device_mongo_1.DeviceMongooseModel.updateDevice(deviceId, updatedDbDto);
         });
     }
     deleteDevice(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            const result = yield device_mongo_1.DeviceMongooseModel.deleteOne({ deviceId }).exec();
-            return { count: (_a = result.deletedCount) !== null && _a !== void 0 ? _a : 0 };
+            return device_mongo_1.DeviceMongooseModel.deleteDevice(deviceId);
         });
     }
     deleteAllDevices() {
         return __awaiter(this, void 0, void 0, function* () {
-            return device_mongo_1.DeviceMongooseModel.deleteMany({}).exec();
+            yield device_mongo_1.DeviceMongooseModel.deleteAllDevices();
         });
     }
     deleteAllDevicesExcludeCurrent(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield device_mongo_1.DeviceMongooseModel.deleteMany({
-                deviceId: { $ne: deviceId },
-            }).exec();
+            yield device_mongo_1.DeviceMongooseModel.deleteAllDevicesExcludeCurrent(deviceId);
         });
     }
 };

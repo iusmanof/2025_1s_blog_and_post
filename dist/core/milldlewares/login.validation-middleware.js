@@ -1,30 +1,58 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
+    }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done
+          ? resolve(result.value)
+          : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-};
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginValidation = void 0;
 const express_validator_1 = require("express-validator");
 const users_repository_1 = require("../../users/infrastructure/users.repository");
 const composition_root_1 = require("../../composition.root");
-const usersRepository = composition_root_1.container.get(users_repository_1.UsersRepository);
+const usersRepository = composition_root_1.container.get(
+  users_repository_1.UsersRepository,
+);
 exports.loginValidation = (0, express_validator_1.body)("login")
-    .isString()
-    .trim()
-    .isLength({ min: 3, max: 10 })
-    .matches(/^[a-zA-Z0-9_-]*$/)
-    .withMessage("Login is not correct")
-    .custom((login) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield usersRepository.findByLoginOrEmail(login);
-    if (user) {
+  .isString()
+  .trim()
+  .isLength({ min: 3, max: 10 })
+  .matches(/^[a-zA-Z0-9_-]*$/)
+  .withMessage("Login is not correct")
+  .custom((login) =>
+    __awaiter(void 0, void 0, void 0, function* () {
+      const user = yield usersRepository.findByLoginOrEmail(login);
+      if (user) {
         throw new Error("login already exist");
-    }
-    return true;
-}));
+      }
+      return true;
+    }),
+  );
 //# sourceMappingURL=login.validation-middleware.js.map

@@ -36,6 +36,7 @@ const users_repository_1 = require("../../users/infrastructure/users.repository"
 const security_devices_query_repository_1 = require("../infrastructure/security-devices.query-repository");
 const security_devices_repository_1 = require("../infrastructure/security-devices.repository");
 const users_query_repository_1 = require("../../users/infrastructure/users.query.repository");
+const user_entity_1 = require("../../users/domain/user.entity");
 let AuthService = class AuthService {
     constructor(jwtAdapter, emailAdapter, emailAdapterRecoveryPassword, emailAdapterYandex, bcryptAdapter, securityDevicesService, securityDevicesQueryRepository, securityDevicesRepository, usersQueryRepository, usersRepository) {
         this.jwtAdapter = jwtAdapter;
@@ -104,13 +105,19 @@ let AuthService = class AuthService {
                 },
                 passwordRecovery: null,
             };
-            // await this.usersRepository.create(newUser);
+            const newUserEntity = {
+                login: login,
+                email: email,
+                passwordHash: passwordHash,
+            };
+            const userEntity = new user_entity_1.UserEntity(newUserEntity);
+            yield this.usersRepository.create(userEntity);
             if (newUser.emailConfirmation) {
                 try {
                     yield this.emailAdapter.nodemailer(email, email_template_1.emailTemplate.registrationEmail(newUser.emailConfirmation.confirmationCode));
                 }
                 catch (err) {
-                    console.log("send email error");
+                    console.log(`send email error ${err}`);
                 }
             }
             return {
@@ -180,7 +187,7 @@ let AuthService = class AuthService {
                 yield this.emailAdapter.nodemailer(email, email_template_1.emailTemplate.registrationEmail(codeRefreshed));
             }
             catch (err) {
-                console.log("send email error");
+                console.log(`send email error ${err}`);
             }
             return {
                 status: result_object_1.resultStatus.SUCCESS,

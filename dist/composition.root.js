@@ -18,7 +18,6 @@ const auth_service_1 = require("./auth/application/auth.service");
 const security_devices_service_1 = require("./auth/application/security-devices.service");
 const blogs_repository_1 = require("./blogs/infrastructure/blogs.repository");
 const blog_service_1 = require("./blogs/application/blog.service");
-const comments_service_1 = __importDefault(require("./comments/application/comments.service"));
 const comments_repository_1 = require("./comments/infrastructure/comments.repository");
 const posts_repository_1 = __importDefault(require("./posts/infrastructure/posts.repository"));
 const post_service_1 = require("./posts/application/post.service");
@@ -29,35 +28,31 @@ const post_controller_1 = require("./posts/presentation/post.controller");
 const user_controller_1 = require("./users/presentation/user.controller");
 const auth_controller_1 = require("./auth/presentation/auth.controller");
 const security_devices_controller_1 = require("./auth/presentation/security-devices.controller");
+const comments_service_1 = require("./comments/application/comments.service");
 exports.container = new inversify_1.Container();
-// Adapters
 exports.container.bind(bcrypt_adapter_1.BcryptAdapter).to(bcrypt_adapter_1.BcryptAdapter);
 exports.container.bind(jwt_adapter_1.JwtAdapter).to(jwt_adapter_1.JwtAdapter);
 exports.container.bind(email_adapter_1.EmailAdapter).to(email_adapter_1.EmailAdapter);
 exports.container.bind(email_adapter_1.EmailAdapterRecoveryPassword).to(email_adapter_1.EmailAdapterRecoveryPassword);
 exports.container.bind(email_adapter_1.EmailAdapterYandex).to(email_adapter_1.EmailAdapterYandex);
-// Controllers
 exports.container.bind(blog_controller_1.BlogController).to(blog_controller_1.BlogController);
 exports.container.bind(comment_controller_1.CommentController).to(comment_controller_1.CommentController);
 exports.container.bind(post_controller_1.PostController).to(post_controller_1.PostController);
 exports.container.bind(user_controller_1.UserController).to(user_controller_1.UserController);
 exports.container.bind(auth_controller_1.AuthController).to(auth_controller_1.AuthController);
 exports.container.bind(security_devices_controller_1.SecurityDeviceController).to(security_devices_controller_1.SecurityDeviceController);
-// Services
 exports.container.bind(users_service_1.UsersService).to(users_service_1.UsersService);
 exports.container.bind(post_service_1.PostService).to(post_service_1.PostService);
 exports.container.bind(blog_service_1.BlogService).to(blog_service_1.BlogService);
 exports.container.bind(security_devices_service_1.SecurityDevicesService).to(security_devices_service_1.SecurityDevicesService);
 exports.container.bind(auth_service_1.AuthService).to(auth_service_1.AuthService);
-exports.container.bind(comments_service_1.default).to(comments_service_1.default);
-// Repositories
+exports.container.bind(comments_service_1.CommentsService).to(comments_service_1.CommentsService);
 exports.container.bind(users_repository_1.UsersRepository).to(users_repository_1.UsersRepository);
 exports.container.bind(posts_repository_1.default).to(posts_repository_1.default);
 exports.container.bind(blogs_repository_1.BlogsRepository).to(blogs_repository_1.BlogsRepository);
 exports.container.bind(security_devices_repository_1.SecurityDevicesRepository).to(security_devices_repository_1.SecurityDevicesRepository);
 exports.container.bind(auth_repository_1.AuthRepository).to(auth_repository_1.AuthRepository);
 exports.container.bind(comments_repository_1.CommentsRepository).to(comments_repository_1.CommentsRepository);
-// QueryRepositories
 exports.container
     .bind(security_devices_query_repository_1.SecurityDevicesQueryRepository)
     .to(security_devices_query_repository_1.SecurityDevicesQueryRepository);

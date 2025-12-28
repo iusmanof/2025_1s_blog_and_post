@@ -36,8 +36,7 @@ let UsersQueryRepository = class UsersQueryRepository {
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount,
-                items: [{ id: '11', login: '111', email: '123d@fe', createdAt: new Date() }]
-                // items: users.map((user) => this._getInView(user)),
+                items: users.map((user) => this._getInView(user)),
             };
         });
     }
@@ -45,32 +44,29 @@ let UsersQueryRepository = class UsersQueryRepository {
         return __awaiter(this, void 0, void 0, function* () {
             if (!mongodb_1.ObjectId.isValid(id))
                 return null;
-            const user = yield user_mongo_1.UserModel.findById({
-                _id: new mongodb_1.ObjectId(id),
-            });
-            if (!user) {
+            const user = yield user_mongo_1.UserModel.findById(id);
+            if (!user)
                 return null;
-            }
-            return { id: '11', login: '111', email: '123d@fe', createdAt: new Date() };
-            // return this._getInView(user);
+            return this._getInView(user);
         });
     }
+    _getInView(user) {
+        return {
+            id: user._id.toString(),
+            login: user.login,
+            email: user.email,
+            createdAt: user.createdAt.toISOString(),
+        };
+    }
     _getFilter(loginQuery, emailQuery) {
-        const filters = [];
+        const filter = {};
         if (loginQuery) {
-            filters.push({ login: { $regex: loginQuery, $options: "i" } });
+            filter.login = { $regex: loginQuery, $options: "i" };
         }
         if (emailQuery) {
-            filters.push({ email: { $regex: emailQuery, $options: "i" } });
+            filter.email = { $regex: emailQuery, $options: "i" };
         }
-        if (filters.length === 0) {
-            return {};
-        }
-        if (filters.length === 1) {
-            return filters[0];
-        }
-        // @ts-ignore
-        return { $or: filters };
+        return filter;
     }
 };
 exports.UsersQueryRepository = UsersQueryRepository;

@@ -5,7 +5,7 @@ import { User } from "../types/user";
 import { ObjectId, WithId } from "mongodb";
 import { add } from "date-fns";
 import { UserModel } from "./user.mongo";
-import {UserEntity} from "../domain/user.entity";
+import { UserEntity } from "../domain/user.entity";
 
 @injectable()
 export class UsersRepository {
@@ -98,7 +98,7 @@ export class UsersRepository {
         $set: {
           passwordRecovery: {
             recoveryCode,
-            expirationDate: add(new Date(), { hours: 1 }), // код действителен 1 час
+            expirationDate: add(new Date(), { hours: 1 }),
           },
         },
       },
@@ -119,7 +119,7 @@ export class UsersRepository {
       { "passwordRecovery.recoveryCode": recoveryCode },
       {
         $set: { password: hashedPassword },
-        $unset: { passwordRecovery: "" }, // удаляем код после смены пароля
+        $unset: { passwordRecovery: "" },
       },
     );
   }

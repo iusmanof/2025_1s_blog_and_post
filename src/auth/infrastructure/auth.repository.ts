@@ -4,15 +4,14 @@ import { RTokenMongooseModel } from "./rtoken.mongo";
 @injectable()
 export class AuthRepository {
   async addTokenInBlackList(rfToken: string) {
-    await RTokenMongooseModel.create({
-      token: rfToken,
-      createdAt: new Date(),
-    });
+    await RTokenMongooseModel.addTokenInBlackList(rfToken);
   }
+
   async findRefreshTokenInBlackList(refresh_token: string) {
-    return await RTokenMongooseModel.findOne({ token: refresh_token }).exec();
+    return RTokenMongooseModel.findRefreshTokenInBlackList(refresh_token);
   }
+
   async deleteRefreshTokenBlackList() {
-    await RTokenMongooseModel.deleteMany({}).exec();
+    await RTokenMongooseModel.deleteRefreshTokenBlackList();
   }
 }

@@ -20,25 +20,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const mongodb_1 = require("mongodb");
 const blogs_repository_1 = require("../../blogs/infrastructure/blogs.repository");
 const post_mongo_1 = require("./post.mongo");
+const blog_mongo_1 = require("../../blogs/infrastructure/blog.mongo");
+const mongoose_1 = __importDefault(require("mongoose"));
 let PostsRepository = class PostsRepository {
     constructor(blogsRepository) {
         this.blogsRepository = blogsRepository;
     }
-    createPost(newPost) {
+    createPost(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield this.blogsRepository.getBlogById(newPost.getBlogId());
-            if (blog) {
-                newPost.setBlogName(blog.getName());
+            if (!mongoose_1.default.isValidObjectId(dto.blogId)) {
+                throw new Error("Blog not found");
             }
-            else {
-                newPost.setBlogName("");
-            }
-            const post = post_mongo_1.PostModel.create_post_in_blog(Object.assign({}, newPost.toPrimitives()));
+            const blogId = new mongoose_1.default.Types.ObjectId(dto.blogId);
+            const blog = yield blog_mongo_1.BlogModel.findById(blogId);
+            if (!blog)
+                throw new Error("Blog not found");
+            const post = post_mongo_1.PostModel.createPost(Object.assign(Object.assign({}, dto), { blogId: dto.blogId, blogName: blog.name }));
             yield post.save();
             return post;
         });
@@ -48,18 +53,18 @@ let PostsRepository = class PostsRepository {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === "asc" ? 1 : -1;
-            const result = yield post_mongo_1.PostModel.find({})
+            const items = yield post_mongo_1.PostModel.find({})
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
                 .exec();
             const totalCount = yield post_mongo_1.PostModel.countDocuments({});
             return {
-                pagesCount: +Math.ceil(totalCount / pageSize),
-                page: +pageNumber,
-                pageSize: +pageSize,
-                totalCount: +totalCount,
-                items: result,
+                pagesCount: Math.ceil(totalCount / pageSize),
+                page: pageNumber,
+                pageSize,
+                totalCount,
+                items,
             };
         });
     }
@@ -68,36 +73,28 @@ let PostsRepository = class PostsRepository {
             if (!mongodb_1.ObjectId.isValid(id)) {
                 return null;
             }
-            const result = yield post_mongo_1.PostModel.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (!result) {
-                return null;
-            }
-            return Object.assign(Object.assign({}, result.toObject()), { id: result._id.toString() });
-        });
-    }
-    deletePost(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const isDeleted = yield post_mongo_1.PostModel.deleteOne({
-                _id: new mongodb_1.ObjectId(id),
-            });
-            return isDeleted.deletedCount !== 0;
+            return post_mongo_1.PostModel.findById(id).exec();
         });
     }
     updatePost(id, post) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updateFields = {
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: post.blogId,
-            };
-            if (post.blogName) {
-                updateFields.blogName = post.blogName;
-            }
-            const isUpdated = yield post_mongo_1.PostModel.updateOne({ _id: new mongodb_1.ObjectId(id) }, {
-                $set: updateFields,
+            const result = yield post_mongo_1.PostModel.updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+                $set: {
+                    title: post.title,
+                    shortDescription: post.shortDescription,
+                    content: post.content,
+                    blogId: post.blogId,
+                },
             });
-            return (yield isUpdated.matchedCount) !== 0;
+            return result.matchedCount === 1;
+        });
+    }
+    deletePost(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield post_mongo_1.PostModel.deleteOne({
+                _id: new mongodb_1.ObjectId(id),
+            });
+            return result.deletedCount === 1;
         });
     }
     deleteAllPosts() {
@@ -110,18 +107,18 @@ let PostsRepository = class PostsRepository {
             const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", } = query;
             const skip = (pageNumber - 1) * pageSize;
             const sortDir = sortDirection === "asc" ? 1 : -1;
-            const result = yield post_mongo_1.PostModel.find({ blogId })
+            const items = yield post_mongo_1.PostModel.find({ blogId })
                 .sort({ [sortBy]: sortDir })
                 .skip(+skip)
                 .limit(+pageSize)
                 .exec();
             const totalCount = yield post_mongo_1.PostModel.countDocuments({ blogId });
             return {
-                pagesCount: +Math.ceil(totalCount / pageSize),
-                page: +pageNumber,
-                pageSize: +pageSize,
-                totalCount: +totalCount,
-                items: result,
+                pagesCount: Math.ceil(totalCount / pageSize),
+                page: pageNumber,
+                pageSize,
+                totalCount,
+                items,
             };
         });
     }

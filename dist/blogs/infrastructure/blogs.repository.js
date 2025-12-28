@@ -39,13 +39,12 @@ let BlogsRepository = class BlogsRepository {
             const filter = searchNameTerm
                 ? { name: { $regex: searchNameTerm, $options: "i" } }
                 : {};
-            const blogs = yield blog_mongo_1.BlogModel
-                .find(filter)
+            const blogs = yield blog_mongo_1.BlogModel.find(filter)
                 .sort({ [sortBy]: sortDir })
                 .skip(skip)
                 .limit(pageSize)
                 .lean();
-            const items = blogs.map(blog => ({
+            const items = blogs.map((blog) => ({
                 id: blog._id.toString(),
                 name: blog.name,
                 description: blog.description,

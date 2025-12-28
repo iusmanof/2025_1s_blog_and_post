@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-export const nameValidation = body("name")
+export const nameValidationMiddleware = body("name")
   .trim()
   .isString()
   .withMessage("Name must be string")

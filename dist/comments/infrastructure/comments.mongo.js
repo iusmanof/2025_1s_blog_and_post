@@ -1,55 +1,58 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommentMongooseModel = exports.CommentReactionModel = exports.likeInfoSchema = exports.commentatorInfoSchema = void 0;
-const mongoose_1 = __importStar(require("mongoose"));
-exports.commentatorInfoSchema = new mongoose_1.default.Schema({
-    userId: { type: String, required: true },
-    userLogin: { type: String, required: true },
-}, { _id: false });
-exports.likeInfoSchema = new mongoose_1.default.Schema({
-    likesCount: { type: Number, required: true },
-    dislikesCount: { type: Number, required: true },
-}, { _id: false });
-const commentSchema = new mongoose_1.default.Schema({
-    postId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Post", required: true },
+exports.CommentMongooseModel = exports.CommentReactionModel = void 0;
+const mongoose_1 = require("mongoose");
+const commentSchema = new mongoose_1.Schema({
+    postId: { type: String, required: true },
     content: { type: String, required: true },
-    commentatorInfo: { type: exports.commentatorInfoSchema, required: true },
-    likesInfo: { type: exports.likeInfoSchema, required: true },
+    commentatorInfo: {
+        userId: { type: String, required: true },
+        userLogin: { type: String, required: true },
+    },
+    likesInfo: {
+        likesCount: { type: Number, required: true, default: 0 },
+        dislikesCount: { type: Number, required: true, default: 0 },
+        myStatus: { type: String, default: "None" },
+    },
 }, { timestamps: { createdAt: true, updatedAt: false } });
-const commentReactionSchema = new mongoose_1.default.Schema({
+commentSchema.methods.updateReaction = function (currentStatus, newStatus) {
+    if (currentStatus === newStatus)
+        return;
+    if (currentStatus === "Like" && this.likesInfo.likesCount > 0)
+        this.likesInfo.likesCount--;
+    if (currentStatus === "Dislike" && this.likesInfo.dislikesCount > 0)
+        this.likesInfo.dislikesCount--;
+    if (newStatus === "Like")
+        this.likesInfo.likesCount++;
+    if (newStatus === "Dislike")
+        this.likesInfo.dislikesCount++;
+    this.likesInfo.myStatus = newStatus;
+};
+commentSchema.methods.setMyStatus = function (status) {
+    this.likesInfo.myStatus = status;
+};
+commentSchema.statics.createFromEntity = function (entity) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const comment = new this({
+            postId: entity.postId,
+            content: entity.content,
+            commentatorInfo: { userId: entity.userId, userLogin: entity.userLogin },
+            likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: "None" },
+        });
+        yield comment.save();
+        return comment;
+    });
+};
+const commentReactionSchema = new mongoose_1.Schema({
     userId: { type: String, required: true },
     commentId: { type: mongoose_1.Schema.Types.ObjectId, ref: "comment", required: true },
     status: { type: String, required: true },

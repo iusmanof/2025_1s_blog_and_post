@@ -1,10 +1,7 @@
 import { Router } from "express";
-import { passwordValidation } from "./middlewares/password.validation-middleware";
-import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
-import { loginOrEmailValidation } from "../../core/milldlewares/login-or-email.validation";
+import { loginOrEmailValidationMiddleware } from "./middlewares/login-or-email-validation.middleware";
 import { accessTokenGuard } from "./access-token.guard";
 import { inputRegistrationValidationMiddleware } from "./middlewares/input-registration-validation.middleware";
-import { loginRegistrationValidationMiddleware } from "./middlewares/login-registration.validation.middleware";
 import { emailRegistrationValidationMiddleware } from "./middlewares/email-registration-validation.middleware";
 import {
   checkRefreshTokenMiddleware,
@@ -21,6 +18,9 @@ import { container } from "../../composition.root";
 import { AuthController } from "./auth.controller";
 import { newPasswordValidation } from "./middlewares/new-password-validation.middleware";
 import { emailPasswordRecoveryValidation } from "./middlewares/email-password-recovery.validation";
+import { inputAuthValidationMiddleware } from "./middlewares/input-auth-validation.middleware";
+import { passwordValidation } from "./middlewares/password-validation.middleware";
+import { loginRegistrationValidationMiddleware } from "./middlewares/login-registration-validation.middleware";
 
 const authController = container.get(AuthController);
 
@@ -29,8 +29,8 @@ export const authRouter = Router();
 authRouter.post(
   "/login",
   passwordValidation,
-  loginOrEmailValidation,
-  inputValidationMiddleware,
+  loginOrEmailValidationMiddleware,
+  inputAuthValidationMiddleware,
   loginRequestLimit,
   authController.login,
 );

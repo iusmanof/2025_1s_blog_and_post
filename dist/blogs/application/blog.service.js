@@ -29,7 +29,7 @@ const inversify_1 = require("inversify");
 const blogs_repository_1 = require("../infrastructure/blogs.repository");
 const posts_repository_1 = __importDefault(require("../../posts/infrastructure/posts.repository"));
 const blog_entity_1 = require("../domain/blog.entity");
-const post_entity_1 = require("../../posts/domain/post.entity");
+const post_mapper_1 = require("../../posts/application/post.mapper");
 let BlogService = class BlogService {
     constructor(blogsRepository, postsRepository) {
         this.blogsRepository = blogsRepository;
@@ -83,19 +83,8 @@ let BlogService = class BlogService {
             const blog = yield this.blogsRepository.getBlogById(blogId);
             if (!blog)
                 return null;
-            const postEntity = new post_entity_1.PostEntity(postBody);
-            postEntity.setBlogId(blog.getId());
-            postEntity.setBlogName(blog.getName());
-            const post = yield this.postsRepository.createPost(postEntity);
-            return {
-                id: postEntity.getId(),
-                title: postEntity.getTitle(),
-                shortDescription: postEntity.getShortDescription(),
-                content: postEntity.getContent(),
-                blogId: postEntity.getBlogId(),
-                blogName: postEntity.getBlogName(),
-                createdAt: post.createdAt,
-            };
+            const post = yield this.postsRepository.createPost(Object.assign(Object.assign({}, postBody), { blogId: blog.getId(), blogName: blog.getName() }));
+            return (0, post_mapper_1.mapPostToView)(post);
         });
     }
 };

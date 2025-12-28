@@ -20,17 +20,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -38,27 +27,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostService = void 0;
 const inversify_1 = require("inversify");
 const posts_repository_1 = __importDefault(require("../infrastructure/posts.repository"));
-const post_entity_1 = require("../domain/post.entity");
+const post_mapper_1 = require("./post.mapper");
+const users_repository_1 = require("../../users/infrastructure/users.repository");
 let PostService = class PostService {
-    constructor(postsRepository) {
+    constructor(postsRepository, usersRepository) {
         this.postsRepository = postsRepository;
+        this.usersRepository = usersRepository;
     }
     create(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const postEntity = new post_entity_1.PostEntity(body);
-            const post = yield this.postsRepository.createPost(postEntity);
-            const _a = post.toObject(), { _id, __v } = _a, rest = __rest(_a, ["_id", "__v"]);
-            return Object.assign(Object.assign({}, rest), { id: _id.toString() });
+            const post = yield this.postsRepository.createPost(body);
+            return (0, post_mapper_1.mapPostToView)(post);
         });
     }
-    findMany(query) {
+    findMany(query, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.postsRepository.getAllPosts(query);
+            const posts = yield this.postsRepository.getAllPosts(query);
+            return Object.assign(Object.assign({}, posts), { items: yield Promise.all(posts.items.map((p) => (0, post_mapper_1.mapPostToView)(p, userId))) });
         });
     }
-    findById(id) {
+    findById(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.postsRepository.getPostById(id);
+            const post = yield this.postsRepository.getPostById(id);
+            if (!post)
+                return null;
+            return (0, post_mapper_1.mapPostToView)(post, userId);
         });
     }
     update(id, body) {
@@ -71,9 +64,29 @@ let PostService = class PostService {
             return yield this.postsRepository.deletePost(id);
         });
     }
-    findPostsByBlogId(blogId, query) {
+    findPostsByBlogId(blogId, query, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.postsRepository.getPostByBlogId(blogId, query);
+            const { items, totalCount, pagesCount, page, pageSize } = yield this.postsRepository.getPostByBlogId(blogId, query);
+            const mappedItems = yield Promise.all(items.map((post) => (0, post_mapper_1.mapPostToView)(post, userId)));
+            return {
+                pagesCount,
+                page,
+                pageSize,
+                totalCount,
+                items: mappedItems,
+            };
+        });
+    }
+    getLikeStatus(postId, userId, likeStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = yield this.postsRepository.getPostById(postId);
+            if (!post)
+                return null;
+            const user = yield this.usersRepository.findById(userId);
+            if (!user)
+                return null;
+            const currentStatus = yield post.setLikeStatus(userId, user.login, likeStatus);
+            return { likeStatus: currentStatus };
         });
     }
 };
@@ -81,6 +94,8 @@ exports.PostService = PostService;
 exports.PostService = PostService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(posts_repository_1.default)),
-    __metadata("design:paramtypes", [posts_repository_1.default])
+    __param(1, (0, inversify_1.inject)(users_repository_1.UsersRepository)),
+    __metadata("design:paramtypes", [posts_repository_1.default,
+        users_repository_1.UsersRepository])
 ], PostService);
 //# sourceMappingURL=post.service.js.map

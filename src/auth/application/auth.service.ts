@@ -17,6 +17,7 @@ import { UsersRepository } from "../../users/infrastructure/users.repository";
 import { SecurityDevicesQueryRepository } from "../infrastructure/security-devices.query-repository";
 import { SecurityDevicesRepository } from "../infrastructure/security-devices.repository";
 import { UsersQueryRepository } from "../../users/infrastructure/users.query.repository";
+import { UserEntity } from "../../users/domain/user.entity";
 
 @injectable()
 export class AuthService {
@@ -125,7 +126,14 @@ export class AuthService {
       },
       passwordRecovery: null,
     };
-    // await this.usersRepository.create(newUser);
+
+    const newUserEntity = {
+      login: login,
+      email: email,
+      passwordHash: passwordHash,
+    };
+    const userEntity = new UserEntity(newUserEntity);
+    await this.usersRepository.create(userEntity);
 
     if (newUser.emailConfirmation) {
       try {
@@ -136,7 +144,7 @@ export class AuthService {
           ),
         );
       } catch (err) {
-        console.log("send email error");
+        console.log(`send email error ${err}`);
       }
     }
     return {
@@ -214,7 +222,7 @@ export class AuthService {
         emailTemplate.registrationEmail(codeRefreshed),
       );
     } catch (err) {
-      console.log("send email error");
+      console.log(`send email error ${err}`);
     }
 
     return {
@@ -224,11 +232,7 @@ export class AuthService {
     };
   }
 
-  async updateToken(
-    rf: string,
-    ipAddr: string,
-    userAgent: string,
-  ): Promise<ResultObject<{} | null>> {
+  async updateToken(rf: string, ipAddr: string, userAgent: string) {
     const decoded = await this.jwtAdapter.decodeToken(rf);
 
     const oldDevice = await this.securityDevicesQueryRepository.findByIdAndIat(

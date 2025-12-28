@@ -1,10 +1,10 @@
-import {inject, injectable} from "inversify";
-import {ObjectId} from "mongodb";
-import {CommentsQuery} from "../types/comments-query";
-import {UsersQueryRepository} from "../../users/infrastructure/users.query.repository";
-import {UserModel} from "../../users/infrastructure/user.mongo";
-import {CommentMongooseModel, CommentReactionModel,} from "./comments.mongo";
-import mongoose from "mongoose";
+import { injectable, inject } from "inversify";
+import { ObjectId } from "mongodb";
+import { UsersQueryRepository } from "../../users/infrastructure/users.query.repository";
+import { UserModel } from "../../users/infrastructure/user.mongo";
+import { CommentMongooseModel, CommentReactionModel } from "./comments.mongo";
+import { CommentsQuery } from "../types/comments-query";
+import { CommentEntity } from "../domain/comment.entity";
 
 @injectable()
 export class CommentsRepository {
@@ -13,34 +13,18 @@ export class CommentsRepository {
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
-  async create(userId: string, postId: string, content: string) {
-    const user = await UserModel.findById(userId);
+  async create(commentEntity: CommentEntity) {
+    const user = await UserModel.findById(commentEntity.getUserId());
     if (!user) return null;
 
-    const newComment = await CommentMongooseModel.create({
-      postId,
-      content,
-      commentatorInfo: {
-        userId: user.id,
-        userLogin: user.login,
-      },
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: "None",
-      },
-      createdAt: new Date().toISOString(),
+    const comment = await CommentMongooseModel.createFromEntity({
+      userId: commentEntity.getUserId(),
+      postId: commentEntity.getPostId(),
+      content: commentEntity.getContent(),
+      userLogin: user.login,
     });
 
-    const json = newComment.toJSON();
-
-    return {
-      id: json._id.toString(),
-      content: json.content,
-      commentatorInfo: json.commentatorInfo,
-      likesInfo: json.likesInfo,
-      createdAt: json.createdAt,
-    };
+    return comment.toJSON();
   }
 
   async getCommentsByPostId(postId: string, query: CommentsQuery) {
@@ -50,54 +34,41 @@ export class CommentsRepository {
       sortBy = "createdAt",
       sortDirection = "desc",
     } = query;
-
     const skip = (pageNumber - 1) * pageSize;
     const sortDir = sortDirection === "asc" ? 1 : -1;
-    const search = { postId: postId };
 
-    const result = await CommentMongooseModel.find(search)
+    const items = await CommentMongooseModel.find({ postId })
       .sort({ [sortBy]: sortDir })
-      .skip(+skip)
-      .limit(+pageSize)
-      .lean()
-      .exec();
+      .skip(skip)
+      .limit(pageSize)
+      .lean();
 
-    if (!result) {
-      return null;
-    }
-
-    const totalCount = (await CommentMongooseModel.find(search).exec()).length;
+    const totalCount = await CommentMongooseModel.countDocuments({ postId });
 
     return {
-      pagesCount: +Math.ceil(totalCount / pageSize),
-      page: +pageNumber,
-      pageSize: +pageSize,
-      totalCount: +totalCount,
-      items: result.map((comment) => ({
-        id: comment._id.toString(),
-        content: comment.content,
-        commentatorInfo: comment.commentatorInfo,
-        likesInfo: comment.likesInfo,
-        createdAt: comment.createdAt,
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items: items.map((c) => ({
+        id: c._id.toString(),
+        content: c.content,
+        commentatorInfo: c.commentatorInfo,
+        likesInfo: c.likesInfo,
+        createdAt: c.createdAt,
       })),
     };
   }
 
   async getCommentById(commentId: string) {
-    const result = await CommentMongooseModel.findOne({
-      _id: new ObjectId(commentId),
-    }).lean();
-
-    if (!result) {
-      return null;
-    }
-
+    const comment = await CommentMongooseModel.findById(commentId).lean();
+    if (!comment) return null;
     return {
-      id: result._id.toString(),
-      content: result.content,
-      commentatorInfo: result.commentatorInfo,
-      likesInfo: result.likesInfo,
-      createdAt: result.createdAt,
+      id: comment._id.toString(),
+      content: comment.content,
+      commentatorInfo: comment.commentatorInfo,
+      likesInfo: comment.likesInfo,
+      createdAt: comment.createdAt,
     };
   }
 
@@ -105,56 +76,49 @@ export class CommentsRepository {
     const result = await CommentMongooseModel.deleteOne({
       _id: new ObjectId(commentId),
     });
-    if (result.deletedCount === 0) {
-      return null;
-    }
-    return result;
+    return result.deletedCount === 0 ? null : result;
   }
 
-  async deleteAllComments() {
-    await CommentMongooseModel.deleteMany({});
-  }
-
-  async updateById(commentId: string, content: string): Promise<{} | null> {
+  async updateById(commentId: string, content: string) {
     const result = await CommentMongooseModel.updateOne(
       { _id: new ObjectId(commentId) },
-      { $set: { content: content } },
+      { $set: { content } },
     );
-    if (result.matchedCount === 0) {
-      return null;
-    }
-    return result;
+    return result.matchedCount === 0 ? null : result;
   }
 
-  async setCommentLikeStatus(
-    id: string,
-    likeCount: number,
-    dislikeCount: number,
+  async setLikeStatus(
+    commentId: string,
+    newLikeStatus: string,
+    userId: string,
   ) {
-      return CommentMongooseModel.updateOne(
-          {_id: new mongoose.Types.ObjectId(id)},
-          {
-              $set: {
-                  "likesInfo.likesCount": likeCount,
-                  "likesInfo.dislikesCount": dislikeCount,
-              },
-          },
-      );
+    const comment = await CommentMongooseModel.findById(commentId);
+    if (!comment) return null;
+
+    const currentStatus = await CommentReactionModel.findOne({
+      commentId,
+      userId,
+    }).lean();
+    const oldStatus = currentStatus?.status || "None";
+
+    comment.updateReaction(oldStatus, newLikeStatus);
+    await comment.save();
+
+    await CommentReactionModel.updateOne(
+      { commentId, userId },
+      { status: newLikeStatus },
+      { upsert: true },
+    );
+
+    return comment.toJSON();
   }
 
   async getStatusByUserId(commentId: string, userId: string) {
-    return CommentReactionModel.findOne({ userId, commentId }).lean();
+    return CommentReactionModel.findOne({ commentId, userId }).lean();
   }
 
-  async updateStatusByUserId(
-    commentId: string,
-    userId: string,
-    finalStatus: string,
-  ) {
-    await CommentReactionModel.updateOne(
-      { userId, commentId },
-      { status: finalStatus },
-      { upsert: true },
-    );
+  async deleteAllComments() {
+    const result = await CommentMongooseModel.deleteMany({});
+    return result.deletedCount === 0 ? null : result;
   }
 }

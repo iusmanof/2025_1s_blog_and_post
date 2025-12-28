@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { accessTokenGuard } from "../../auth/presentation/access-token.guard";
-import { commentValidationa } from "./middlewares/comments-validation.middleware";
-import { inputValidationMiddleware } from "../../core/milldlewares/input-validation-middleware";
+import { commentValidation } from "./middlewares/comments-validation.middleware";
 import { container } from "../../composition.root";
 import { CommentController } from "./comment.controller";
-import { likeStatusValidation } from "./middlewares/likeStatus-validation.middleware";
+import { inputCommentsValidationMiddleware } from "./middlewares/input-comments-validation.middleware";
+import { likeStatusValidation } from "./middlewares/like-status-validation.middleware";
 
 const commentController = container.get(CommentController);
 
@@ -17,8 +17,8 @@ commentsRouter.delete("/:id", accessTokenGuard, commentController.deleteById);
 commentsRouter.put(
   "/:id",
   accessTokenGuard,
-  [commentValidationa],
-  inputValidationMiddleware,
+  [commentValidation],
+  inputCommentsValidationMiddleware,
   commentController.updateById,
 );
 
@@ -26,6 +26,6 @@ commentsRouter.put(
   "/:id/like-status",
   accessTokenGuard,
   [likeStatusValidation],
-  inputValidationMiddleware,
+  inputCommentsValidationMiddleware,
   commentController.setLikeStatus,
 );

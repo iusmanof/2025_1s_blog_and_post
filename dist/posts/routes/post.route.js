@@ -14,13 +14,57 @@ const comments_validation_middleware_1 = require("../../comments/middlewares/com
 const post_id_validation_middleware_1 = require("../middlewares/post-id-validation.middleware");
 const user_id_validation_middleware_1 = require("../middlewares/user-id-validation.middleware");
 const post_controller_1 = require("../controllers/post.controller");
-const postController = composition_root_1.container.get(post_controller_1.PostController);
+const postController = composition_root_1.container.get(
+  post_controller_1.PostController,
+);
 exports.postRouter = (0, express_1.Router)();
-exports.postRouter.get("/", (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), postController.findMany);
+exports.postRouter.get(
+  "/",
+  (0,
+  query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(),
+  postController.findMany,
+);
 exports.postRouter.get("/:id", postController.findById);
-exports.postRouter.post("/", super_admin_guard_middleware_1.basicAuth, [title_validation_1.titleValidation, contentValidation_1.contentValidation, short_description_validation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, postController.create);
-exports.postRouter.put("/:id", super_admin_guard_middleware_1.basicAuth, [title_validation_1.titleValidation, contentValidation_1.contentValidation, short_description_validation_1.shortDescriptionValidation], input_validation_middleware_1.inputValidationMiddleware, postController.update);
-exports.postRouter.delete("/:id", super_admin_guard_middleware_1.basicAuth, postController.delete);
-exports.postRouter.post("/:postId/comments", access_token_guard_1.accessTokenGuard, comments_validation_middleware_1.commentValidationa, input_validation_middleware_1.inputValidationMiddleware, post_id_validation_middleware_1.postIdValidationMiddleware, user_id_validation_middleware_1.userIdValidationMiddleware, postController.createComment);
-exports.postRouter.get("/:postId/comments", (0, query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(), postController.getComments);
+exports.postRouter.post(
+  "/",
+  super_admin_guard_middleware_1.basicAuth,
+  [
+    title_validation_1.titleValidation,
+    contentValidation_1.contentValidation,
+    short_description_validation_1.shortDescriptionValidation,
+  ],
+  input_validation_middleware_1.inputValidationMiddleware,
+  postController.create,
+);
+exports.postRouter.put(
+  "/:id",
+  super_admin_guard_middleware_1.basicAuth,
+  [
+    title_validation_1.titleValidation,
+    contentValidation_1.contentValidation,
+    short_description_validation_1.shortDescriptionValidation,
+  ],
+  input_validation_middleware_1.inputValidationMiddleware,
+  postController.update,
+);
+exports.postRouter.delete(
+  "/:id",
+  super_admin_guard_middleware_1.basicAuth,
+  postController.delete,
+);
+exports.postRouter.post(
+  "/:postId/comments",
+  access_token_guard_1.accessTokenGuard,
+  comments_validation_middleware_1.commentValidationa,
+  input_validation_middleware_1.inputValidationMiddleware,
+  post_id_validation_middleware_1.postIdValidationMiddleware,
+  user_id_validation_middleware_1.userIdValidationMiddleware,
+  postController.createComment,
+);
+exports.postRouter.get(
+  "/:postId/comments",
+  (0,
+  query_pagination_sorting_validation_middleware_1.paginationAndSortingValidation)(),
+  postController.getComments,
+);
 //# sourceMappingURL=post.route.js.map

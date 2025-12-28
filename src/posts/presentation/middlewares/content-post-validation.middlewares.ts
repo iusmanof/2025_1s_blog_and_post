@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-export const contentValidation = body("content")
+export const contentPostValidation = body("content")
   .trim()
   .isString()
   .withMessage("Param not a string")
