@@ -122,7 +122,9 @@ let PostController = class PostController {
             if (token) {
                 try {
                     const payload = (yield this.jwtAdapter.verifyAccessToken(token));
-                    userId = payload.id;
+                    if (payload) {
+                        userId = payload.id;
+                    }
                 }
                 catch (_a) { }
             }

@@ -111,7 +111,7 @@ let UsersRepository = class UsersRepository {
                 $set: {
                     passwordRecovery: {
                         recoveryCode,
-                        expirationDate: (0, date_fns_1.add)(new Date(), { hours: 1 }), // код действителен 1 час
+                        expirationDate: (0, date_fns_1.add)(new Date(), { hours: 1 }),
                     },
                 },
             });
@@ -128,7 +128,7 @@ let UsersRepository = class UsersRepository {
         return __awaiter(this, void 0, void 0, function* () {
             return user_mongo_1.UserModel.updateOne({ "passwordRecovery.recoveryCode": recoveryCode }, {
                 $set: { password: hashedPassword },
-                $unset: { passwordRecovery: "" }, // удаляем код после смены пароля
+                $unset: { passwordRecovery: "" },
             });
         });
     }

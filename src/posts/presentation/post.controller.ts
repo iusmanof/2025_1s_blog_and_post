@@ -154,7 +154,10 @@ export class PostController {
         const payload = (await this.jwtAdapter.verifyAccessToken(
           token,
         )) as AccessTokenPayload | null;
-        userId = payload.id;
+
+        if (payload) {
+          userId = payload.id;
+        }
       } catch {}
     }
     const result = await this.commentsService.getCommentByPostId(
